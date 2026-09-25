@@ -1,0 +1,550 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Gestionnaire de commandes - Version 1">
+    <title>📦 Gestionnaire de commandes</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- =====================================================
+             EN-TÊTE
+        ====================================================== -->
+
+        <header class="header">
+
+            <div>
+                <h1>📦 Gestionnaire de commandes</h1>
+
+                <p>
+                    Gestion simple des clients, produits et paiements
+                </p>
+            </div>
+
+        </header>
+
+
+        <main>
+
+            <!-- =================================================
+                 STATISTIQUES
+            ================================================== -->
+
+            <section class="stats-grid">
+
+                <div class="stat-card">
+                    <span>👥 Clients</span>
+                    <strong id="statClients">0</strong>
+                </div>
+
+
+                <div class="stat-card">
+                    <span>📦 Commandes</span>
+                    <strong id="statCommandes">0</strong>
+                </div>
+
+
+                <div class="stat-card">
+                    <span>💰 Acomptes reçus</span>
+                    <strong id="statAcomptes">0 Ar</strong>
+                </div>
+
+
+                <div class="stat-card">
+                    <span>💵 Restes à payer</span>
+                    <strong id="statRestes">0 Ar</strong>
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 FORMULAIRE
+            ================================================== -->
+
+            <section class="card">
+
+                <div class="section-title">
+
+                    <div>
+
+                        <h2 id="formTitle">
+                            ➕ Nouvelle commande
+                        </h2>
+
+                        <p>
+                            Les montants sont calculés automatiquement.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form id="commandeForm" autocomplete="off">
+
+                    <input
+                        type="hidden"
+                        id="commandeId"
+                    >
+
+
+                    <div class="form-grid">
+
+
+                        <!-- NOM CLIENT -->
+
+                        <div class="field">
+
+                            <label for="nomClient">
+                                Nom du client *
+                            </label>
+
+                            <input
+                                id="nomClient"
+                                type="text"
+                                placeholder="Ex. Jean"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <!-- NOM PRODUIT -->
+
+                        <div class="field">
+
+                            <label for="nomProduit">
+                                Nom du produit *
+                            </label>
+
+                            <input
+                                id="nomProduit"
+                                type="text"
+                                placeholder="Ex. Bracelet Naruto"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <!-- NOMBRE -->
+
+                        <div class="field">
+
+                            <label for="nombreProduit">
+                                Nombre *
+                            </label>
+
+                            <input
+                                id="nombreProduit"
+                                type="number"
+                                min="1"
+                                step="1"
+                                value="1"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <!-- PRIX -->
+
+                        <div class="field">
+
+                            <label for="prixProduit">
+                                Prix unitaire (Ar) *
+                            </label>
+
+                            <input
+                                id="prixProduit"
+                                type="number"
+                                min="0"
+                                step="1"
+                                placeholder="Ex. 15000"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <!-- ACOMPTE -->
+
+                        <div class="field">
+
+                            <label for="acompte">
+                                Acompte (Ar)
+                            </label>
+
+                            <input
+                                id="acompte"
+                                type="number"
+                                min="0"
+                                step="1"
+                                value="0"
+                            >
+
+                        </div>
+
+
+
+                        <!-- STATUT -->
+
+                        <div class="field">
+
+                            <label for="statut">
+                                Statut
+                            </label>
+
+                            <select id="statut">
+
+                                <option value="En attente">
+                                    En attente
+                                </option>
+
+                                <option value="Acompte reçu">
+                                    Acompte reçu
+                                </option>
+
+                                <option value="En préparation">
+                                    En préparation
+                                </option>
+
+                                <option value="Prêt">
+                                    Prêt
+                                </option>
+
+                                <option value="Livré">
+                                    Livré
+                                </option>
+
+                                <option value="Payé">
+                                    Payé
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         CALCUL AUTOMATIQUE
+                    ================================================== -->
+
+                    <div class="calculation">
+
+
+                        <div>
+
+                            <span>
+                                Total produit
+                            </span>
+
+                            <strong id="totalProduit">
+                                0 Ar
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Reste à charge
+                            </span>
+
+                            <strong id="resteCharge">
+                                0 Ar
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         BOUTONS FORMULAIRE
+                    ================================================== -->
+
+                    <div class="form-actions">
+
+
+                        <button
+                            class="btn primary"
+                            type="submit"
+                            id="btnEnregistrer"
+                        >
+                            💾 Enregistrer
+                        </button>
+
+
+                        <button
+                            class="btn secondary hidden"
+                            type="button"
+                            id="btnAnnuler"
+                        >
+                            ✖ Annuler la modification
+                        </button>
+
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 LISTE DES COMMANDES
+            ================================================== -->
+
+            <section class="card">
+
+
+                <!-- RECHERCHE ET FILTRE -->
+
+                <div class="toolbar">
+
+
+                    <div class="search-box">
+
+                        <label for="recherche">
+                            🔍 Recherche
+                        </label>
+
+                        <input
+                            id="recherche"
+                            type="search"
+                            placeholder="Client ou produit..."
+                        >
+
+                    </div>
+
+
+
+                    <div class="filter-box">
+
+                        <label for="filtreStatut">
+                            📌 Statut
+                        </label>
+
+                        <select id="filtreStatut">
+
+                            <option value="">
+                                Tous les statuts
+                            </option>
+
+                            <option value="En attente">
+                                En attente
+                            </option>
+
+                            <option value="Acompte reçu">
+                                Acompte reçu
+                            </option>
+
+                            <option value="En préparation">
+                                En préparation
+                            </option>
+
+                            <option value="Prêt">
+                                Prêt
+                            </option>
+
+                            <option value="Livré">
+                                Livré
+                            </option>
+
+                            <option value="Payé">
+                                Payé
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     ACTIONS DONNÉES
+                ================================================== -->
+
+                <div class="data-actions">
+
+
+                    <button
+                        class="btn secondary"
+                        id="btnExporter"
+                        type="button"
+                    >
+                        📤 Exporter les données
+                    </button>
+
+
+
+                    <label
+                        class="btn secondary file-label"
+                        for="fichierImport"
+                    >
+                        📥 Importer les données
+                    </label>
+
+
+                    <input
+                        id="fichierImport"
+                        type="file"
+                        accept=".json,application/json"
+                        hidden
+                    >
+
+
+
+                    <button
+                        class="btn danger-outline"
+                        id="btnToutSupprimer"
+                        type="button"
+                    >
+                        🗑️ Tout supprimer
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     TABLEAU
+                ================================================== -->
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Client
+                                </th>
+
+                                <th>
+                                    Produit
+                                </th>
+
+                                <th>
+                                    Qté
+                                </th>
+
+                                <th>
+                                    Prix unitaire
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Acompte
+                                </th>
+
+                                <th>
+                                    Reste
+                                </th>
+
+                                <th>
+                                    Statut
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="commandesBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     MESSAGE AUCUNE COMMANDE
+                ================================================== -->
+
+                <div
+                    id="aucuneCommande"
+                    class="empty-state hidden"
+                >
+
+                    <div>
+                        📦
+                    </div>
+
+                    <h3>
+                        Aucune commande
+                    </h3>
+
+                    <p>
+                        Ajoute une commande ou modifie ta recherche.
+                    </p>
+
+                </div>
+
+
+            </section>
+
+        </main>
+
+
+
+        <!-- =====================================================
+             PIED DE PAGE
+        ====================================================== -->
+
+        <footer>
+
+            Gestionnaire de commandes — Version 1
+
+        </footer>
+
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+```

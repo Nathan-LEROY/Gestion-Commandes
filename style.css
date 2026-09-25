@@ -1,0 +1,140 @@
+```css
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --bg: #f3f6fb;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #667085;
+    --border: #d9e0ea;
+    --danger: #dc2626;
+    --success: #15803d;
+    --warning: #b45309;
+    --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button,
+.file-label {
+    cursor: pointer;
+}
+
+.app {
+    width: min(1400px, 96%);
+    margin: 0 auto;
+}
+
+/* =========================================================
+   EN-TÊTE
+========================================================= */
+
+.header {
+    background: var(--primary);
+    color: white;
+    padding: 24px;
+    margin: 18px 0;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.header h1 {
+    margin: 0 0 6px;
+    font-size: clamp(24px, 4vw, 34px);
+}
+
+.header p {
+    margin: 0;
+    opacity: 0.9;
+}
+
+
+/* =========================================================
+   STRUCTURE PRINCIPALE
+========================================================= */
+
+main {
+    display: grid;
+    gap: 18px;
+}
+
+
+/* =========================================================
+   STATISTIQUES
+========================================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.stat-card,
+.card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.stat-card {
+    padding: 20px;
+}
+
+.stat-card span {
+    display: block;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.stat-card strong {
+    font-size: 23px;
+}
+
+
+/* =========================================================
+   CARTES
+========================================================= */
+
+.card {
+    padding: 22px;
+}
+
+.section-title {
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
+    margin: 0 0 5px;
+    font-size: 22px;
+}
+
+.section-title p {
+    margin: 0;
+    color: var(--muted);
+}
+
+
+/* =========================================================
+   FORMULAIRE
+========================================================= */
+
+.form-grid {
+    display: grid;
+    grid-tem
+```

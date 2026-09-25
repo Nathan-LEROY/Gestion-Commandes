@@ -1,0 +1,11 @@
+{
+    "name": "Gestionnaire de commandes",
+    "short_name": "Commandes",
+    "description": "Gestion simple des clients, produits et paiements",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f3f6fb",
+    "theme_color": "#2563eb",
+    "lang": "fr",
+    "icons": []
+}
