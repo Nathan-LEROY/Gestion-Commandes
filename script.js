@@ -15,6 +15,7 @@ const STORAGE_KEY = "gestionCommandesV1";
 const commandeForm = document.getElementById("commandeForm");
 const commandeId = document.getElementById("commandeId");
 
+const numeroCommande = document.getElementById("numeroCommande");
 const nomClient = document.getElementById("nomClient");
 const telephoneClient = document.getElementById("telephoneClient");
 const whatsappClient = document.getElementById("whatsappClient");
@@ -494,6 +495,7 @@ function enregistrerCommande(evenement) {
 
     const commande = {
     id,
+    numeroCommande: obtenirValeur(numeroCommande).trim(),
     client: nomClient.value.trim(),
     telephone: obtenirValeur(telephoneClient).trim(),
     whatsapp: obtenirValeur(whatsappClient).trim(),
