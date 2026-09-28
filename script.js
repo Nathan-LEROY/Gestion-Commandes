@@ -294,8 +294,12 @@ function afficherCommandes() {
                 >
                 <strong>${echapperHTML(commande.client)}</strong>
                 ${commande.telephone
-                    ? `<br><small>${echapperHTML(commande.telephone)}</small>`
-                    : ""}
+    ? `<br><small>📞 ${echapperHTML(commande.telephone)}</small>`
+    : ""}
+
+${commande.whatsapp
+    ? `<br><small>💬 ${echapperHTML(commande.whatsapp)}</small>`
+    : ""}
             </td>
 
             <td>
