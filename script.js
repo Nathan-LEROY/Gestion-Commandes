@@ -1,1503 +1,693 @@
-```javascript
-const STORAGE_KEY = "gestionCommandesV1";
 
-let commandes = chargerCommandes();
+* {
+    box-sizing: border-box;
+}
 
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --bg: #f3f6fb;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #667085;
+    --border: #d9e0ea;
+    --danger: #dc2626;
+    --success: #15803d;
+    --warning: #b45309;
+    --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+}
 
-// =========================================================
-// RÉCUPÉRATION DES ÉLÉMENTS HTML
-// =========================================================
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-const commandeForm = document.getElementById("commandeForm");
+button,
+input,
+select {
+    font: inherit;
+}
 
-const commandeId = document.getElementById("commandeId");
+button,
+.file-label {
+    cursor: pointer;
+}
 
-const nomClient = document.getElementById("nomClient");
+.app {
+    width: min(1400px, 96%);
+    margin: 0 auto;
+}
 
-const nomProduit = document.getElementById("nomProduit");
+/* =========================================================
+   EN-TÊTE
+========================================================= */
 
-const nombreProduit = document.getElementById("nombreProduit");
+.header {
+    background: var(--primary);
+    color: white;
+    padding: 24px;
+    margin: 18px 0;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
 
-const prixProduit = document.getElementById("prixProduit");
+.header h1 {
+    margin: 0 0 6px;
+    font-size: clamp(24px, 4vw, 34px);
+}
 
-const acompte = document.getElementById("acompte");
+.header p {
+    margin: 0;
+    opacity: 0.9;
+}
 
-const statut = document.getElementById("statut");
+/* =========================================================
+   STRUCTURE PRINCIPALE
+========================================================= */
 
-const totalProduit = document.getElementById("totalProduit");
+main {
+    display: grid;
+    gap: 18px;
+}
 
-const resteCharge = document.getElementById("resteCharge");
+/* =========================================================
+   STATISTIQUES
+========================================================= */
 
-const commandesBody = document.getElementById("commandesBody");
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
 
-const recherche = document.getElementById("recherche");
+.stat-card,
+.card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
 
-const filtreStatut = document.getElementById("filtreStatut");
+.stat-card {
+    padding: 20px;
+}
 
-const aucuneCommande = document.getElementById("aucuneCommande");
+.stat-card span {
+    display: block;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
 
-const btnEnregistrer =
-    document.getElementById("btnEnregistrer");
+.stat-card strong {
+    font-size: 23px;
+}
 
-const btnAnnuler =
-    document.getElementById("btnAnnuler");
+/* =========================================================
+   CARTES
+========================================================= */
 
-const btnExporter =
-    document.getElementById("btnExporter");
+.card {
+    padding: 22px;
+    min-width: 0;
+}
 
-const fichierImport =
-    document.getElementById("fichierImport");
+.section-title {
+    margin-bottom: 18px;
+}
 
-const btnToutSupprimer =
-    document.getElementById("btnToutSupprimer");
+.section-title h2 {
+    margin: 0 0 5px;
+    font-size: 22px;
+}
 
+.section-title p {
+    margin: 0;
+    color: var(--muted);
+}
 
-// =========================================================
-// CHARGER LES COMMANDES
-// =========================================================
+/* =========================================================
+   FORMULAIRE
+========================================================= */
 
-function chargerCommandes() {
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
 
-    try {
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
 
-        const donnees =
-            localStorage.getItem(STORAGE_KEY);
+.field label,
+.search-box label,
+.filter-box label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
 
-        if (!donnees) {
+.field input,
+.field select,
+.search-box input,
+.filter-box select {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
 
-            return [];
+.field input:focus,
+.field select:focus,
+.search-box input:focus,
+.filter-box select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
 
-        }
+.field input::placeholder,
+.search-box input::placeholder {
+    color: #98a2b3;
+}
 
-        const resultat =
-            JSON.parse(donnees);
+.field input:disabled,
+.field select:disabled {
+    background: #f2f4f7;
+    cursor: not-allowed;
+}
 
-        return Array.isArray(resultat)
-            ? resultat
-            : [];
+/* =========================================================
+   CALCULS
+========================================================= */
 
+.calculation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.calculation > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+}
+
+.calculation span {
+    color: #475569;
+    font-size: 14px;
+}
+
+.calculation strong {
+    color: var(--primary-dark);
+    font-size: 21px;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   BOUTONS
+========================================================= */
+
+.form-actions,
+.data-actions,
+.print-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-actions {
+    margin-top: 20px;
+}
+
+.data-actions,
+.print-actions {
+    margin: 18px 0;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn.primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn.secondary {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: var(--border);
+}
+
+.btn.secondary:hover {
+    background: #e2e8f0;
+}
+
+.btn.danger,
+.btn.danger-outline {
+    color: var(--danger);
+    border-color: #fecaca;
+    background: #fff;
+}
+
+.btn.danger:hover,
+.btn.danger-outline:hover {
+    background: #fef2f2;
+}
+
+.btn.whatsapp {
+    color: white;
+    background: #16a34a;
+}
+
+.btn.whatsapp:hover {
+    background: #15803d;
+}
+
+.btn.print {
+    color: white;
+    background: #475569;
+}
+
+.btn.print:hover {
+    background: #334155;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.file-label {
+    user-select: none;
+}
+
+/* =========================================================
+   RECHERCHE ET FILTRES
+========================================================= */
+
+.toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.search-box,
+.filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+/* =========================================================
+   TABLEAU DES COMMANDES
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 14px;
+}
+
+thead {
+    background: #eff6ff;
+}
+
+th,
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    color: #334155;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+td {
+    overflow-wrap: anywhere;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+td .btn {
+    min-height: 32px;
+    padding: 6px 9px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+/* =========================================================
+   SÉLECTION POUR IMPRESSION
+========================================================= */
+
+.selection-impression {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+    vertical-align: middle;
+}
+
+.selection-impression-entete {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* =========================================================
+   BADGES DE STATUT
+========================================================= */
+
+.statut {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.statut-attente {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.statut-acompte {
+    color: #1d4ed8;
+    background: #dbeafe;
+}
+
+.statut-preparation {
+    color: #6d28d9;
+    background: #ede9fe;
+}
+
+.statut-pret {
+    color: #0369a1;
+    background: #e0f2fe;
+}
+
+.statut-livre {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.statut-paye {
+    color: #166534;
+    background: #bbf7d0;
+}
+
+/* =========================================================
+   MESSAGE AUCUNE COMMANDE
+========================================================= */
+
+.empty-state {
+    padding: 35px 15px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-state > div {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.empty-state h3 {
+    margin: 0 0 7px;
+    color: var(--text);
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+/* =========================================================
+   IMPRESSION DES ÉTIQUETTES
+   Les éléments correspondants seront ajoutés au HTML.
+========================================================= */
+
+.print-area {
+    display: none;
+}
+
+.labels-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8mm;
+    align-content: start;
+}
+
+.shipping-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+    min-width: 0;
+    padding: 5mm;
+    border: 1px solid #94a3b8;
+    border-radius: 2mm;
+    background: white;
+    color: #111827;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    overflow-wrap: anywhere;
+}
+
+.shipping-label h2 {
+    margin: 0 0 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid #94a3b8;
+    font-size: 15pt;
+}
+
+.shipping-label p {
+    margin: 0;
+    font-size: 10pt;
+    line-height: 1.35;
+}
+
+.shipping-label .label-total {
+    margin-top: 2mm;
+    padding: 3mm;
+    border: 1px solid #111827;
+    border-radius: 1mm;
+    font-size: 15pt;
+    font-weight: 700;
+    text-align: center;
+}
+
+.shipping-label .label-strong {
+    font-weight: 700;
+}
+
+/* =========================================================
+   PIED DE PAGE
+========================================================= */
+
+footer {
+    padding: 20px 10px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    catch (erreur) {
+    .card {
+        padding: 18px;
+    }
+}
 
-        console.error(
-            "Erreur de lecture :",
-            erreur
-        );
-
-        return [];
-
+@media (max-width: 600px) {
+    .app {
+        width: 94%;
     }
 
-}
-
-
-// =========================================================
-// SAUVEGARDER LES COMMANDES
-// =========================================================
-
-function sauvegarderCommandes() {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(commandes)
-    );
-
-}
-
-
-// =========================================================
-// FORMATAGE DES MONTANTS
-// =========================================================
-
-function formatMontant(nombre) {
-
-    const valeur =
-        Number(nombre) || 0;
-
-    return (
-        new Intl.NumberFormat("fr-FR")
-            .format(valeur)
-        + " Ar"
-    );
-
-}
-
-
-// =========================================================
-// CALCUL AUTOMATIQUE
-// =========================================================
-
-function calculerMontants() {
-
-    const quantite =
-        Math.max(
-            0,
-            Number(nombreProduit.value) || 0
-        );
-
-
-    const prix =
-        Math.max(
-            0,
-            Number(prixProduit.value) || 0
-        );
-
-
-    const acompteSaisi =
-        Math.max(
-            0,
-            Number(acompte.value) || 0
-        );
-
-
-    // Total = quantité × prix
-
-    const total =
-        quantite * prix;
-
-
-    // Reste = total - acompte
-
-    const reste =
-        Math.max(
-            0,
-            total - acompteSaisi
-        );
-
-
-    totalProduit.textContent =
-        formatMontant(total);
-
-
-    resteCharge.textContent =
-        formatMontant(reste);
-
-
-    return {
-
-        total: total,
-
-        acompte: acompteSaisi,
-
-        reste: reste
-
-    };
-
-}
-
-
-// =========================================================
-// STATISTIQUES
-// =========================================================
-
-function afficherStatistiques() {
-
-    const clients =
-        new Set(
-
-            commandes
-
-                .map(
-                    c =>
-                        String(
-                            c.nomClient || ""
-                        )
-                        .trim()
-                        .toLowerCase()
-                )
-
-                .filter(Boolean)
-
-        );
-
-
-    const totalAcomptes =
-        commandes.reduce(
-
-            (somme, c) =>
-                somme +
-                Number(c.acompte || 0),
-
-            0
-
-        );
-
-
-    const totalRestes =
-        commandes.reduce(
-
-            (somme, c) =>
-                somme +
-                Number(c.reste || 0),
-
-            0
-
-        );
-
-
-    document.getElementById(
-        "statClients"
-    ).textContent =
-        clients.size;
-
-
-    document.getElementById(
-        "statCommandes"
-    ).textContent =
-        commandes.length;
-
-
-    document.getElementById(
-        "statAcomptes"
-    ).textContent =
-        formatMontant(totalAcomptes);
-
-
-    document.getElementById(
-        "statRestes"
-    ).textContent =
-        formatMontant(totalRestes);
-
-}
-
-
-// =========================================================
-// COULEUR DU STATUT
-// =========================================================
-
-function statutClass(statutTexte) {
-
-    const classes = {
-
-        "En attente":
-            "status-attente",
-
-        "Acompte reçu":
-            "status-acompte",
-
-        "En préparation":
-            "status-preparation",
-
-        "Prêt":
-            "status-pret",
-
-        "Livré":
-            "status-livre",
-
-        "Payé":
-            "status-paye"
-
-    };
-
-
-    return (
-        classes[statutTexte]
-        ||
-        "status-attente"
-    );
-
-}
-
-
-// =========================================================
-// AFFICHER LES COMMANDES
-// =========================================================
-
-function afficherCommandes() {
-
-    const rechercheTexte =
-        recherche.value
-            .trim()
-            .toLowerCase();
-
-
-    const filtre =
-        filtreStatut.value;
-
-
-    const resultats =
-        commandes.filter(commande => {
-
-            const texteRecherche = [
-
-                commande.nomClient,
-
-                commande.nomProduit
-
-            ]
-                .join(" ")
-                .toLowerCase();
-
-
-            const correspondRecherche =
-
-                !rechercheTexte
-                ||
-                texteRecherche.includes(
-                    rechercheTexte
-                );
-
-
-            const correspondStatut =
-
-                !filtre
-                ||
-                commande.statut === filtre;
-
-
-            return (
-                correspondRecherche
-                &&
-                correspondStatut
-            );
-
-        });
-
-
-    commandesBody.innerHTML = "";
-
-
-    aucuneCommande.classList.toggle(
-        "hidden",
-        resultats.length !== 0
-    );
-
-
-    resultats.forEach(commande => {
-
-        const ligne =
-            document.createElement("tr");
-
-
-        ligne.innerHTML = `
-
-            <td>
-                ${echapperHTML(
-                    commande.nomClient
-                )}
-            </td>
-
-
-            <td>
-                ${echapperHTML(
-                    commande.nomProduit
-                )}
-            </td>
-
-
-            <td>
-                ${commande.nombre}
-            </td>
-
-
-            <td>
-                ${formatMontant(
-                    commande.prix
-                )}
-            </td>
-
-
-            <td>
-                ${formatMontant(
-                    commande.total
-                )}
-            </td>
-
-
-            <td>
-                ${formatMontant(
-                    commande.acompte
-                )}
-            </td>
-
-
-            <td>
-                <strong>
-                    ${formatMontant(
-                        commande.reste
-                    )}
-                </strong>
-            </td>
-
-
-            <td>
-
-                <span
-                    class="status
-                    ${statutClass(
-                        commande.statut
-                    )}"
-                >
-
-                    ${echapperHTML(
-                        commande.statut
-                    )}
-
-                </span>
-
-            </td>
-
-
-            <td>
-
-                <div class="actions">
-
-
-                    <button
-                        class="action-btn edit-btn"
-                        data-action="modifier"
-                        data-id="${commande.id}"
-                    >
-                        ✏️ Modifier
-                    </button>
-
-
-                    <button
-                        class="action-btn delete-btn"
-                        data-action="supprimer"
-                        data-id="${commande.id}"
-                    >
-                        🗑️ Supprimer
-                    </button>
-
-
-                </div>
-
-            </td>
-
-        `;
-
-
-        commandesBody.appendChild(
-            ligne
-        );
-
-    });
-
-
-    afficherStatistiques();
-
-}
-
-
-// =========================================================
-// PROTECTION CONTRE LE HTML
-// =========================================================
-
-function echapperHTML(texte) {
-
-    return String(texte ?? "")
-
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
-// =========================================================
-// RÉINITIALISER LE FORMULAIRE
-// =========================================================
-
-function reinitialiserFormulaire() {
-
-    commandeForm.reset();
-
-
-    commandeId.value = "";
-
-
-    nombreProduit.value = 1;
-
-
-    acompte.value = 0;
-
-
-    statut.value =
-        "En attente";
-
-
-    document.getElementById(
-        "formTitle"
-    ).textContent =
-        "➕ Nouvelle commande";
-
-
-    btnEnregistrer.textContent =
-        "💾 Enregistrer";
-
-
-    btnAnnuler.classList.add(
-        "hidden"
-    );
-
-
-    calculerMontants();
-
-}
-
-
-// =========================================================
-// MODIFIER UNE COMMANDE
-// =========================================================
-
-function commencerModification(id) {
-
-    const commande =
-        commandes.find(
-
-            c =>
-                String(c.id)
-                ===
-                String(id)
-
-        );
-
-
-    if (!commande) {
-
-        return;
-
+    .header {
+        padding: 18px;
+        margin: 12px 0;
+        border-radius: 12px;
     }
 
+    .header h1 {
+        font-size: 24px;
+    }
 
-    commandeId.value =
-        commande.id;
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
 
+    .stat-card {
+        padding: 14px;
+    }
 
-    nomClient.value =
-        commande.nomClient;
+    .stat-card strong {
+        font-size: 19px;
+    }
 
+    .card {
+        padding: 15px;
+    }
 
-    nomProduit.value =
-        commande.nomProduit;
+    .form-grid,
+    .calculation,
+    .toolbar {
+        grid-template-columns: minmax(0, 1fr);
+    }
 
+    .form-actions,
+    .data-actions,
+    .print-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
 
-    nombreProduit.value =
-        commande.nombre;
+    .form-actions .btn,
+    .data-actions .btn,
+    .data-actions .file-label,
+    .print-actions .btn {
+        width: 100%;
+    }
 
-
-    prixProduit.value =
-        commande.prix;
-
-
-    acompte.value =
-        commande.acompte;
-
-
-    statut.value =
-        commande.statut;
-
-
-    document.getElementById(
-        "formTitle"
-    ).textContent =
-        "✏️ Modifier la commande";
-
-
-    btnEnregistrer.textContent =
-        "💾 Enregistrer les modifications";
-
-
-    btnAnnuler.classList.remove(
-        "hidden"
-    );
-
-
-    calculerMontants();
-
-
-    document
-        .querySelector(".card")
-        .scrollIntoView({
-
-            behavior: "smooth",
-
-            block: "start"
-
-        });
-
+    .labels-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
+/* =========================================================
+   IMPRESSION A4
+========================================================= */
 
-// =========================================================
-// SUPPRIMER UNE COMMANDE
-// =========================================================
-
-function supprimerCommande(id) {
-
-    const commande =
-        commandes.find(
-
-            c =>
-                String(c.id)
-                ===
-                String(id)
-
-        );
-
-
-    if (!commande) {
-
-        return;
-
-    }
-
-
-    const confirmation =
-        confirm(
-
-            `Supprimer la commande de "${commande.nomClient}" pour "${commande.nomProduit}" ?`
-
-        );
-
-
-    if (!confirmation) {
-
-        return;
-
-    }
-
-
-    commandes =
-        commandes.filter(
-
-            c =>
-                String(c.id)
-                !==
-                String(id)
-
-        );
-
-
-    sauvegarderCommandes();
-
-
-    afficherCommandes();
-
+@page {
+    size: A4 portrait;
+    margin: 8mm;
 }
 
-
-// =========================================================
-// ENREGISTRER / MODIFIER
-// =========================================================
-
-commandeForm.addEventListener(
-    "submit",
-    event => {
-
-        event.preventDefault();
-
-
-        const nomClientValue =
-            nomClient.value.trim();
-
-
-        const nomProduitValue =
-            nomProduit.value.trim();
-
-
-        const nombre =
-            Number(
-                nombreProduit.value
-            );
-
-
-        const prix =
-            Number(
-                prixProduit.value
-            );
-
-
-        const montants =
-            calculerMontants();
-
-
-        if (
-            !nomClientValue
-            ||
-            !nomProduitValue
-        ) {
-
-            alert(
-                "Veuillez renseigner le nom du client et le nom du produit."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            !Number.isFinite(nombre)
-            ||
-            nombre < 1
-        ) {
-
-            alert(
-                "Le nombre de produits doit être au moins égal à 1."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            !Number.isFinite(prix)
-            ||
-            prix < 0
-        ) {
-
-            alert(
-                "Le prix du produit est incorrect."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            montants.acompte
-            >
-            montants.total
-        ) {
-
-            const continuer =
-                confirm(
-
-                    "L'acompte est supérieur au total de la commande. Voulez-vous continuer ?"
-
-                );
-
-
-            if (!continuer) {
-
-                return;
-
-            }
-
-        }
-
-
-        const idExistant =
-            commandeId.value;
-
-
-        // =====================================================
-        // MODIFICATION
-        // =====================================================
-
-        if (idExistant) {
-
-            const index =
-                commandes.findIndex(
-
-                    c =>
-                        String(c.id)
-                        ===
-                        String(idExistant)
-
-                );
-
-
-            if (index !== -1) {
-
-                commandes[index] = {
-
-                    ...commandes[index],
-
-                    nomClient:
-                        nomClientValue,
-
-                    nomProduit:
-                        nomProduitValue,
-
-                    nombre:
-                        nombre,
-
-                    prix:
-                        prix,
-
-                    total:
-                        montants.total,
-
-                    acompte:
-                        montants.acompte,
-
-                    reste:
-                        montants.reste,
-
-                    statut:
-                        statut.value,
-
-                    dateModification:
-                        new Date()
-                            .toISOString()
-
-                };
-
-            }
-
-        }
-
-
-        // =====================================================
-        // NOUVELLE COMMANDE
-        // =====================================================
-
-        else {
-
-            commandes.unshift({
-
-                id:
-                    Date.now()
-                    .toString(),
-
-                nomClient:
-                    nomClientValue,
-
-                nomProduit:
-                    nomProduitValue,
-
-                nombre:
-                    nombre,
-
-                prix:
-                    prix,
-
-                total:
-                    montants.total,
-
-                acompte:
-                    montants.acompte,
-
-                reste:
-                    montants.reste,
-
-                statut:
-                    statut.value,
-
-                dateCreation:
-                    new Date()
-                        .toISOString()
-
-            });
-
-        }
-
-
-        sauvegarderCommandes();
-
-
-        afficherCommandes();
-
-
-        reinitialiserFormulaire();
-
+@media print {
+    html,
+    body {
+        width: 100%;
+        min-height: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        color: #000 !important;
     }
-);
 
-
-// =========================================================
-// RECALCUL AUTOMATIQUE
-// =========================================================
-
-[
-    nombreProduit,
-    prixProduit,
-    acompte
-
-].forEach(champ => {
-
-    champ.addEventListener(
-        "input",
-        calculerMontants
-    );
-
-});
-
-
-// =========================================================
-// RECHERCHE
-// =========================================================
-
-recherche.addEventListener(
-    "input",
-    afficherCommandes
-);
-
-
-// =========================================================
-// FILTRE STATUT
-// =========================================================
-
-filtreStatut.addEventListener(
-    "change",
-    afficherCommandes
-);
-
-
-// =========================================================
-// ANNULER MODIFICATION
-// =========================================================
-
-btnAnnuler.addEventListener(
-    "click",
-    reinitialiserFormulaire
-);
-
-
-// =========================================================
-// ACTIONS DU TABLEAU
-// =========================================================
-
-commandesBody.addEventListener(
-    "click",
-    event => {
-
-        const bouton =
-            event.target.closest(
-                "button[data-action]"
-            );
-
-
-        if (!bouton) {
-
-            return;
-
-        }
-
-
-        const action =
-            bouton.dataset.action;
-
-
-        const id =
-            bouton.dataset.id;
-
-
-        if (
-            action
-            ===
-            "modifier"
-        ) {
-
-            commencerModification(id);
-
-        }
-
-
-        if (
-            action
-            ===
-            "supprimer"
-        ) {
-
-            supprimerCommande(id);
-
-        }
-
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
-);
 
-
-// =========================================================
-// EXPORTER LES DONNÉES
-// =========================================================
-
-btnExporter.addEventListener(
-    "click",
-    () => {
-
-        if (
-            commandes.length
-            ===
-            0
-        ) {
-
-            alert(
-                "Il n'y a aucune donnée à exporter."
-            );
-
-            return;
-
-        }
-
-
-        const contenu =
-            JSON.stringify(
-                commandes,
-                null,
-                2
-            );
-
-
-        const blob =
-            new Blob(
-
-                [
-                    contenu
-                ],
-
-                {
-                    type:
-                        "application/json;charset=utf-8"
-                }
-
-            );
-
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-
-        const lien =
-            document.createElement(
-                "a"
-            );
-
-
-        lien.href =
-            url;
-
-
-        lien.download =
-            `commandes-${new Date()
-                .toISOString()
-                .slice(0, 10)
-            }.json`;
-
-
-        document.body.appendChild(
-            lien
-        );
-
-
-        lien.click();
-
-
-        lien.remove();
-
-
-        URL.revokeObjectURL(
-            url
-        );
-
+    .app {
+        display: none !important;
     }
-);
 
-
-// =========================================================
-// IMPORTER LES DONNÉES
-// =========================================================
-
-fichierImport.addEventListener(
-    "change",
-    event => {
-
-        const fichier =
-            event.target.files[0];
-
-
-        if (!fichier) {
-
-            return;
-
-        }
-
-
-        const lecteur =
-            new FileReader();
-
-
-        lecteur.onload =
-            () => {
-
-                try {
-
-                    const donnees =
-                        JSON.parse(
-                            lecteur.result
-                        );
-
-
-                    if (
-                        !Array.isArray(
-                            donnees
-                        )
-                    ) {
-
-                        throw new Error(
-                            "Format incorrect"
-                        );
-
-                    }
-
-
-                    const donneesValides =
-                        donnees.filter(
-
-                            c =>
-
-                                c
-                                &&
-                                typeof c.nomClient
-                                ===
-                                "string"
-                                &&
-                                typeof c.nomProduit
-                                ===
-                                "string"
-                                &&
-                                Number.isFinite(
-                                    Number(c.nombre)
-                                )
-                                &&
-                                Number.isFinite(
-                                    Number(c.prix)
-                                )
-
-                        );
-
-
-                    if (
-                        donneesValides.length
-                        !==
-                        donnees.length
-                    ) {
-
-                        const continuer =
-                            confirm(
-
-                                "Certaines lignes du fichier semblent incorrectes. Seules les lignes valides seront importées. Continuer ?"
-
-                            );
-
-
-                        if (!continuer) {
-
-                            fichierImport.value =
-                                "";
-
-                            return;
-
-                        }
-
-                    }
-
-
-                    if (
-                        donneesValides.length
-                        ===
-                        0
-                    ) {
-
-                        alert(
-                            "Aucune commande valide trouvée dans le fichier."
-                        );
-
-                        fichierImport.value =
-                            "";
-
-                        return;
-
-                    }
-
-
-                    const remplacer =
-                        confirm(
-
-                            "OK = remplacer les données actuelles.\n\nAnnuler = ajouter les données importées aux données actuelles."
-
-                        );
-
-
-                    if (remplacer) {
-
-                        commandes =
-                            normaliserCommandes(
-                                donneesValides
-                            );
-
-                    }
-
-                    else {
-
-                        commandes =
-                            commandes.concat(
-
-                                normaliserCommandes(
-                                    donneesValides
-                                )
-
-                            );
-
-                    }
-
-
-                    sauvegarderCommandes();
-
-
-                    afficherCommandes();
-
-
-                    alert(
-                        `${donneesValides.length} commande(s) importée(s).`
-                    );
-
-                }
-
-                catch (erreur) {
-
-                    console.error(
-                        erreur
-                    );
-
-
-                    alert(
-
-                        "Impossible d'importer ce fichier. Vérifiez qu'il s'agit d'un fichier JSON créé par l'application."
-
-                    );
-
-                }
-
-
-                fichierImport.value =
-                    "";
-
-            };
-
-
-        lecteur.readAsText(
-            fichier
-        );
-
+    .print-area {
+        display: block !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
     }
-);
 
+    .labels-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5mm;
+        width: 100%;
+    }
 
-// =========================================================
-// NORMALISATION DES COMMANDES IMPORTÉES
-// =========================================================
+    .shipping-label {
+        display: flex !important;
+        min-width: 0;
+        border: 1px solid #333;
+        border-radius: 1mm;
+        box-shadow: none;
+        background: white !important;
+        color: black !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
 
-function normaliserCommandes(liste) {
+    .shipping-label h2,
+    .shipping-label p,
+    .shipping-label strong {
+        color: black !important;
+    }
 
-    return liste.map(c => {
+    .shipping-label .label-total {
+        border: 1px solid black;
+    }
 
-        const nombre =
-            Math.max(
-                1,
-                Number(c.nombre)
-                ||
-                1
-            );
-
-
-        const prix =
-            Math.max(
-                0,
-                Number(c.prix)
-                ||
-                0
-            );
-
-
-        const total =
-            nombre * prix;
-
-
-        const acompteValue =
-            Math.max(
-                0,
-                Number(c.acompte)
-                ||
-                0
-            );
-
-
-        return {
-
-            id:
-                String(
-                    c.id
-                    ||
-                    `${Date.now()}-${Math.random()
-                        .toString(16)
-                        .slice(2)
-                    }`
-                ),
-
-            nomClient:
-                String(
-                    c.nomClient
-                    ||
-                    ""
-                ).trim(),
-
-            nomProduit:
-                String(
-                    c.nomProduit
-                    ||
-                    ""
-                ).trim(),
-
-            nombre:
-                nombre,
-
-            prix:
-                prix,
-
-            total:
-                total,
-
-            acompte:
-                acompteValue,
-
-            reste:
-                Math.max(
-                    0,
-                    total -
-                    acompteValue
-                ),
-
-            statut:
-                String(
-                    c.statut
-                    ||
-                    "En attente"
-                ),
-
-            dateCreation:
-                c.dateCreation
-                ||
-                new Date()
-                    .toISOString()
-
-        };
-
-    });
-
+    .no-print {
+        display: none !important;
+    }
 }
-
-
-// =========================================================
-// SUPPRIMER TOUTES LES COMMANDES
-// =========================================================
-
-btnToutSupprimer.addEventListener(
-    "click",
-    () => {
-
-        if (
-            commandes.length
-            ===
-            0
-        ) {
-
-            alert(
-                "Il n'y a aucune commande à supprimer."
-            );
-
-            return;
-
-        }
-
-
-        const confirmation =
-            confirm(
-
-                "ATTENTION : cette action va supprimer toutes les commandes enregistrées sur cet appareil.\n\nContinuer ?"
-
-            );
-
-
-        if (!confirmation) {
-
-            return;
-
-        }
-
-
-        commandes = [];
-
-
-        sauvegarderCommandes();
-
-
-        afficherCommandes();
-
-
-        reinitialiserFormulaire();
-
-    }
-);
-
-
-// =========================================================
-// SERVICE WORKER
-// =========================================================
-
-if (
-    "serviceWorker"
-    in
-    navigator
-) {
-
-    window.addEventListener(
-        "load",
-        () => {
-
-            navigator.serviceWorker
-                .register(
-                    "./service-worker.js"
-                )
-
-                .catch(
-                    erreur =>
-                        console.log(
-                            "Service Worker non disponible :",
-                            erreur
-                        )
-                );
-
-        }
-    );
-
-}
-
-
-// =========================================================
-// DÉMARRAGE
-// =========================================================
-
-reinitialiserFormulaire();
-
-afficherCommandes();
-```
