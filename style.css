@@ -1,4 +1,4 @@
-```css
+
 * {
     box-sizing: border-box;
 }
@@ -63,7 +63,6 @@ button,
     opacity: 0.9;
 }
 
-
 /* =========================================================
    STRUCTURE PRINCIPALE
 ========================================================= */
@@ -72,7 +71,6 @@ main {
     display: grid;
     gap: 18px;
 }
-
 
 /* =========================================================
    STATISTIQUES
@@ -106,13 +104,13 @@ main {
     font-size: 23px;
 }
 
-
 /* =========================================================
    CARTES
 ========================================================= */
 
 .card {
     padding: 22px;
+    min-width: 0;
 }
 
 .section-title {
@@ -129,12 +127,567 @@ main {
     color: var(--muted);
 }
 
-
 /* =========================================================
    FORMULAIRE
 ========================================================= */
 
 .form-grid {
     display: grid;
-    grid-tem
-```
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+.field label,
+.search-box label,
+.filter-box label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.field input,
+.field select,
+.search-box input,
+.filter-box select {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.search-box input:focus,
+.filter-box select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.field input::placeholder,
+.search-box input::placeholder {
+    color: #98a2b3;
+}
+
+.field input:disabled,
+.field select:disabled {
+    background: #f2f4f7;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   CALCULS
+========================================================= */
+
+.calculation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.calculation > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+}
+
+.calculation span {
+    color: #475569;
+    font-size: 14px;
+}
+
+.calculation strong {
+    color: var(--primary-dark);
+    font-size: 21px;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   BOUTONS
+========================================================= */
+
+.form-actions,
+.data-actions,
+.print-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-actions {
+    margin-top: 20px;
+}
+
+.data-actions,
+.print-actions {
+    margin: 18px 0;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 10px 15px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn.primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn.primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn.secondary {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: var(--border);
+}
+
+.btn.secondary:hover {
+    background: #e2e8f0;
+}
+
+.btn.danger,
+.btn.danger-outline {
+    color: var(--danger);
+    border-color: #fecaca;
+    background: #fff;
+}
+
+.btn.danger:hover,
+.btn.danger-outline:hover {
+    background: #fef2f2;
+}
+
+.btn.whatsapp {
+    color: white;
+    background: #16a34a;
+}
+
+.btn.whatsapp:hover {
+    background: #15803d;
+}
+
+.btn.print {
+    color: white;
+    background: #475569;
+}
+
+.btn.print:hover {
+    background: #334155;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.file-label {
+    user-select: none;
+}
+
+/* =========================================================
+   RECHERCHE ET FILTRES
+========================================================= */
+
+.toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.search-box,
+.filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+}
+
+/* =========================================================
+   TABLEAU DES COMMANDES
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 14px;
+}
+
+thead {
+    background: #eff6ff;
+}
+
+th,
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    color: #334155;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+td {
+    overflow-wrap: anywhere;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+td .btn {
+    min-height: 32px;
+    padding: 6px 9px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+/* =========================================================
+   SÉLECTION POUR IMPRESSION
+========================================================= */
+
+.selection-impression {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+    vertical-align: middle;
+}
+
+.selection-impression-entete {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+/* =========================================================
+   BADGES DE STATUT
+========================================================= */
+
+.statut {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.statut-attente {
+    color: #92400e;
+    background: #fef3c7;
+}
+
+.statut-acompte {
+    color: #1d4ed8;
+    background: #dbeafe;
+}
+
+.statut-preparation {
+    color: #6d28d9;
+    background: #ede9fe;
+}
+
+.statut-pret {
+    color: #0369a1;
+    background: #e0f2fe;
+}
+
+.statut-livre {
+    color: #166534;
+    background: #dcfce7;
+}
+
+.statut-paye {
+    color: #166534;
+    background: #bbf7d0;
+}
+
+/* =========================================================
+   MESSAGE AUCUNE COMMANDE
+========================================================= */
+
+.empty-state {
+    padding: 35px 15px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-state > div {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.empty-state h3 {
+    margin: 0 0 7px;
+    color: var(--text);
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+/* =========================================================
+   IMPRESSION DES ÉTIQUETTES
+   Les éléments correspondants seront ajoutés au HTML.
+========================================================= */
+
+.print-area {
+    display: none;
+}
+
+.labels-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8mm;
+    align-content: start;
+}
+
+.shipping-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3mm;
+    min-width: 0;
+    padding: 5mm;
+    border: 1px solid #94a3b8;
+    border-radius: 2mm;
+    background: white;
+    color: #111827;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    overflow-wrap: anywhere;
+}
+
+.shipping-label h2 {
+    margin: 0 0 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 1px solid #94a3b8;
+    font-size: 15pt;
+}
+
+.shipping-label p {
+    margin: 0;
+    font-size: 10pt;
+    line-height: 1.35;
+}
+
+.shipping-label .label-total {
+    margin-top: 2mm;
+    padding: 3mm;
+    border: 1px solid #111827;
+    border-radius: 1mm;
+    font-size: 15pt;
+    font-weight: 700;
+    text-align: center;
+}
+
+.shipping-label .label-strong {
+    font-weight: 700;
+}
+
+/* =========================================================
+   PIED DE PAGE
+========================================================= */
+
+footer {
+    padding: 20px 10px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .app {
+        width: 94%;
+    }
+
+    .header {
+        padding: 18px;
+        margin: 12px 0;
+        border-radius: 12px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+    .stat-card strong {
+        font-size: 19px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .form-grid,
+    .calculation,
+    .toolbar {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .form-actions,
+    .data-actions,
+    .print-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .form-actions .btn,
+    .data-actions .btn,
+    .data-actions .file-label,
+    .print-actions .btn {
+        width: 100%;
+    }
+
+    .labels-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* =========================================================
+   IMPRESSION A4
+========================================================= */
+
+@page {
+    size: A4 portrait;
+    margin: 8mm;
+}
+
+@media print {
+    html,
+    body {
+        width: 100%;
+        min-height: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        color: #000 !important;
+    }
+
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .app {
+        display: none !important;
+    }
+
+    .print-area {
+        display: block !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .labels-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5mm;
+        width: 100%;
+    }
+
+    .shipping-label {
+        display: flex !important;
+        min-width: 0;
+        border: 1px solid #333;
+        border-radius: 1mm;
+        box-shadow: none;
+        background: white !important;
+        color: black !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .shipping-label h2,
+    .shipping-label p,
+    .shipping-label strong {
+        color: black !important;
+    }
+
+    .shipping-label .label-total {
+        border: 1px solid black;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
