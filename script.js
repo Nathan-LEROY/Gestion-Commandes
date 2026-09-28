@@ -1,693 +1,938 @@
 
-* {
-    box-sizing: border-box;
+"use strict";
+
+/* =========================================================
+   GESTIONNAIRE DE COMMANDES
+   Version complète
+========================================================= */
+
+const STORAGE_KEY = "gestionCommandesV1";
+
+/* =========================================================
+   ÉLÉMENTS HTML
+========================================================= */
+
+const commandeForm = document.getElementById("commandeForm");
+const commandeId = document.getElementById("commandeId");
+
+const nomClient = document.getElementById("nomClient");
+const telephoneClient = document.getElementById("telephoneClient");
+const lieuLivraison = document.getElementById("lieuLivraison");
+const nomProduit = document.getElementById("nomProduit");
+const nombreProduit = document.getElementById("nombreProduit");
+const prixProduit = document.getElementById("prixProduit");
+const acompte = document.getElementById("acompte");
+const fraisLivraison = document.getElementById("fraisLivraison");
+const statut = document.getElementById("statut");
+
+const totalProduit = document.getElementById("totalProduit");
+const resteCharge = document.getElementById("resteCharge");
+
+const commandesBody = document.getElementById("commandesBody");
+const aucuneCommande = document.getElementById("aucuneCommande");
+
+const recherche = document.getElementById("recherche");
+const filtreStatut = document.getElementById("filtreStatut");
+
+const btnEnregistrer = document.getElementById("btnEnregistrer");
+const btnAnnuler = document.getElementById("btnAnnuler");
+const btnExporter = document.getElementById("btnExporter");
+const fichierImport = document.getElementById("fichierImport");
+const btnToutSupprimer = document.getElementById("btnToutSupprimer");
+
+/* =========================================================
+   DONNÉES
+========================================================= */
+
+let commandes = chargerCommandes();
+let selectionImpression = new Set();
+
+/* =========================================================
+   OUTILS
+========================================================= */
+
+function nombre(valeur) {
+    const resultat = Number(valeur);
+    return Number.isFinite(resultat) ? resultat : 0;
 }
 
-:root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --bg: #f3f6fb;
-    --card: #ffffff;
-    --text: #172033;
-    --muted: #667085;
-    --border: #d9e0ea;
-    --danger: #dc2626;
-    --success: #15803d;
-    --warning: #b45309;
-    --shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+function formaterMontant(valeur) {
+    return new Intl.NumberFormat("fr-FR", {
+        maximumFractionDigits: 0
+    }).format(Math.round(nombre(valeur))) + " Ar";
 }
 
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: Arial, Helvetica, sans-serif;
+function genererId() {
+    return Date.now().toString(36) +
+        Math.random().toString(36).slice(2, 9);
 }
 
-button,
-input,
-select {
-    font: inherit;
+function echapperHTML(valeur) {
+    return String(valeur ?? "").replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[caractere]);
 }
 
-button,
-.file-label {
-    cursor: pointer;
+function obtenirValeur(element, defaut = "") {
+    return element ? element.value : defaut;
 }
 
-.app {
-    width: min(1400px, 96%);
-    margin: 0 auto;
+function definirTexte(element, texte) {
+    if (element) {
+        element.textContent = texte;
+    }
 }
 
 /* =========================================================
-   EN-TÊTE
+   STOCKAGE
 ========================================================= */
 
-.header {
-    background: var(--primary);
-    color: white;
-    padding: 24px;
-    margin: 18px 0;
-    border-radius: 16px;
-    box-shadow: var(--shadow);
+function chargerCommandes() {
+    try {
+        const donnees = JSON.parse(
+            localStorage.getItem(STORAGE_KEY) || "[]"
+        );
+
+        if (!Array.isArray(donnees)) {
+            return [];
+        }
+
+        return donnees
+            .filter(c => c && typeof c === "object")
+            .map(c => ({
+                id: String(c.id || genererId()),
+                client: String(c.client || ""),
+                telephone: String(c.telephone || ""),
+                lieu: String(c.lieu || ""),
+                produit: String(c.produit || ""),
+                quantite: Math.max(1, nombre(c.quantite || 1)),
+                prix: Math.max(0, nombre(c.prix)),
+                acompte: Math.max(0, nombre(c.acompte)),
+                fraisLivraison: Math.max(
+                    0,
+                    nombre(c.fraisLivraison)
+                ),
+                statut: String(c.statut || "En attente"),
+                dateCreation: c.dateCreation || new Date().toISOString()
+            }));
+    } catch (erreur) {
+        console.error("Erreur de lecture des commandes :", erreur);
+        return [];
+    }
 }
 
-.header h1 {
-    margin: 0 0 6px;
-    font-size: clamp(24px, 4vw, 34px);
-}
-
-.header p {
-    margin: 0;
-    opacity: 0.9;
-}
-
-/* =========================================================
-   STRUCTURE PRINCIPALE
-========================================================= */
-
-main {
-    display: grid;
-    gap: 18px;
-}
-
-/* =========================================================
-   STATISTIQUES
-========================================================= */
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-}
-
-.stat-card,
-.card {
-    background: var(--card);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-}
-
-.stat-card {
-    padding: 20px;
-}
-
-.stat-card span {
-    display: block;
-    color: var(--muted);
-    margin-bottom: 8px;
-    font-size: 14px;
-}
-
-.stat-card strong {
-    font-size: 23px;
-}
-
-/* =========================================================
-   CARTES
-========================================================= */
-
-.card {
-    padding: 22px;
-    min-width: 0;
-}
-
-.section-title {
-    margin-bottom: 18px;
-}
-
-.section-title h2 {
-    margin: 0 0 5px;
-    font-size: 22px;
-}
-
-.section-title p {
-    margin: 0;
-    color: var(--muted);
-}
-
-/* =========================================================
-   FORMULAIRE
-========================================================= */
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    min-width: 0;
-}
-
-.field label,
-.search-box label,
-.filter-box label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-}
-
-.field input,
-.field select,
-.search-box input,
-.filter-box select {
-    width: 100%;
-    min-width: 0;
-    padding: 11px 12px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    background: white;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.field input:focus,
-.field select:focus,
-.search-box input:focus,
-.filter-box select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.field input::placeholder,
-.search-box input::placeholder {
-    color: #98a2b3;
-}
-
-.field input:disabled,
-.field select:disabled {
-    background: #f2f4f7;
-    cursor: not-allowed;
+function sauvegarderCommandes() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(commandes)
+        );
+        return true;
+    } catch (erreur) {
+        console.error("Erreur de sauvegarde :", erreur);
+        alert(
+            "Impossible d'enregistrer les commandes. " +
+            "Vérifie l'espace de stockage disponible."
+        );
+        return false;
+    }
 }
 
 /* =========================================================
    CALCULS
 ========================================================= */
 
-.calculation {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-    margin-top: 20px;
+function calculerTotalProduit(commande) {
+    return nombre(commande.quantite) * nombre(commande.prix);
 }
 
-.calculation > div {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 16px;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 10px;
+function calculerResteProduit(commande) {
+    return Math.max(
+        0,
+        calculerTotalProduit(commande) - nombre(commande.acompte)
+    );
 }
 
-.calculation span {
-    color: #475569;
-    font-size: 14px;
+function calculerTotalEtiquette(commande) {
+    return Math.max(
+        0,
+        calculerTotalProduit(commande) +
+        nombre(commande.fraisLivraison) -
+        nombre(commande.acompte)
+    );
 }
 
-.calculation strong {
-    color: var(--primary-dark);
-    font-size: 21px;
-    overflow-wrap: anywhere;
-}
+function recalculerFormulaire() {
+    const quantite = Math.max(0, nombre(nombreProduit?.value));
+    const prix = Math.max(0, nombre(prixProduit?.value));
+    const avance = Math.max(0, nombre(acompte?.value));
 
-/* =========================================================
-   BOUTONS
-========================================================= */
+    const total = quantite * prix;
+    const reste = Math.max(0, total - avance);
 
-.form-actions,
-.data-actions,
-.print-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-}
-
-.form-actions {
-    margin-top: 20px;
-}
-
-.data-actions,
-.print-actions {
-    margin: 18px 0;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-height: 40px;
-    padding: 10px 15px;
-    border: 1px solid transparent;
-    border-radius: 9px;
-    font-weight: 600;
-    font-size: 14px;
-    text-align: center;
-    text-decoration: none;
-    transition: background 0.2s, border-color 0.2s, transform 0.1s;
-}
-
-.btn:active {
-    transform: translateY(1px);
-}
-
-.btn.primary {
-    background: var(--primary);
-    color: white;
-}
-
-.btn.primary:hover {
-    background: var(--primary-dark);
-}
-
-.btn.secondary {
-    background: #f1f5f9;
-    color: #334155;
-    border-color: var(--border);
-}
-
-.btn.secondary:hover {
-    background: #e2e8f0;
-}
-
-.btn.danger,
-.btn.danger-outline {
-    color: var(--danger);
-    border-color: #fecaca;
-    background: #fff;
-}
-
-.btn.danger:hover,
-.btn.danger-outline:hover {
-    background: #fef2f2;
-}
-
-.btn.whatsapp {
-    color: white;
-    background: #16a34a;
-}
-
-.btn.whatsapp:hover {
-    background: #15803d;
-}
-
-.btn.print {
-    color: white;
-    background: #475569;
-}
-
-.btn.print:hover {
-    background: #334155;
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.file-label {
-    user-select: none;
+    definirTexte(totalProduit, formaterMontant(total));
+    definirTexte(resteCharge, formaterMontant(reste));
 }
 
 /* =========================================================
-   RECHERCHE ET FILTRES
+   STATISTIQUES
 ========================================================= */
 
-.toolbar {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
-    gap: 14px;
-    margin-bottom: 16px;
-}
+function afficherStatistiques() {
+    const clients = new Set(
+        commandes
+            .map(c => c.client.trim().toLowerCase())
+            .filter(Boolean)
+    );
 
-.search-box,
-.filter-box {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    min-width: 0;
+    const totalAcomptes = commandes.reduce(
+        (somme, c) => somme + nombre(c.acompte),
+        0
+    );
+
+    const totalRestes = commandes.reduce(
+        (somme, c) => somme + calculerResteProduit(c),
+        0
+    );
+
+    definirTexte(
+        document.getElementById("statClients"),
+        String(clients.size)
+    );
+
+    definirTexte(
+        document.getElementById("statCommandes"),
+        String(commandes.length)
+    );
+
+    definirTexte(
+        document.getElementById("statAcomptes"),
+        formaterMontant(totalAcomptes)
+    );
+
+    definirTexte(
+        document.getElementById("statRestes"),
+        formaterMontant(totalRestes)
+    );
 }
 
 /* =========================================================
-   TABLEAU DES COMMANDES
+   STATUTS
 ========================================================= */
 
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-}
+function classeStatut(valeur) {
+    const classes = {
+        "En attente": "statut-attente",
+        "Acompte reçu": "statut-acompte",
+        "En préparation": "statut-preparation",
+        "Prêt": "statut-pret",
+        "Livré": "statut-livre",
+        "Payé": "statut-paye"
+    };
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    font-size: 14px;
-}
-
-thead {
-    background: #eff6ff;
-}
-
-th,
-td {
-    padding: 12px 10px;
-    border-bottom: 1px solid var(--border);
-    text-align: left;
-    vertical-align: middle;
-}
-
-th {
-    color: #334155;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-td {
-    overflow-wrap: anywhere;
-}
-
-tbody tr:last-child td {
-    border-bottom: none;
-}
-
-tbody tr:hover {
-    background: #f8fafc;
-}
-
-td .btn {
-    min-height: 32px;
-    padding: 6px 9px;
-    margin: 2px;
-    font-size: 12px;
+    return classes[valeur] || "statut-attente";
 }
 
 /* =========================================================
-   SÉLECTION POUR IMPRESSION
+   RECHERCHE ET FILTRE
 ========================================================= */
 
-.selection-impression {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: var(--primary);
-    vertical-align: middle;
-}
+function obtenirCommandesFiltrees() {
+    const terme = (recherche?.value || "")
+        .trim()
+        .toLowerCase();
 
-.selection-impression-entete {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary);
-    cursor: pointer;
+    const filtre = filtreStatut?.value || "";
+
+    return commandes.filter(commande => {
+        const texte = [
+            commande.client,
+            commande.telephone,
+            commande.lieu,
+            commande.produit
+        ].join(" ").toLowerCase();
+
+        const correspondRecherche =
+            !terme || texte.includes(terme);
+
+        const correspondStatut =
+            !filtre || commande.statut === filtre;
+
+        return correspondRecherche && correspondStatut;
+    });
 }
 
 /* =========================================================
-   BADGES DE STATUT
+   TABLEAU
 ========================================================= */
 
-.statut {
-    display: inline-block;
-    padding: 5px 9px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-}
+function afficherCommandes() {
+    if (!commandesBody) return;
 
-.statut-attente {
-    color: #92400e;
-    background: #fef3c7;
-}
+    const liste = obtenirCommandesFiltrees();
 
-.statut-acompte {
-    color: #1d4ed8;
-    background: #dbeafe;
-}
+    commandesBody.innerHTML = "";
 
-.statut-preparation {
-    color: #6d28d9;
-    background: #ede9fe;
-}
+    liste.forEach(commande => {
+        const ligne = document.createElement("tr");
+        const selectionnee = selectionImpression.has(commande.id);
 
-.statut-pret {
-    color: #0369a1;
-    background: #e0f2fe;
-}
+        ligne.innerHTML = `
+            <td>
+                <input
+                    type="checkbox"
+                    class="selection-impression"
+                    aria-label="Sélectionner pour impression"
+                    data-selection="${echapperHTML(commande.id)}"
+                    ${selectionnee ? "checked" : ""}
+                >
+                <strong>${echapperHTML(commande.client)}</strong>
+                ${commande.telephone
+                    ? `<br><small>${echapperHTML(commande.telephone)}</small>`
+                    : ""}
+            </td>
 
-.statut-livre {
-    color: #166534;
-    background: #dcfce7;
-}
+            <td>
+                ${echapperHTML(commande.produit)}
+                ${commande.lieu
+                    ? `<br><small>${echapperHTML(commande.lieu)}</small>`
+                    : ""}
+            </td>
 
-.statut-paye {
-    color: #166534;
-    background: #bbf7d0;
+            <td>${echapperHTML(commande.quantite)}</td>
+            <td>${formaterMontant(commande.prix)}</td>
+            <td>${formaterMontant(calculerTotalProduit(commande))}</td>
+            <td>${formaterMontant(commande.acompte)}</td>
+            <td>${formaterMontant(calculerResteProduit(commande))}</td>
+
+            <td>
+                <span class="statut ${classeStatut(commande.statut)}">
+                    ${echapperHTML(commande.statut)}
+                </span>
+            </td>
+
+            <td>
+                <button
+                    class="btn secondary"
+                    type="button"
+                    data-action="modifier"
+                    data-id="${echapperHTML(commande.id)}"
+                >✏️ Modifier</button>
+
+                <button
+                    class="btn danger-outline"
+                    type="button"
+                    data-action="supprimer"
+                    data-id="${echapperHTML(commande.id)}"
+                >🗑️ Supprimer</button>
+
+                <button
+                    class="btn whatsapp"
+                    type="button"
+                    data-action="whatsapp"
+                    data-id="${echapperHTML(commande.id)}"
+                >WhatsApp</button>
+            </td>
+        `;
+
+        commandesBody.appendChild(ligne);
+    });
+
+    if (aucuneCommande) {
+        aucuneCommande.classList.toggle(
+            "hidden",
+            liste.length !== 0
+        );
+    }
+
+    afficherStatistiques();
 }
 
 /* =========================================================
-   MESSAGE AUCUNE COMMANDE
+   RÉINITIALISATION DU FORMULAIRE
 ========================================================= */
 
-.empty-state {
-    padding: 35px 15px;
-    text-align: center;
-    color: var(--muted);
-}
+function reinitialiserFormulaire() {
+    if (!commandeForm) return;
 
-.empty-state > div {
-    font-size: 38px;
-    margin-bottom: 8px;
-}
+    commandeForm.reset();
 
-.empty-state h3 {
-    margin: 0 0 7px;
-    color: var(--text);
-}
+    if (commandeId) commandeId.value = "";
+    if (nombreProduit) nombreProduit.value = "1";
+    if (acompte) acompte.value = "0";
+    if (fraisLivraison) fraisLivraison.value = "0";
 
-.empty-state p {
-    margin: 0;
+    const titre = document.getElementById("formTitle");
+    definirTexte(titre, "➕ Nouvelle commande");
+
+    if (btnEnregistrer) {
+        btnEnregistrer.textContent = "💾 Enregistrer";
+    }
+
+    btnAnnuler?.classList.add("hidden");
+
+    recalculerFormulaire();
 }
 
 /* =========================================================
-   IMPRESSION DES ÉTIQUETTES
-   Les éléments correspondants seront ajoutés au HTML.
+   MODIFICATION
 ========================================================= */
 
-.print-area {
-    display: none;
-}
+function modifierCommande(id) {
+    const commande = commandes.find(c => c.id === id);
+    if (!commande || !commandeForm) return;
 
-.labels-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8mm;
-    align-content: start;
-}
+    commandeId.value = commande.id;
+    nomClient.value = commande.client;
+    nomProduit.value = commande.produit;
+    nombreProduit.value = commande.quantite;
+    prixProduit.value = commande.prix;
+    acompte.value = commande.acompte;
 
-.shipping-label {
-    display: flex;
-    flex-direction: column;
-    gap: 3mm;
-    min-width: 0;
-    padding: 5mm;
-    border: 1px solid #94a3b8;
-    border-radius: 2mm;
-    background: white;
-    color: #111827;
-    break-inside: avoid;
-    page-break-inside: avoid;
-    overflow-wrap: anywhere;
-}
+    if (telephoneClient) {
+        telephoneClient.value = commande.telephone;
+    }
 
-.shipping-label h2 {
-    margin: 0 0 2mm;
-    padding-bottom: 2mm;
-    border-bottom: 1px solid #94a3b8;
-    font-size: 15pt;
-}
+    if (lieuLivraison) {
+        lieuLivraison.value = commande.lieu;
+    }
 
-.shipping-label p {
-    margin: 0;
-    font-size: 10pt;
-    line-height: 1.35;
-}
+    if (fraisLivraison) {
+        fraisLivraison.value = commande.fraisLivraison;
+    }
 
-.shipping-label .label-total {
-    margin-top: 2mm;
-    padding: 3mm;
-    border: 1px solid #111827;
-    border-radius: 1mm;
-    font-size: 15pt;
-    font-weight: 700;
-    text-align: center;
-}
+    if (statut) {
+        statut.value = commande.statut;
+    }
 
-.shipping-label .label-strong {
-    font-weight: 700;
+    definirTexte(
+        document.getElementById("formTitle"),
+        "✏️ Modifier la commande"
+    );
+
+    if (btnEnregistrer) {
+        btnEnregistrer.textContent = "💾 Enregistrer les modifications";
+    }
+
+    btnAnnuler?.classList.remove("hidden");
+
+    recalculerFormulaire();
+    commandeForm.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
 }
 
 /* =========================================================
-   PIED DE PAGE
+   SUPPRESSION
 ========================================================= */
 
-footer {
-    padding: 20px 10px;
-    color: var(--muted);
-    text-align: center;
-    font-size: 13px;
-}
+function supprimerCommande(id) {
+    const commande = commandes.find(c => c.id === id);
+    if (!commande) return;
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+    const confirmation = confirm(
+        `Supprimer la commande de ${commande.client} ?`
+    );
 
-@media (max-width: 900px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    if (!confirmation) return;
 
-    .card {
-        padding: 18px;
-    }
-}
+    commandes = commandes.filter(c => c.id !== id);
+    selectionImpression.delete(id);
 
-@media (max-width: 600px) {
-    .app {
-        width: 94%;
-    }
+    if (sauvegarderCommandes()) {
+        afficherCommandes();
 
-    .header {
-        padding: 18px;
-        margin: 12px 0;
-        border-radius: 12px;
-    }
-
-    .header h1 {
-        font-size: 24px;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 9px;
-    }
-
-    .stat-card {
-        padding: 14px;
-    }
-
-    .stat-card strong {
-        font-size: 19px;
-    }
-
-    .card {
-        padding: 15px;
-    }
-
-    .form-grid,
-    .calculation,
-    .toolbar {
-        grid-template-columns: minmax(0, 1fr);
-    }
-
-    .form-actions,
-    .data-actions,
-    .print-actions {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .form-actions .btn,
-    .data-actions .btn,
-    .data-actions .file-label,
-    .print-actions .btn {
-        width: 100%;
-    }
-
-    .labels-grid {
-        grid-template-columns: minmax(0, 1fr);
+        if (commandeId?.value === id) {
+            reinitialiserFormulaire();
+        }
     }
 }
 
 /* =========================================================
-   IMPRESSION A4
+   ENREGISTREMENT
 ========================================================= */
 
-@page {
-    size: A4 portrait;
-    margin: 8mm;
-}
+function enregistrerCommande(evenement) {
+    evenement.preventDefault();
 
-@media print {
-    html,
-    body {
-        width: 100%;
-        min-height: 0;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        color: #000 !important;
+    if (!commandeForm.reportValidity()) return;
+
+    const quantite = Number(nombreProduit.value);
+    const prix = Number(prixProduit.value);
+    const avance = Number(acompte.value || 0);
+    const frais = Number(fraisLivraison?.value || 0);
+
+    if (
+        !Number.isInteger(quantite) ||
+        quantite < 1 ||
+        prix < 0 ||
+        avance < 0 ||
+        frais < 0
+    ) {
+        alert("Vérifie les quantités et les montants saisis.");
+        return;
     }
 
-    body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    const id = commandeId?.value || genererId();
+
+    const ancienne = commandes.find(c => c.id === id);
+
+    const commande = {
+        id,
+        client: nomClient.value.trim(),
+        telephone: obtenirValeur(telephoneClient).trim(),
+        lieu: obtenirValeur(lieuLivraison).trim(),
+        produit: nomProduit.value.trim(),
+        quantite,
+        prix,
+        acompte: avance,
+        fraisLivraison: frais,
+        statut: obtenirValeur(statut, "En attente"),
+        dateCreation: ancienne?.dateCreation || new Date().toISOString()
+    };
+
+    if (!commande.client || !commande.produit) {
+        alert("Veuillez renseigner le nom du client et le produit.");
+        return;
     }
 
-    .app {
-        display: none !important;
+    if (ancienne) {
+        commandes = commandes.map(c => c.id === id ? commande : c);
+    } else {
+        commandes.push(commande);
     }
 
-    .print-area {
-        display: block !important;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    .labels-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 5mm;
-        width: 100%;
-    }
-
-    .shipping-label {
-        display: flex !important;
-        min-width: 0;
-        border: 1px solid #333;
-        border-radius: 1mm;
-        box-shadow: none;
-        background: white !important;
-        color: black !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-
-    .shipping-label h2,
-    .shipping-label p,
-    .shipping-label strong {
-        color: black !important;
-    }
-
-    .shipping-label .label-total {
-        border: 1px solid black;
-    }
-
-    .no-print {
-        display: none !important;
+    if (sauvegarderCommandes()) {
+        reinitialiserFormulaire();
+        afficherCommandes();
     }
 }
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+function normaliserTelephone(numero) {
+    let resultat = String(numero || "").replace(/\D/g, "");
+
+    // Enlève le préfixe international 00.
+    if (resultat.startsWith("00")) {
+        resultat = resultat.slice(2);
+    }
+
+    // Ne devine pas l'indicatif du pays.
+    return resultat;
+}
+
+function envoyerWhatsApp(id) {
+    const commande = commandes.find(c => c.id === id);
+    if (!commande) return;
+
+    if (!commande.telephone) {
+        alert(
+            "Aucun numéro de téléphone n'est renseigné " +
+            "pour cette commande."
+        );
+        return;
+    }
+
+    const telephone = normaliserTelephone(commande.telephone);
+
+    if (telephone.length < 8) {
+        alert(
+            "Le numéro semble incomplet. " +
+            "Vérifie son indicatif international."
+        );
+        return;
+    }
+
+    const message = [
+        `Bonjour ${commande.client},`,
+        "",
+        `Voici le récapitulatif de votre commande :`,
+        `Produit : ${commande.produit}`,
+        `Quantité : ${commande.quantite}`,
+        `Prix du produit : ${formaterMontant(calculerTotalProduit(commande))}`,
+        `Avance versée : ${formaterMontant(commande.acompte)}`,
+        `Reste sur le produit : ${formaterMontant(calculerResteProduit(commande))}`,
+        `Frais de livraison : ${formaterMontant(commande.fraisLivraison)}`,
+        `Total après avance et livraison : ${formaterMontant(calculerTotalEtiquette(commande))}`,
+        `Statut : ${commande.statut}`,
+        commande.lieu ? `Lieu de livraison : ${commande.lieu}` : "",
+        "",
+        "Merci pour votre confiance !"
+    ].filter(Boolean).join("\n");
+
+    const url =
+        "https://wa.me/" +
+        encodeURIComponent(telephone) +
+        "?text=" +
+        encodeURIComponent(message);
+
+    window.open(url, "_blank", "noopener,noreferrer");
+}
+
+/* =========================================================
+   SÉLECTION DES COMMANDES À IMPRIMER
+========================================================= */
+
+function gererSelectionImpression(id, coche) {
+    if (coche) {
+        selectionImpression.add(id);
+    } else {
+        selectionImpression.delete(id);
+    }
+    mettreAJourCompteurImpression();
+}
+
+function obtenirBoutonImpression() {
+    let bouton = document.getElementById("btnImprimer");
+
+    if (!bouton) {
+        const actions = document.querySelector(".data-actions");
+
+        if (!actions) return null;
+
+        bouton = document.createElement("button");
+        bouton.type = "button";
+        bouton.id = "btnImprimer";
+        bouton.className = "btn print";
+        bouton.textContent = "🖨️ Imprimer les étiquettes";
+        actions.appendChild(bouton);
+
+        bouton.addEventListener("click", imprimerCommandes);
+    }
+
+    return bouton;
+}
+
+function mettreAJourCompteurImpression() {
+    const bouton = obtenirBoutonImpression();
+    if (!bouton) return;
+
+    bouton.textContent =
+        `🖨️ Imprimer les étiquettes (${selectionImpression.size})`;
+    bouton.disabled = selectionImpression.size === 0;
+}
+
+/* =========================================================
+   PRÉPARATION DES ÉTIQUETTES
+========================================================= */
+
+function obtenirZoneImpression() {
+    let zone = document.getElementById("printArea");
+
+    if (!zone) {
+        zone = document.createElement("section");
+        zone.id = "printArea";
+        zone.className = "print-area";
+        document.body.appendChild(zone);
+    }
+
+    return zone;
+}
+
+function creerEtiquette(commande) {
+    const etiquette = document.createElement("article");
+    etiquette.className = "shipping-label";
+
+    const totalProduit = calculerTotalProduit(commande);
+    const reste = calculerResteProduit(commande);
+    const totalEtiquette = calculerTotalEtiquette(commande);
+
+    etiquette.innerHTML = `
+        <h2>📦 LIVRAISON</h2>
+
+        <p>
+            <strong>Client :</strong>
+            ${echapperHTML(commande.client)}
+        </p>
+
+        <p>
+            <strong>Téléphone :</strong>
+            ${echapperHTML(commande.telephone || "Non renseigné")}
+        </p>
+
+        <p>
+            <strong>Lieu de livraison :</strong>
+            ${echapperHTML(commande.lieu || "Non renseigné")}
+        </p>
+
+        <p>
+            <strong>Produit :</strong>
+            ${echapperHTML(commande.produit)}
+        </p>
+
+        <p>
+            <strong>Quantité :</strong>
+            ${echapperHTML(commande.quantite)}
+        </p>
+
+        <hr>
+
+        <p>
+            <strong>Prix du produit :</strong>
+            ${formaterMontant(totalProduit)}
+        </p>
+
+        <p>
+            <strong>Avance :</strong>
+            ${formaterMontant(commande.acompte)}
+        </p>
+
+        <p>
+            <strong>Reste à payer :</strong>
+            ${formaterMontant(reste)}
+        </p>
+
+        <p>
+            <strong>Frais de livraison :</strong>
+            ${formaterMontant(commande.fraisLivraison)}
+        </p>
+
+        <div class="label-total">
+            TOTAL : ${formaterMontant(totalEtiquette)}
+        </div>
+    `;
+
+    return etiquette;
+}
+
+function imprimerCommandes() {
+    const selectionnees = commandes.filter(c =>
+        selectionImpression.has(c.id)
+    );
+
+    if (selectionnees.length === 0) {
+        alert("Sélectionne au moins une commande à imprimer.");
+        return;
+    }
+
+    const zone = obtenirZoneImpression();
+    zone.innerHTML = "";
+
+    const grille = document.createElement("div");
+    grille.className = "labels-grid";
+
+    selectionnees.forEach(commande => {
+        grille.appendChild(creerEtiquette(commande));
+    });
+
+    zone.appendChild(grille);
+
+    window.print();
+}
+
+/* =========================================================
+   EXPORTATION JSON
+========================================================= */
+
+function exporterCommandes() {
+    const fichier = new Blob(
+        [JSON.stringify(commandes, null, 2)],
+        { type: "application/json;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(fichier);
+    const lien = document.createElement("a");
+
+    lien.href = url;
+    lien.download =
+        "gestion-commandes-" +
+        new Date().toISOString().slice(0, 10) +
+        ".json";
+
+    document.body.appendChild(lien);
+    lien.click();
+    lien.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+/* =========================================================
+   IMPORTATION JSON
+========================================================= */
+
+async function importerCommandes(evenement) {
+    const fichier = evenement.target.files?.[0];
+    if (!fichier) return;
+
+    try {
+        const texte = await fichier.text();
+        const donnees = JSON.parse(texte);
+
+        if (!Array.isArray(donnees)) {
+            throw new Error("Le fichier doit contenir une liste.");
+        }
+
+        const nouvelles = donnees
+            .filter(c => c && typeof c === "object")
+            .map(c => ({
+                id: String(c.id || genererId()),
+                client: String(c.client || ""),
+                telephone: String(c.telephone || ""),
+                lieu: String(c.lieu || ""),
+                produit: String(c.produit || ""),
+                quantite: Math.max(1, nombre(c.quantite || 1)),
+                prix: Math.max(0, nombre(c.prix)),
+                acompte: Math.max(0, nombre(c.acompte)),
+                fraisLivraison: Math.max(
+                    0,
+                    nombre(c.fraisLivraison)
+                ),
+                statut: String(c.statut || "En attente"),
+                dateCreation: c.dateCreation || new Date().toISOString()
+            }))
+            .filter(c => c.client && c.produit);
+
+        if (!confirm(
+            `Importer ${nouvelles.length} commande(s) ?\n` +
+            "Les commandes existantes seront conservées."
+        )) {
+            return;
+        }
+
+        const ids = new Set(commandes.map(c => c.id));
+
+        nouvelles.forEach(c => {
+            if (ids.has(c.id)) {
+                c.id = genererId();
+            }
+            ids.add(c.id);
+            commandes.push(c);
+        });
+
+        if (sauvegarderCommandes()) {
+            afficherCommandes();
+            alert(`${nouvelles.length} commande(s) importée(s).`);
+        }
+    } catch (erreur) {
+        console.error("Erreur d'importation :", erreur);
+        alert("Le fichier JSON est invalide ou illisible.");
+    } finally {
+        evenement.target.value = "";
+    }
+}
+
+/* =========================================================
+   SUPPRESSION DE TOUTES LES COMMANDES
+========================================================= */
+
+function toutSupprimer() {
+    if (commandes.length === 0) {
+        alert("Aucune commande à supprimer.");
+        return;
+    }
+
+    const confirmation = confirm(
+        "Attention : cette action supprimera toutes les commandes.\n" +
+        "Veux-tu vraiment continuer ?"
+    );
+
+    if (!confirmation) return;
+
+    const secondeConfirmation = confirm(
+        "Confirme une dernière fois la suppression totale."
+    );
+
+    if (!secondeConfirmation) return;
+
+    const anciennesCommandes = commandes;
+    commandes = [];
+
+    if (sauvegarderCommandes()) {
+        selectionImpression.clear();
+        reinitialiserFormulaire();
+        afficherCommandes();
+    } else {
+        commandes = anciennesCommandes;
+        afficherCommandes();
+    }
+}
+
+/* =========================================================
+   ÉVÉNEMENTS DU TABLEAU
+========================================================= */
+
+commandesBody?.addEventListener("click", evenement => {
+    const bouton = evenement.target.closest("button[data-action]");
+    if (!bouton) return;
+
+    const id = bouton.dataset.id;
+    const action = bouton.dataset.action;
+
+    if (action === "modifier") {
+        modifierCommande(id);
+    } else if (action === "supprimer") {
+        supprimerCommande(id);
+    } else if (action === "whatsapp") {
+        envoyerWhatsApp(id);
+    }
+});
+
+commandesBody?.addEventListener("change", evenement => {
+    const caseSelection = evenement.target.closest(
+        "input[data-selection]"
+    );
+
+    if (!caseSelection) return;
+
+    gererSelectionImpression(
+        caseSelection.dataset.selection,
+        caseSelection.checked
+    );
+});
+
+/* =========================================================
+   ÉVÉNEMENTS DU FORMULAIRE
+========================================================= */
+
+commandeForm?.addEventListener("submit", enregistrerCommande);
+
+btnAnnuler?.addEventListener("click", reinitialiserFormulaire);
+
+[
+    nombreProduit,
+    prixProduit,
+    acompte
+].forEach(element => {
+    element?.addEventListener("input", recalculerFormulaire);
+});
+
+recherche?.addEventListener("input", afficherCommandes);
+filtreStatut?.addEventListener("change", afficherCommandes);
+
+btnExporter?.addEventListener("click", exporterCommandes);
+
+fichierImport?.addEventListener("change", importerCommandes);
+
+btnToutSupprimer?.addEventListener("click", toutSupprimer);
+
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
+
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js")
+            .catch(erreur => {
+                console.error(
+                    "Erreur d'enregistrement du service worker :",
+                    erreur
+                );
+            });
+    });
+}
+
+/* =========================================================
+   DÉMARRAGE
+========================================================= */
+
+afficherCommandes();
+recalculerFormulaire();
+mettreAJourCompteurImpression();
