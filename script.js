@@ -107,10 +107,11 @@ function chargerCommandes() {
             .filter(c => c && typeof c === "object")
             .map(c => ({
                 id: String(c.id || genererId()),
+               numeroCommande: String(c.numeroCommande || ""),
                 client: String(c.client || ""),
                 telephone: String(c.telephone || ""),
-whatsapp: String(c.whatsapp || ""),
-lieu: String(c.lieu || ""),
+                whatsapp: String(c.whatsapp || ""),
+                lieu: String(c.lieu || ""),
                 produit: String(c.produit || ""),
                 quantite: Math.max(1, nombre(c.quantite || 1)),
                 prix: Math.max(0, nombre(c.prix)),
@@ -293,14 +294,22 @@ function afficherCommandes() {
                     data-selection="${echapperHTML(commande.id)}"
                     ${selectionnee ? "checked" : ""}
                 >
-                <strong>${echapperHTML(commande.client)}</strong>
-                ${commande.telephone
+
+               <strong>
+    ${commande.numeroCommande
+        ? `🔢 ${echapperHTML(commande.numeroCommande)}<br>`
+        : ""}
+    ${echapperHTML(commande.client)}
+</strong>
+
+${commande.telephone
     ? `<br><small>📞 ${echapperHTML(commande.telephone)}</small>`
     : ""}
 
 ${commande.whatsapp
     ? `<br><small>💬 ${echapperHTML(commande.whatsapp)}</small>`
     : ""}
+                
             </td>
 
             <td>
@@ -394,6 +403,7 @@ function modifierCommande(id) {
     if (!commande || !commandeForm) return;
 
     commandeId.value = commande.id;
+    numeroCommande.value = commande.numeroCommande || "";
     nomClient.value = commande.client;
     nomProduit.value = commande.produit;
     nombreProduit.value = commande.quantite;
