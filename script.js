@@ -17,6 +17,7 @@ const commandeId = document.getElementById("commandeId");
 
 const nomClient = document.getElementById("nomClient");
 const telephoneClient = document.getElementById("telephoneClient");
+const whatsappClient = document.getElementById("whatsappClient");
 const lieuLivraison = document.getElementById("lieuLivraison");
 const nomProduit = document.getElementById("nomProduit");
 const nombreProduit = document.getElementById("nombreProduit");
@@ -107,7 +108,8 @@ function chargerCommandes() {
                 id: String(c.id || genererId()),
                 client: String(c.client || ""),
                 telephone: String(c.telephone || ""),
-                lieu: String(c.lieu || ""),
+whatsapp: String(c.whatsapp || ""),
+lieu: String(c.lieu || ""),
                 produit: String(c.produit || ""),
                 quantite: Math.max(1, nombre(c.quantite || 1)),
                 prix: Math.max(0, nombre(c.prix)),
@@ -394,12 +396,16 @@ function modifierCommande(id) {
     acompte.value = commande.acompte;
 
     if (telephoneClient) {
-        telephoneClient.value = commande.telephone;
-    }
+    telephoneClient.value = commande.telephone;
+}
 
-    if (lieuLivraison) {
-        lieuLivraison.value = commande.lieu;
-    }
+if (whatsappClient) {
+    whatsappClient.value = commande.whatsapp || "";
+}
+
+if (lieuLivraison) {
+    lieuLivraison.value = commande.lieu;
+}
 
     if (fraisLivraison) {
         fraisLivraison.value = commande.fraisLivraison;
@@ -483,11 +489,12 @@ function enregistrerCommande(evenement) {
     const ancienne = commandes.find(c => c.id === id);
 
     const commande = {
-        id,
-        client: nomClient.value.trim(),
-        telephone: obtenirValeur(telephoneClient).trim(),
-        lieu: obtenirValeur(lieuLivraison).trim(),
-        produit: nomProduit.value.trim(),
+    id,
+    client: nomClient.value.trim(),
+    telephone: obtenirValeur(telephoneClient).trim(),
+    whatsapp: obtenirValeur(whatsappClient).trim(),
+    lieu: obtenirValeur(lieuLivraison).trim(),
+    produit: nomProduit.value.trim(),
         quantite,
         prix,
         acompte: avance,
@@ -533,15 +540,15 @@ function envoyerWhatsApp(id) {
     const commande = commandes.find(c => c.id === id);
     if (!commande) return;
 
-    if (!commande.telephone) {
-        alert(
-            "Aucun numéro de téléphone n'est renseigné " +
-            "pour cette commande."
-        );
-        return;
-    }
+    if (!commande.whatsapp) {
+    alert(
+        "Aucun numéro WhatsApp n'est renseigné " +
+        "pour cette commande."
+    );
+    return;
+}
 
-    const telephone = normaliserTelephone(commande.telephone);
+const telephone = normaliserTelephone(commande.whatsapp);
 
     if (telephone.length < 8) {
         alert(
