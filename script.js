@@ -552,6 +552,16 @@ function normaliserTelephone(numero) {
     return resultat;
 }
 
+function formaterDateCommande(date) {
+    const valeur = new Date(date);
+
+    if (Number.isNaN(valeur.getTime())) {
+        return "";
+    }
+
+    return valeur.toLocaleDateString("fr-FR");
+}
+
 function envoyerWhatsApp(id) {
     const commande = commandes.find(c => c.id === id);
     if (!commande) return;
@@ -575,21 +585,18 @@ const telephone = normaliserTelephone(commande.whatsapp);
     }
 
     const message = [
-        `Bonjour ${commande.client},`,
-        "",
-        `Voici le récapitulatif de votre commande :`,
-        `Produit : ${commande.produit}`,
-        `Quantité : ${commande.quantite}`,
-        `Prix du produit : ${formaterMontant(calculerTotalProduit(commande))}`,
-        `Avance versée : ${formaterMontant(commande.acompte)}`,
-        `Reste sur le produit : ${formaterMontant(calculerResteProduit(commande))}`,
-        `Frais de livraison : ${formaterMontant(commande.fraisLivraison)}`,
-        `Total après avance et livraison : ${formaterMontant(calculerTotalEtiquette(commande))}`,
-        `Statut : ${commande.statut}`,
-        commande.lieu ? `Lieu de livraison : ${commande.lieu}` : "",
-        "",
-        "Merci pour votre confiance !"
-    ].filter(Boolean).join("\n");
+
+   const message = [
+    "Miarahaba tompoko,",
+    "",
+    `Faly mampahafantatra anao izahay ato amin'ny Crystal Boutik fa efa azonao alaina na livraison-na ny entana ${commande.produit}, mitondra ny laharana commande ${commande.numeroCommande}, izay nafaranao tamin'ny ${formaterDateCommande(commande.dateCreation)}.`,
+    "",
+    "Manasa anao ary hitsidika ny page Crystal Boutik.",
+    "",
+    "Misaotra indrindra,",
+    "Crystal Boutik",
+    "\"Ny mora indrindra hatrany\""
+].join("\n");
 
     const url =
         "https://wa.me/" +
