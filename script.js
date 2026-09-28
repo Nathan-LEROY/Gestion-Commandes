@@ -562,41 +562,45 @@ function formaterDateCommande(date) {
     return valeur.toLocaleDateString("fr-FR");
 }
 
+
 function envoyerWhatsApp(id) {
     const commande = commandes.find(c => c.id === id);
     if (!commande) return;
 
     if (!commande.whatsapp) {
-    alert(
-        "Aucun numéro WhatsApp n'est renseigné " +
-        "pour cette commande."
-    );
-    return;
-}
-
-const telephone = normaliserTelephone(commande.whatsapp);
-
-    if (telephone.length < 8) {
         alert(
-            "Le numéro semble incomplet. " +
-            "Vérifie son indicatif international."
+            "Aucun numéro WhatsApp n'est renseigné " +
+            "pour cette commande."
+        );
+        return;
+    }
+
+    let telephone = normaliserTelephone(commande.whatsapp);
+
+    // Convertit les numéros malgaches locaux en format international.
+    if (telephone.startsWith("0")) {
+        telephone = "261" + telephone.slice(1);
+    }
+
+    if (telephone.length < 10) {
+        alert(
+            "Le numéro WhatsApp semble incomplet. " +
+            "Vérifie le numéro renseigné."
         );
         return;
     }
 
     const message = [
-
-   const message = [
-    "Miarahaba tompoko,",
-    "",
-    `Faly mampahafantatra anao izahay ato amin'ny Crystal Boutik fa efa azonao alaina na livraison-na ny entana ${commande.produit}, mitondra ny laharana commande ${commande.numeroCommande}, izay nafaranao tamin'ny ${formaterDateCommande(commande.dateCreation)}.`,
-    "",
-    "Manasa anao ary hitsidika ny page Crystal Boutik.",
-    "",
-    "Misaotra indrindra,",
-    "Crystal Boutik",
-    "\"Ny mora indrindra hatrany\""
-].join("\n");
+        "Miarahaba tompoko,",
+        "",
+        `Faly mampahafantatra anao izahay ato amin'ny Crystal Boutik fa efa azonao alaina na livraison-na ny entana ${commande.produit}, mitondra ny laharana commande ${commande.numeroCommande}, izay nafaranao tamin'ny ${formaterDateCommande(commande.dateCreation)}.`,
+        "",
+        "Manasa anao ary hitsidika ny page Crystal Boutik.",
+        "",
+        "Misaotra indrindra,",
+        "Crystal Boutik",
+        "\"Ny mora indrindra hatrany\""
+    ].join("\n");
 
     const url =
         "https://wa.me/" +
