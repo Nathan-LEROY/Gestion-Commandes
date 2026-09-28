@@ -593,7 +593,7 @@ function envoyerWhatsApp(id) {
     const message = [
         "Miarahaba tompoko,",
         "",
-        `Faly mampahafantatra anao izahay ato amin'ny Crystal Boutik fa efa azonao alaina na livraison-na ny entana ${commande.produit}, mitondra ny laharana commande ${commande.numeroCommande}, izay nafaranao tamin'ny ${formaterDateCommande(commande.dateCreation)}.`,
+        `Faly mampahafantatra anao izahay ato amin'ny Crystal Boutik fa efa azonao alaina na aterinay ny entana ${commande.produit}, mitondra ny laharana commande ${commande.numeroCommande}, izay nafaranao tamin'ny ${formaterDateCommande(commande.dateCreation)}.`,
         "",
         "Manasa anao ary hitsidika ny page Crystal Boutik.",
         "",
