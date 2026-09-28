@@ -671,67 +671,37 @@ function obtenirZoneImpression() {
     return zone;
 }
 
+
 function creerEtiquette(commande) {
     const etiquette = document.createElement("article");
     etiquette.className = "shipping-label";
 
-    const totalProduit = calculerTotalProduit(commande);
-    const reste = calculerResteProduit(commande);
-    const totalEtiquette = calculerTotalEtiquette(commande);
-
     etiquette.innerHTML = `
-        <h2>📦 LIVRAISON</h2>
+        <h2>CRYSTAL BOUTIK</h2>
 
-        <p>
-            <strong>Client :</strong>
-            ${echapperHTML(commande.client)}
+        <p><strong>N° :</strong>
+            ${echapperHTML(commande.numeroCommande || "")}
         </p>
 
-        <p>
-            <strong>Téléphone :</strong>
-            ${echapperHTML(commande.telephone || "Non renseigné")}
+        <p><strong>Client :</strong>
+            ${echapperHTML(commande.client || "")}
         </p>
 
-        <p>
-            <strong>Lieu de livraison :</strong>
-            ${echapperHTML(commande.lieu || "Non renseigné")}
+        <p><strong>Tél :</strong>
+            ${echapperHTML(commande.telephone || "")}
         </p>
 
-        <p>
-            <strong>Produit :</strong>
-            ${echapperHTML(commande.produit)}
+        <p><strong>Produit :</strong>
+            ${echapperHTML(commande.produit || "")}
         </p>
 
-        <p>
-            <strong>Quantité :</strong>
-            ${echapperHTML(commande.quantite)}
+        <p><strong>Qté :</strong>
+            ${echapperHTML(commande.quantite || "")}
         </p>
 
-        <hr>
-
-        <p>
-            <strong>Prix du produit :</strong>
-            ${formaterMontant(totalProduit)}
+        <p><strong>Lieu :</strong>
+            ${echapperHTML(commande.lieu || "")}
         </p>
-
-        <p>
-            <strong>Avance :</strong>
-            ${formaterMontant(commande.acompte)}
-        </p>
-
-        <p>
-            <strong>Reste à payer :</strong>
-            ${formaterMontant(reste)}
-        </p>
-
-        <p>
-            <strong>Frais de livraison :</strong>
-            ${formaterMontant(commande.fraisLivraison)}
-        </p>
-
-        <div class="label-total">
-            TOTAL : ${formaterMontant(totalEtiquette)}
-        </div>
     `;
 
     return etiquette;
