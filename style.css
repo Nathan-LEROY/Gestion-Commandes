@@ -493,37 +493,43 @@ td .btn {
 
 .labels-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8mm;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 0;
+    width: 100%;
     align-content: start;
 }
+
 
 .shipping-label {
     display: flex;
     flex-direction: column;
-    gap: 3mm;
+    gap: 0.5mm;
     min-width: 0;
-    padding: 5mm;
-    border: 1px solid #94a3b8;
-    border-radius: 2mm;
+    min-height: 0;
+    padding: 1mm;
+    border: 0.2mm solid #94a3b8;
+    border-radius: 0;
     background: white;
     color: #111827;
     break-inside: avoid;
     page-break-inside: avoid;
+    overflow: hidden;
     overflow-wrap: anywhere;
 }
 
 .shipping-label h2 {
-    margin: 0 0 2mm;
-    padding-bottom: 2mm;
-    border-bottom: 1px solid #94a3b8;
-    font-size: 15pt;
+    margin: 0 0 0.5mm;
+    padding-bottom: 0.5mm;
+    border-bottom: 0.2mm solid #94a3b8;
+    font-size: 5pt;
+    line-height: 1.1;
 }
 
 .shipping-label p {
     margin: 0;
-    font-size: 10pt;
-    line-height: 1.35;
+    font-size: 4.5pt;
+    line-height: 1.1;
 }
 
 .shipping-label .label-total {
@@ -659,11 +665,12 @@ footer {
     }
 
     .labels-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 5mm;
-        width: 100%;
-    }
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    gap: 0;
+    width: 100%;
+}
 
     .shipping-label {
         display: flex !important;
