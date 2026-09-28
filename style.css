@@ -664,13 +664,16 @@ footer {
         padding: 0;
     }
 
-    .labels-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(10, 1fr);
-    gap: 0;
-    width: 100%;
-}
+        .labels-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(10, 1fr);
+        gap: 0;
+        width: 100%;
+        height: 281mm;
+        align-content: stretch;
+        box-sizing: border-box;
+    }
 
     .shipping-label {
         display: flex !important;
