@@ -671,7 +671,6 @@ function obtenirZoneImpression() {
     return zone;
 }
 
-
 function creerEtiquette(commande) {
     const etiquette = document.createElement("article");
     etiquette.className = "shipping-label";
