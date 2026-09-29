@@ -665,15 +665,17 @@ footer {
     }
 
         .labels-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        grid-template-rows: repeat(10, 1fr);
-        gap: 0;
-        width: 100%;
-        height: 280mm;
-        align-content: stretch;
-        box-sizing: border-box;
-    }
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(10, 28mm);
+    gap: 0;
+    width: 194mm;
+    height: 280mm;
+    align-content: start;
+    box-sizing: border-box;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
 
     .shipping-label {
         display: flex !important;
