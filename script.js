@@ -20,6 +20,7 @@ const nomClient = document.getElementById("nomClient");
 const dateCommande = document.getElementById("dateCommande");
 const telephoneClient = document.getElementById("telephoneClient");
 const whatsappClient = document.getElementById("whatsappClient");
+const facebookClient = document.getElementById("facebookClient");
 const lieuLivraison = document.getElementById("lieuLivraison");
 const nomProduit = document.getElementById("nomProduit");
 const nombreProduit = document.getElementById("nombreProduit");
@@ -486,6 +487,14 @@ if (commande.dateCommande) {
                         data-action="whatsapp"
                         data-id="${echapperHTML(commande.id)}"
                     >WhatsApp</button>
+
+                    <button
+                       class="btn secondary"
+                       type="button"
+                       data-action="facebook"
+                       data-id="${echapperHTML(commande.id)}"
+                    >💙 Messenger</button>
+                    
                 </td>
             `;
 
@@ -558,6 +567,10 @@ if (whatsappClient) {
     whatsappClient.value = commande.whatsapp || "";
 }
 
+if (facebookClient) {
+    facebookClient.value = commande.facebook || "";
+}
+   
 if (lieuLivraison) {
     lieuLivraison.value = commande.lieu;
 }
@@ -649,6 +662,7 @@ function enregistrerCommande(evenement) {
     client: nomClient.value.trim(),
     telephone: obtenirValeur(telephoneClient).trim(),
     whatsapp: obtenirValeur(whatsappClient).trim(),
+    facebook: obtenirValeur(facebookClient).trim(),
     lieu: obtenirValeur(lieuLivraison).trim(),
     produit: nomProduit.value.trim(),
         quantite,
@@ -750,6 +764,26 @@ function envoyerWhatsApp(id) {
         encodeURIComponent(message);
 
     window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function envoyerFacebook(id) {
+    const commande = commandes.find(c => c.id === id);
+
+    if (!commande) return;
+
+    if (!commande.facebook) {
+        alert(
+            "Aucun lien Facebook / Messenger n'est renseigné " +
+            "pour cette commande."
+        );
+        return;
+    }
+
+    window.open(
+        commande.facebook,
+        "_blank",
+        "noopener,noreferrer"
+    );
 }
 
 /* =========================================================
@@ -1019,12 +1053,14 @@ commandesBody?.addEventListener("click", evenement => {
     const action = bouton.dataset.action;
 
     if (action === "modifier") {
-        modifierCommande(id);
-    } else if (action === "supprimer") {
-        supprimerCommande(id);
-    } else if (action === "whatsapp") {
-        envoyerWhatsApp(id);
-    }
+    modifierCommande(id);
+} else if (action === "supprimer") {
+    supprimerCommande(id);
+} else if (action === "whatsapp") {
+    envoyerWhatsApp(id);
+} else if (action === "facebook") {
+    envoyerFacebook(id);
+}
 });
 
 commandesBody?.addEventListener("change", evenement => {
