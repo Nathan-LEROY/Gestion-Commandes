@@ -670,7 +670,7 @@ footer {
         grid-template-rows: repeat(10, 1fr);
         gap: 0;
         width: 100%;
-        height: 281mm;
+        height: 280mm;
         align-content: stretch;
         box-sizing: border-box;
     }
