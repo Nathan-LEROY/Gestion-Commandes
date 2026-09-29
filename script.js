@@ -194,10 +194,13 @@ function afficherStatistiques() {
             .filter(Boolean)
     );
 
-    const totalAcomptes = commandes.reduce(
-        (somme, c) => somme + nombre(c.acompte),
-        0
-    );
+    const totalPayees = commandes.filter(
+    c => c.statut === "Payé"
+).length;
+
+const totalEnAttente = commandes.filter(
+    c => c.statut === "En attente"
+).length;
 
     const totalRestes = commandes.reduce(
     (somme, c) => {
@@ -221,9 +224,14 @@ function afficherStatistiques() {
     );
 
     definirTexte(
-        document.getElementById("statAcomptes"),
-        formaterMontant(totalAcomptes)
-    );
+    document.getElementById("statPayees"),
+    `${totalPayees} payée${totalPayees > 1 ? "s" : ""}`
+);
+
+definirTexte(
+    document.getElementById("statEnAttente"),
+    `${totalEnAttente} en attente`
+);
 
     definirTexte(
         document.getElementById("statRestes"),
