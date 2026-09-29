@@ -200,9 +200,15 @@ function afficherStatistiques() {
     );
 
     const totalRestes = commandes.reduce(
-        (somme, c) => somme + calculerResteProduit(c),
-        0
-    );
+    (somme, c) => {
+        if (c.statut === "En attente") {
+            return somme + calculerResteProduit(c);
+        }
+
+        return somme;
+    },
+    0
+);
 
     definirTexte(
         document.getElementById("statClients"),
