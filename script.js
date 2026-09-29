@@ -695,19 +695,19 @@ function creerEtiquette(commande) {
         </p>
 
         <p><strong>Prix :</strong>
-            ${echapperHTML(commande.prixProduit || "")}
+            ${formaterMontant(commande.prix)}
         </p>
 
         <p><strong>Avance :</strong>
-            ${echapperHTML(commande.acompte || "")}
+            ${formaterMontant(commande.acompte)}
         </p>
 
         <p><strong>Frais de livraison :</strong>
-            ${echapperHTML(commande.fraisLivraison || "")}
+            ${formaterMontant(commande.fraisLivraison)}
         </p>
 
         <p><strong>Reste :</strong>
-            ${echapperHTML(commande.resteAPayer || "")}
+            ${formaterMontant(calculerResteProduit(commande))}
         </p>
 
         <p><strong>Lieu :</strong>
