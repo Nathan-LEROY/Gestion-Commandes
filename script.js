@@ -686,20 +686,36 @@ function creerEtiquette(commande) {
             ${echapperHTML(commande.client || "")}
         </p>
 
-        <p><strong>Tél :</strong>
-            ${echapperHTML(commande.telephone || "")}
-        </p>
-
-        <p><strong>Produit :</strong>
+        <p>
+            <strong>Produit :</strong>
             ${echapperHTML(commande.produit || "")}
+            &nbsp;&nbsp;
+            <strong>Qté :</strong>
+            ${echapperHTML(commande.quantite || "")}
         </p>
 
-        <p><strong>Qté :</strong>
-            ${echapperHTML(commande.quantite || "")}
+        <p><strong>Prix :</strong>
+            ${echapperHTML(commande.prixProduit || "")}
+        </p>
+
+        <p><strong>Avance :</strong>
+            ${echapperHTML(commande.acompte || "")}
+        </p>
+
+        <p><strong>Frais de livraison :</strong>
+            ${echapperHTML(commande.fraisLivraison || "")}
+        </p>
+
+        <p><strong>Reste :</strong>
+            ${echapperHTML(commande.resteAPayer || "")}
         </p>
 
         <p><strong>Lieu :</strong>
             ${echapperHTML(commande.lieu || "")}
+        </p>
+
+        <p><strong>Tél :</strong>
+            ${echapperHTML(commande.telephone || "")}
         </p>
     `;
 
