@@ -281,82 +281,206 @@ function afficherCommandes() {
 
     commandesBody.innerHTML = "";
 
+    /* -----------------------------------------------------
+       CLASSER LES COMMANDES PAR DATE DE CRÉATION
+    ----------------------------------------------------- */
+
+    const groupes = {};
+
     liste.forEach(commande => {
-        const ligne = document.createElement("tr");
-        const selectionnee = selectionImpression.has(commande.id);
+        let date = "Date inconnue";
 
-        ligne.innerHTML = `
-            <td>
-                <input
-                    type="checkbox"
-                    class="selection-impression"
-                    aria-label="Sélectionner pour impression"
-                    data-selection="${echapperHTML(commande.id)}"
-                    ${selectionnee ? "checked" : ""}
-                >
+        if (commande.dateCreation) {
+            const d = new Date(commande.dateCreation);
 
-               <strong>
-    ${commande.numeroCommande
-        ? `🔢 ${echapperHTML(commande.numeroCommande)}<br>`
-        : ""}
-    ${echapperHTML(commande.client)}
-</strong>
+            if (!isNaN(d.getTime())) {
+                date = d.toLocaleDateString("fr-FR");
+            }
+        }
 
-${commande.telephone
-    ? `<br><small>📞 ${echapperHTML(commande.telephone)}</small>`
-    : ""}
+        if (!groupes[date]) {
+            groupes[date] = [];
+        }
 
-${commande.whatsapp
-    ? `<br><small>💬 ${echapperHTML(commande.whatsapp)}</small>`
-    : ""}
-                
-            </td>
+        groupes[date].push(commande);
+    });
 
-            <td>
-                ${echapperHTML(commande.produit)}
-                ${commande.lieu
-                    ? `<br><small>${echapperHTML(commande.lieu)}</small>`
-                    : ""}
-            </td>
+    /* -----------------------------------------------------
+       TRIER LES DATES : PLUS RÉCENTE EN PREMIER
+    ----------------------------------------------------- */
 
-            <td>${echapperHTML(commande.quantite)}</td>
-            <td>${formaterMontant(commande.prix)}</td>
-            <td>${formaterMontant(calculerTotalProduit(commande))}</td>
-            <td>${formaterMontant(commande.acompte)}</td>
-            <td>${formaterMontant(calculerResteProduit(commande))}</td>
+    const dates = Object.keys(groupes).sort((a, b) => {
+        if (a === "Date inconnue") return 1;
+        if (b === "Date inconnue") return -1;
 
-            <td>
-                <span class="statut ${classeStatut(commande.statut)}">
-                    ${echapperHTML(commande.statut)}
-                </span>
-            </td>
+        const [jourA, moisA, anneeA] = a.split("/");
+        const [jourB, moisB, anneeB] = b.split("/");
 
-            <td>
+        return new Date(
+            anneeB,
+            moisB - 1,
+            jourB
+        ) - new Date(
+            anneeA,
+            moisA - 1,
+            jourA
+        );
+    });
+
+    /* -----------------------------------------------------
+       AFFICHER LES DOSSIERS
+    ----------------------------------------------------- */
+
+    dates.forEach(date => {
+
+        const commandesDuJour = groupes[date];
+
+        /* DOSSIER */
+        const ligneDossier = document.createElement("tr");
+
+        ligneDossier.dataset.dossier = "true";
+
+        ligneDossier.innerHTML = `
+            <td colspan="9">
                 <button
+                    type="button"
                     class="btn secondary"
-                    type="button"
-                    data-action="modifier"
-                    data-id="${echapperHTML(commande.id)}"
-                >✏️ Modifier</button>
+                    style="
+                        width:100%;
+                        justify-content:flex-start;
+                        text-align:left;
+                        font-size:15px;
+                        padding:12px;
+                    "
+                    data-ouverture="ferme"
+                    onclick="
+                        let ligne = this.closest('tr').nextElementSibling;
+                        let ouvrir = this.dataset.ouverture === 'ferme';
 
-                <button
-                    class="btn danger-outline"
-                    type="button"
-                    data-action="supprimer"
-                    data-id="${echapperHTML(commande.id)}"
-                >🗑️ Supprimer</button>
+                        while (ligne && !ligne.dataset.dossier) {
+                            ligne.style.display = ouvrir ? '' : 'none';
+                            ligne = ligne.nextElementSibling;
+                        }
 
-                <button
-                    class="btn whatsapp"
-                    type="button"
-                    data-action="whatsapp"
-                    data-id="${echapperHTML(commande.id)}"
-                >WhatsApp</button>
+                        this.dataset.ouverture = ouvrir ? 'ouvert' : 'ferme';
+                        this.innerHTML = ouvrir
+                            ? '📂 ${date} — ${commandesDuJour.length} commande(s)'
+                            : '📁 ${date} — ${commandesDuJour.length} commande(s)';
+                    "
+                >
+                    📁 ${date} — ${commandesDuJour.length} commande(s)
+                </button>
             </td>
         `;
 
-        commandesBody.appendChild(ligne);
+        commandesBody.appendChild(ligneDossier);
+
+        /* -------------------------------------------------
+           COMMANDES DE CETTE DATE
+        ------------------------------------------------- */
+
+        commandesDuJour.forEach(commande => {
+
+            const ligne = document.createElement("tr");
+
+            /* Cachée tant que le dossier n'est pas ouvert */
+            ligne.style.display = "none";
+
+            const selectionnee =
+                selectionImpression.has(commande.id);
+
+            ligne.innerHTML = `
+                <td>
+                    <input
+                        type="checkbox"
+                        class="selection-impression"
+                        aria-label="Sélectionner pour impression"
+                        data-selection="${echapperHTML(commande.id)}"
+                        ${selectionnee ? "checked" : ""}
+                    >
+
+                    <strong>
+                        ${commande.numeroCommande
+                            ? `🔢 ${echapperHTML(commande.numeroCommande)}<br>`
+                            : ""}
+                        ${echapperHTML(commande.client)}
+                    </strong>
+
+                    ${commande.telephone
+                        ? `<br><small>📞 ${echapperHTML(commande.telephone)}</small>`
+                        : ""}
+
+                    ${commande.whatsapp
+                        ? `<br><small>💬 ${echapperHTML(commande.whatsapp)}</small>`
+                        : ""}
+                </td>
+
+                <td>
+                    ${echapperHTML(commande.produit)}
+                    ${commande.lieu
+                        ? `<br><small>${echapperHTML(commande.lieu)}</small>`
+                        : ""}
+                </td>
+
+                <td>${echapperHTML(commande.quantite)}</td>
+
+                <td>
+                    ${formaterMontant(commande.prix)}
+                </td>
+
+                <td>
+                    ${formaterMontant(
+                        calculerTotalProduit(commande)
+                    )}
+                </td>
+
+                <td>
+                    ${formaterMontant(commande.acompte)}
+                </td>
+
+                <td>
+                    ${formaterMontant(
+                        calculerResteProduit(commande)
+                    )}
+                </td>
+
+                <td>
+                    <span class="statut ${classeStatut(commande.statut)}">
+                        ${echapperHTML(commande.statut)}
+                    </span>
+                </td>
+
+                <td>
+                    <button
+                        class="btn secondary"
+                        type="button"
+                        data-action="modifier"
+                        data-id="${echapperHTML(commande.id)}"
+                    >✏️ Modifier</button>
+
+                    <button
+                        class="btn danger-outline"
+                        type="button"
+                        data-action="supprimer"
+                        data-id="${echapperHTML(commande.id)}"
+                    >🗑️ Supprimer</button>
+
+                    <button
+                        class="btn whatsapp"
+                        type="button"
+                        data-action="whatsapp"
+                        data-id="${echapperHTML(commande.id)}"
+                    >WhatsApp</button>
+                </td>
+            `;
+
+            commandesBody.appendChild(ligne);
+        });
     });
+
+    /* -----------------------------------------------------
+       AUCUNE COMMANDE
+    ----------------------------------------------------- */
 
     if (aucuneCommande) {
         aucuneCommande.classList.toggle(
