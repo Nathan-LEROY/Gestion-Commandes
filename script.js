@@ -529,6 +529,7 @@ function modifierCommande(id) {
 
     commandeId.value = commande.id;
     numeroCommande.value = commande.numeroCommande || "";
+    dateCommande.value = commande.dateCommande || "";
     nomClient.value = commande.client;
     nomProduit.value = commande.produit;
     nombreProduit.value = commande.quantite;
