@@ -17,6 +17,7 @@ const commandeId = document.getElementById("commandeId");
 
 const numeroCommande = document.getElementById("numeroCommande");
 const nomClient = document.getElementById("nomClient");
+const dateCommande = document.getElementById("dateCommande");
 const telephoneClient = document.getElementById("telephoneClient");
 const whatsappClient = document.getElementById("whatsappClient");
 const lieuLivraison = document.getElementById("lieuLivraison");
@@ -290,13 +291,13 @@ function afficherCommandes() {
     liste.forEach(commande => {
         let date = "Date inconnue";
 
-        if (commande.dateCreation) {
-            const d = new Date(commande.dateCreation);
+if (commande.dateCommande) {
+    const [annee, mois, jour] = commande.dateCommande.split("-");
 
-            if (!isNaN(d.getTime())) {
-                date = d.toLocaleDateString("fr-FR");
-            }
-        }
+    if (annee && mois && jour) {
+        date = `${jour}/${mois}/${annee}`;
+    }
+}
 
         if (!groupes[date]) {
             groupes[date] = [];
@@ -640,7 +641,8 @@ function enregistrerCommande(evenement) {
         acompte: avance,
         fraisLivraison: frais,
         statut: obtenirValeur(statut, "En attente"),
-        dateCreation: ancienne?.dateCreation || new Date().toISOString()
+        dateCommande: obtenirValeur(dateCommande),
+dateCreation: ancienne?.dateCreation || new Date().toISOString()
     };
 
     if (!commande.client || !commande.produit) {
