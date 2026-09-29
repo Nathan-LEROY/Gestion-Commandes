@@ -524,6 +524,7 @@ td .btn {
     border-bottom: 0.2mm solid #94a3b8;
     font-size: 5pt;
     line-height: 1.1;
+    text-align: center;
 }
 
 .shipping-label p {
