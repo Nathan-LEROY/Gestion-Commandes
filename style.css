@@ -658,11 +658,14 @@ footer {
     }
 
     .print-area {
-        display: block !important;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
+    display: block !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 194mm;
+    margin: 0;
+    padding: 0;
+}
 
         .labels-grid {
     display: grid;
