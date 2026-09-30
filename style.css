@@ -779,3 +779,59 @@ footer {
         margin-left: 0;
     }
 }
+
+/* =========================================================
+   MENU MASQUÉ
+   ========================================================= */
+
+.sidebar {
+    left: -260px;
+    transition: left 0.25s ease;
+}
+
+.sidebar.menu-ouvert {
+    left: 0;
+}
+
+.menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #111827;
+    color: white;
+
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.menu-toggle:hover {
+    background: #374151;
+}
+
+/* L'application reprend toute la largeur */
+.app {
+    margin-left: 0;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        width: 210px;
+        left: -230px;
+    }
+
+    .sidebar.menu-ouvert {
+        left: 0;
+    }
+
+    .app {
+        margin-left: 0;
+    }
+}
