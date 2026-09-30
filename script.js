@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* =========================================================
@@ -7,6 +6,15 @@
 ========================================================= */
 
 const STORAGE_KEY = "gestionCommandesV1";
+
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.querySelector(".sidebar");
+
+if (menuToggle && sidebar) {
+    menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("menu-ouvert");
+    });
+}
 
 /* =========================================================
    ÉLÉMENTS HTML
