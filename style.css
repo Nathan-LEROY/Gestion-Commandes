@@ -769,3 +769,13 @@ footer {
 .app {
     margin-left: 240px;
 }
+
+@media (max-width: 700px) {
+    .sidebar {
+        width: 210px;
+    }
+
+    .app {
+        margin-left: 0;
+    }
+}
