@@ -51,6 +51,14 @@ document.querySelectorAll(".menu-item").forEach((bouton) => {
     });
 });
 
+// Tableau de bord
+if (section === "dashboard") {
+    document.querySelector(".stats-grid").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
 /* =========================================================
    ÉLÉMENTS HTML
 ========================================================= */
