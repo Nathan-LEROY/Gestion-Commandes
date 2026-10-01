@@ -6,7 +6,7 @@
 ========================================================= */
 
 const STORAGE_KEY = "gestionCommandesV1";
-
+const PRODUITS_STORAGE_KEY = "crystalBoutikProduitsV1";
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.querySelector(".sidebar");
 
@@ -166,12 +166,58 @@ const btnExporter = document.getElementById("btnExporter");
 const fichierImport = document.getElementById("fichierImport");
 const btnToutSupprimer = document.getElementById("btnToutSupprimer");
 
+// =========================================================
+// ÉLÉMENTS DU FORMULAIRE PRODUIT
+// =========================================================
+
+const produitForm = document.getElementById("produitForm");
+
+const nomProduitStock =
+    document.getElementById("nomProduitStock");
+
+const quantiteStock =
+    document.getElementById("quantiteStock");
+
+const couleurProduit =
+    document.getElementById("couleurProduit");
+
+const tailleProduit =
+    document.getElementById("tailleProduit");
+
+const prixStock =
+    document.getElementById("prixStock");
+
+const btnAjouterProduit =
+    document.getElementById("btnAjouterProduit");
+
 /* =========================================================
    DONNÉES
 ========================================================= */
 
 let commandes = chargerCommandes();
 let selectionImpression = new Set();
+let produits = chargerProduits();
+
+function chargerProduits() {
+    try {
+        const donnees = JSON.parse(
+            localStorage.getItem(PRODUITS_STORAGE_KEY) || "[]"
+        );
+
+        return Array.isArray(donnees) ? donnees : [];
+
+    } catch (erreur) {
+        console.error("Erreur de lecture des produits :", erreur);
+        return [];
+    }
+}
+
+function sauvegarderProduits() {
+    localStorage.setItem(
+        PRODUITS_STORAGE_KEY,
+        JSON.stringify(produits)
+    );
+}
 
 /* =========================================================
    OUTILS
@@ -1248,6 +1294,62 @@ btnExporter?.addEventListener("click", exporterCommandes);
 fichierImport?.addEventListener("change", importerCommandes);
 
 btnToutSupprimer?.addEventListener("click", toutSupprimer);
+
+/* =========================================================
+   PRODUITS
+========================================================= */
+
+function ajouterProduit() {
+
+    if (!produitForm) return;
+
+    if (!produitForm.reportValidity()) {
+        return;
+    }
+
+    const produit = {
+        id: genererId(),
+
+        nom: nomProduitStock.value.trim(),
+
+        quantite: Math.max(
+            0,
+            nombre(quantiteStock.value)
+        ),
+
+        couleur: couleurProduit.value.trim(),
+
+        taille: tailleProduit.value.trim(),
+
+        prix: Math.max(
+            0,
+            nombre(prixStock.value)
+        )
+    };
+
+    if (!produit.nom) {
+        alert("Veuillez renseigner le nom du produit.");
+        return;
+    }
+
+    produits.push(produit);
+
+    sauvegarderProduits();
+
+    produitForm.reset();
+
+    quantiteStock.value = "0";
+
+    alert("Produit ajouté avec succès.");
+}
+
+produitForm?.addEventListener(
+    "submit",
+    function (evenement) {
+        evenement.preventDefault();
+        ajouterProduit();
+    }
+);
 
 /* =========================================================
    SERVICE WORKER
