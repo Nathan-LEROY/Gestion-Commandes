@@ -836,3 +836,54 @@ footer {
         margin-left: 0;
     }
 }
+
+
+/* =========================================
+   CARTES DES PRODUITS
+========================================= */
+
+.product-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.product-item > div:first-child {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.8;
+}
+
+.product-item > div:first-child strong {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #1e293b;
+}
+
+.product-item > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Adaptation aux petits écrans */
+
+@media (max-width: 600px) {
+    .product-item {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .product-item > div:last-child {
+        gap: 6px;
+    }
+}
