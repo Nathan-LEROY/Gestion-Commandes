@@ -16,41 +16,6 @@ if (menuToggle && sidebar) {
     });
 }
 
-
-// NAVIGATION DU MENU LATÉRAL
-document.querySelectorAll(".menu-item").forEach((bouton) => {
-    bouton.addEventListener("click", () => {
-        const section = bouton.dataset.section;
-
-        // Fermer le menu
-        sidebar.classList.remove("menu-ouvert");
-
-        // Mettre à jour le bouton actif
-        document.querySelectorAll(".menu-item").forEach((item) => {
-            item.classList.remove("active");
-        });
-        bouton.classList.add("active");
-
-        // Ajouter une commande
-        if (section === "ajouter") {
-            document.getElementById("commandeForm").reset();
-            document.getElementById("commandeId").value = "";
-            document.getElementById("formTitle").textContent =
-                "➕ Nouvelle commande";
-
-            document.getElementById("btnEnregistrer").textContent =
-                "💾 Enregistrer";
-
-            document.getElementById("btnAnnuler").classList.add("hidden");
-
-            document.getElementById("commandeForm").scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
-    });
-});
-
 // NAVIGATION DU MENU LATÉRAL
 document.querySelectorAll(".menu-item").forEach((bouton) => {
     bouton.addEventListener("click", () => {
@@ -92,7 +57,15 @@ document.querySelectorAll(".menu-item").forEach((bouton) => {
                 block: "start"
             });
         }
-    });
+
+               // Commandes
+        if (section === "commandes") {
+            document.getElementById("sectionCommandes")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+           });
 });
 
 /* =========================================================
