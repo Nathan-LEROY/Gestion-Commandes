@@ -16,32 +16,96 @@ if (menuToggle && sidebar) {
     });
 }
 
+// =====================================================
 // NAVIGATION DU MENU LATÉRAL
+// =====================================================
+
+function afficherSection(section) {
+
+    const sections = [
+        "sectionDashboard",
+        "sectionAjouter",
+        "sectionProduits",
+        "sectionCommandes",
+        "sectionImpression"
+    ];
+
+    // Cacher toutes les sections
+    sections.forEach((id) => {
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.style.display = "none";
+        }
+    });
+
+    // Déterminer la section à afficher
+    let idSection = "";
+
+    if (section === "dashboard") {
+        idSection = "sectionDashboard";
+    }
+
+    if (section === "ajouter") {
+        idSection = "sectionAjouter";
+    }
+
+    if (section === "produits") {
+        idSection = "sectionProduits";
+    }
+
+    if (section === "commandes") {
+        idSection = "sectionCommandes";
+    }
+
+    if (section === "impression") {
+        idSection = "sectionImpression";
+    }
+
+    const sectionElement = document.getElementById(idSection);
+
+    if (sectionElement) {
+        sectionElement.style.display = "";
+    }
+}
+
+
+// =====================================================
+// CLIC SUR LES BOUTONS DU MENU
+// =====================================================
+
 document.querySelectorAll(".menu-item").forEach((bouton) => {
+
     bouton.addEventListener("click", () => {
+
         const section = bouton.dataset.section;
 
         // Fermer le menu
-        sidebar.classList.remove("menu-ouvert");
+        if (sidebar) {
+            sidebar.classList.remove("menu-ouvert");
+        }
 
-        // Mettre à jour le bouton actif
+        // Bouton actif
         document.querySelectorAll(".menu-item").forEach((item) => {
             item.classList.remove("active");
         });
 
         bouton.classList.add("active");
 
-        // Tableau de bord
-        if (section === "dashboard") {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
+        // Afficher uniquement la section choisie
+        afficherSection(section);
 
-        // Ajouter une commande
+        // Remonter en haut
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        // Préparer une nouvelle commande
         if (section === "ajouter") {
+
             document.getElementById("commandeForm").reset();
+
             document.getElementById("commandeId").value = "";
 
             document.getElementById("formTitle").textContent =
@@ -52,37 +116,19 @@ document.querySelectorAll(".menu-item").forEach((bouton) => {
 
             document.getElementById("btnAnnuler").classList.add("hidden");
 
-            document.getElementById("commandeForm").scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+            recalculerFormulaire();
         }
 
-               // Commandes
-        if (section === "commandes") {
-            document.getElementById("sectionCommandes")?.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
+    });
 
-       // Produits
-if (section === "produits") {
-    document.getElementById("sectionProduits")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-}      
-       // Impression
-if (section === "impression") {
-    document.getElementById("sectionImpression")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-}
-       
-           });
 });
+
+
+// =====================================================
+// AFFICHAGE INITIAL
+// =====================================================
+
+afficherSection("dashboard");
 
 /* =========================================================
    ÉLÉMENTS HTML
