@@ -65,6 +65,14 @@ document.querySelectorAll(".menu-item").forEach((bouton) => {
                 block: "start"
             });
         }
+
+       // Produits
+if (section === "produits") {
+    document.getElementById("sectionProduits")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}      
            });
 });
 
