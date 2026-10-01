@@ -675,9 +675,109 @@
         Gestion des produits de Crystal Boutik.
     </p>
 
-    <div class="empty-state">
-        <p>📦 Aucun produit enregistré pour le moment.</p>
-    </div>
+    <!-- FORMULAIRE PRODUIT -->
+
+    <form id="produitForm" autocomplete="off">
+
+        <div class="form-grid">
+
+            <div class="field">
+
+                <label for="nomProduitStock">
+                    📦 Nom du produit *
+                </label>
+
+                <input
+                    id="nomProduitStock"
+                    type="text"
+                    placeholder="Ex. Bracelet Naruto"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="quantiteStock">
+                    📊 Quantité en stock *
+                </label>
+
+                <input
+                    id="quantiteStock"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value="0"
+                    required
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="couleurProduit">
+                    🎨 Couleur
+                </label>
+
+                <input
+                    id="couleurProduit"
+                    type="text"
+                    placeholder="Ex. Noir"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="tailleProduit">
+                    📏 Taille / Pointure
+                </label>
+
+                <input
+                    id="tailleProduit"
+                    type="text"
+                    placeholder="Ex. M ou 41"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="prixStock">
+                    💰 Prix (Ar) *
+                </label>
+
+                <input
+                    id="prixStock"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="Ex. 15000"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                type="submit"
+                class="btn primary"
+                id="btnAjouterProduit"
+            >
+                ➕ Ajouter le produit
+            </button>
+
+        </div>
+
+    </form>
 
 </section>
 
