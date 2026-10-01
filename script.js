@@ -190,6 +190,9 @@ const prixStock =
 const btnAjouterProduit =
     document.getElementById("btnAjouterProduit");
 
+const listeProduits =
+    document.getElementById("listeProduits");
+
 /* =========================================================
    DONNÉES
 ========================================================= */
@@ -1299,6 +1302,59 @@ btnToutSupprimer?.addEventListener("click", toutSupprimer);
    PRODUITS
 ========================================================= */
 
+function afficherProduits() {
+
+    if (!listeProduits) return;
+
+    if (produits.length === 0) {
+
+        listeProduits.innerHTML = `
+            <div class="empty-state">
+                <div>📦</div>
+                <h3>Aucun produit</h3>
+                <p>Ajoutez votre premier produit.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    listeProduits.innerHTML = produits.map((produit) => {
+
+        return `
+            <div class="product-item">
+
+                <div>
+                    <strong>${produit.nom}</strong>
+
+                    <div>
+                        Quantité : ${produit.quantite}
+                    </div>
+
+                    <div>
+                        Prix : ${formaterMontant(produit.prix)}
+                    </div>
+
+                    ${
+                        produit.couleur
+                            ? `<div>🎨 Couleur : ${produit.couleur}</div>`
+                            : ""
+                    }
+
+                    ${
+                        produit.taille
+                            ? `<div>📏 Taille : ${produit.taille}</div>`
+                            : ""
+                    }
+
+                </div>
+
+            </div>
+        `;
+
+    }).join("");
+}
+
 function ajouterProduit() {
 
     if (!produitForm) return;
@@ -1335,6 +1391,8 @@ function ajouterProduit() {
     produits.push(produit);
 
     sauvegarderProduits();
+
+    afficherProduits();
 
     produitForm.reset();
 
@@ -1374,3 +1432,4 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
 afficherCommandes();
 recalculerFormulaire();
 mettreAJourCompteurImpression();
+afficherProduits();
