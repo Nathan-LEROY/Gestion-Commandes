@@ -264,31 +264,57 @@ function recalculerFormulaire() {
    STATISTIQUES
 ========================================================= */
 
-function afficherStatistiques() {
+   function afficherStatistiques() {
+
+    /* -----------------------------------------------------
+       NOMBRE DE CLIENTS
+    ----------------------------------------------------- */
+
     const clients = new Set(
         commandes
             .map(c => c.client.trim().toLowerCase())
             .filter(Boolean)
     );
 
-    const totalPayees = commandes.filter(
-    c => c.statut === "Payé"
-).length;
 
-const totalEnAttente = commandes.filter(
-    c => c.statut === "En attente"
-).length;
+    /* -----------------------------------------------------
+       TOTAL DES ACOMPTES REÇUS
+    ----------------------------------------------------- */
+
+    const totalAcomptes = commandes.reduce(
+        (somme, commande) => {
+            return somme + nombre(commande.acompte);
+        },
+        0
+    );
+
+
+    /* -----------------------------------------------------
+       NOMBRE DE STATUTS
+    ----------------------------------------------------- */
+
+    const statuts = new Set(
+        commandes
+            .map(c => c.statut)
+            .filter(Boolean)
+    );
+
+
+    /* -----------------------------------------------------
+       RESTES À PAYER
+    ----------------------------------------------------- */
 
     const totalRestes = commandes.reduce(
-    (somme, c) => {
-        if (c.statut === "En attente") {
-            return somme + calculerResteProduit(c);
-        }
+        (somme, commande) => {
+            return somme + calculerResteProduit(commande);
+        },
+        0
+    );
 
-        return somme;
-    },
-    0
-);
+
+    /* -----------------------------------------------------
+       AFFICHAGE
+    ----------------------------------------------------- */
 
     definirTexte(
         document.getElementById("statClients"),
@@ -301,14 +327,14 @@ const totalEnAttente = commandes.filter(
     );
 
     definirTexte(
-    document.getElementById("statPayees"),
-    `${totalPayees} payée${totalPayees > 1 ? "s" : ""}`
-);
+        document.getElementById("statAcomptes"),
+        formaterMontant(totalAcomptes)
+    );
 
-definirTexte(
-    document.getElementById("statEnAttente"),
-    `${totalEnAttente} en attente`
-);
+    definirTexte(
+        document.getElementById("statStatuts"),
+        String(statuts.size)
+    );
 
     definirTexte(
         document.getElementById("statRestes"),
