@@ -73,6 +73,14 @@ if (section === "produits") {
         block: "start"
     });
 }      
+       // Impression
+if (section === "impression") {
+    document.getElementById("sectionImpression")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+       
            });
 });
 
