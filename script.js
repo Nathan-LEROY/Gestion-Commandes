@@ -1322,18 +1322,20 @@ function afficherProduits() {
     listeProduits.innerHTML = produits.map((produit) => {
 
         return `
+
             <div class="product-item">
 
-                <div>
-                    <strong>${produit.nom}</strong>
+    <div>
 
-                    <div>
-                        Quantité : ${produit.quantite}
-                    </div>
+        <strong>${echapperHTML(produit.nom)}</strong>
 
-                    <div>
-                        Prix : ${formaterMontant(produit.prix)}
-                    </div>
+        <div>
+            Quantité : ${produit.quantite}
+        </div>
+
+        <div>
+            Prix : ${formaterMontant(produit.prix)}
+        </div>
 
                     ${
                         produit.couleur
@@ -1346,6 +1348,19 @@ function afficherProduits() {
                             ? `<div>📏 Taille : ${produit.taille}</div>`
                             : ""
                     }
+
+                                </div>
+
+                <div>
+
+                    <button
+                        type="button"
+                        class="btn danger-outline"
+                        data-produit-action="supprimer"
+                        data-produit-id="${echapperHTML(produit.id)}"
+                    >
+                        🗑️ Supprimer
+                    </button>
 
                 </div>
 
@@ -1408,6 +1423,48 @@ produitForm?.addEventListener(
         ajouterProduit();
     }
 );
+
+// =========================================================
+// SUPPRIMER UN PRODUIT
+// =========================================================
+
+listeProduits?.addEventListener("click", function (evenement) {
+
+    const bouton = evenement.target.closest(
+        '[data-produit-action="supprimer"]'
+    );
+
+    if (!bouton) {
+        return;
+    }
+
+    const idProduit = bouton.dataset.produitId;
+
+    const produit = produits.find(
+        (item) => String(item.id) === String(idProduit)
+    );
+
+    if (!produit) {
+        return;
+    }
+
+    const confirmation = confirm(
+        `Voulez-vous supprimer le produit "${produit.nom}" ?`
+    );
+
+    if (!confirmation) {
+        return;
+    }
+
+    produits = produits.filter(
+        (item) => String(item.id) !== String(idProduit)
+    );
+
+    sauvegarderProduits();
+
+    afficherProduits();
+
+});
 
 /* =========================================================
    SERVICE WORKER
