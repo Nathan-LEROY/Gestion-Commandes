@@ -1615,6 +1615,20 @@ ficheProduitForm?.addEventListener("submit", function (evenement) {
 
 });
 
+function convertirImageEnBase64(fichier) {
+    return new Promise((resolve, reject) => {
+        const lecteur = new FileReader();
+
+        lecteur.onload = () => resolve(lecteur.result);
+        lecteur.onerror = () => reject(
+            new Error("Impossible de lire la photo.")
+        );
+
+        lecteur.readAsDataURL(fichier);
+    });
+}
+
+
 async function ajouterFicheProduit() {
 
     if (!ficheProduitForm) return;
@@ -1651,15 +1665,71 @@ async function ajouterFicheProduit() {
         photo = await convertirImageEnBase64(fichier);
     }
 
-    const fiche = {
-        id: genererId(),
+    // =====================================================
+// MODIFICATION D'UNE FICHE EXISTANTE
+// =====================================================
+
+if (ficheProduitEnCoursModification !== null) {
+
+    const index = fichesProduits.findIndex(
+        item =>
+            String(item.id) ===
+            String(ficheProduitEnCoursModification)
+    );
+
+    if (index === -1) {
+        alert("Fiche produit introuvable.");
+        return;
+    }
+
+    // Conserver l'ancienne photo si aucune nouvelle photo
+    // n'a été sélectionnée
+    const photoFinale =
+        photo || fichesProduits[index].photo || "";
+
+    fichesProduits[index] = {
+        id: fichesProduits[index].id,
         nom: nom,
         poids: poids,
         frais: frais,
-        photo: photo
+        photo: photoFinale
     };
 
-    fichesProduits.push(fiche);
+    const sauvegardeOK =
+        sauvegarderFichesProduits();
+
+    if (!sauvegardeOK) {
+        return;
+    }
+
+    ficheProduitEnCoursModification = null;
+
+    ficheProduitForm.reset();
+
+    btnEnregistrerFicheProduit.textContent =
+        "➕ Ajouter la fiche";
+
+    afficherFichesProduits();
+
+    alert("Fiche produit modifiée avec succès.");
+
+    return;
+}
+
+
+// =====================================================
+// AJOUT D'UNE NOUVELLE FICHE
+// =====================================================
+
+const fiche = {
+    id: genererId(),
+    nom: nom,
+    poids: poids,
+    frais: frais,
+    photo: photo
+};
+
+fichesProduits.push(fiche);
 
     const sauvegardeOK =
         sauvegarderFichesProduits();
@@ -1675,8 +1745,71 @@ async function ajouterFicheProduit() {
 
     afficherFichesProduits();
 
-    alert("Fiche produit ajoutée avec succès.");
+        alert("Fiche produit ajoutée avec succès.");
 }
+
+
+// =========================================================
+// MODIFIER ET SUPPRIMER UNE FICHE PRODUIT
+// =========================================================
+
+listeFichesProduits?.addEventListener("click", function (evenement) {
+
+    const bouton = evenement.target.closest(
+        "[data-fiche-action]"
+    );
+
+    if (!bouton) return;
+
+    const idFiche = bouton.dataset.ficheId;
+    const action = bouton.dataset.ficheAction;
+
+    const fiche = fichesProduits.find(
+        (item) => String(item.id) === String(idFiche)
+    );
+
+    if (!fiche) return;
+
+    // MODIFIER UNE FICHE
+    if (action === "modifier") {
+
+        ficheProduitEnCoursModification = fiche.id;
+
+        nomFicheProduit.value = fiche.nom || "";
+        poidsFicheProduit.value = fiche.poids || "";
+        fraisFicheProduit.value = fiche.frais || "";
+
+        btnEnregistrerFicheProduit.textContent =
+            "💾 Enregistrer les modifications";
+
+        ficheProduitForm.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        return;
+    }
+
+    // SUPPRIMER UNE FICHE
+    if (action === "supprimer") {
+
+        const confirmation = confirm(
+            `Voulez-vous supprimer la fiche "${fiche.nom}" ?`
+        );
+
+        if (!confirmation) return;
+
+        fichesProduits = fichesProduits.filter(
+            (item) => String(item.id) !== String(idFiche)
+        );
+
+        if (sauvegarderFichesProduits()) {
+            afficherFichesProduits();
+        }
+    }
+
+});
+
 
 function ajouterProduit() {
 
@@ -1868,3 +2001,4 @@ afficherCommandes();
 recalculerFormulaire();
 mettreAJourCompteurImpression();
 afficherProduits();
+afficherFichesProduits();
