@@ -1347,8 +1347,15 @@ function afficherProduits() {
         <strong>${echapperHTML(produit.nom)}</strong>
 
         <div>
-            Quantité : ${produit.quantite}
-        </div>
+    📊 Stock :
+    ${
+        nombre(produit.quantite) === 0
+            ? "🔴 Rupture de stock"
+            : nombre(produit.quantite) <= 2
+                ? `🟠 Stock faible (${nombre(produit.quantite)})`
+                : `🟢 ${nombre(produit.quantite)} disponible(s)`
+    }
+</div>
 
         <div>
             Prix : ${formaterMontant(produit.prix)}
