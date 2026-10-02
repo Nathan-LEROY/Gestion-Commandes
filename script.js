@@ -1495,6 +1495,18 @@ if (produitEnCoursModification !== null) {
 }
 
 // =========================================================
+// ENREGISTREMENT DU FORMULAIRE PRODUIT
+// =========================================================
+
+produitForm?.addEventListener("submit", function (evenement) {
+
+    evenement.preventDefault();
+
+    ajouterProduit();
+
+});
+
+// =========================================================
 // MODIFIER ET SUPPRIMER UN PRODUIT
 // =========================================================
 
