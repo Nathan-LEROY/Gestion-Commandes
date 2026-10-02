@@ -1356,22 +1356,26 @@ function afficherProduits() {
 <div>
 
     <button
-        type="button"
-        class="btn primary"
-        data-produit-action="modifier"
-        data-produit-id="${echapperHTML(produit.id)}"
-    >
-        ✏️ Modifier
-    </button>
+    type="button"
+    class="btn primary"
+    data-produit-action="modifier"
+    data-produit-id="${echapperHTML(produit.id)}"
+    title="Modifier le produit"
+    aria-label="Modifier le produit"
+>
+    ✏️
+</button>
 
-    <button
-        type="button"
-        class="btn danger-outline"
-        data-produit-action="supprimer"
-        data-produit-id="${echapperHTML(produit.id)}"
-    >
-        🗑️ Supprimer
-    </button>
+<button
+    type="button"
+    class="btn danger-outline"
+    data-produit-action="supprimer"
+    data-produit-id="${echapperHTML(produit.id)}"
+    title="Supprimer le produit"
+    aria-label="Supprimer le produit"
+>
+    🗑️
+</button>
 
 </div>
 
