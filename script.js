@@ -200,6 +200,7 @@ const listeProduits =
 let commandes = chargerCommandes();
 let selectionImpression = new Set();
 let produits = chargerProduits();
+let produitEnCoursModification = null;
 
 function chargerProduits() {
     try {
@@ -1351,24 +1352,35 @@ function afficherProduits() {
 
                                 </div>
 
-                <div>
+                
+<div>
 
-                    <button
-                        type="button"
-                        class="btn danger-outline"
-                        data-produit-action="supprimer"
-                        data-produit-id="${echapperHTML(produit.id)}"
-                    >
-                        🗑️ Supprimer
-                    </button>
+    <button
+        type="button"
+        class="btn primary"
+        data-produit-action="modifier"
+        data-produit-id="${echapperHTML(produit.id)}"
+    >
+        ✏️ Modifier
+    </button>
 
-                </div>
+    <button
+        type="button"
+        class="btn danger-outline"
+        data-produit-action="supprimer"
+        data-produit-id="${echapperHTML(produit.id)}"
+    >
+        🗑️ Supprimer
+    </button>
+
+</div>
 
             </div>
         `;
 
     }).join("");
 }
+
 
 function ajouterProduit() {
 
@@ -1378,91 +1390,131 @@ function ajouterProduit() {
         return;
     }
 
-    const produit = {
-        id: genererId(),
+    const nom = nomProduitStock.value.trim();
 
-        nom: nomProduitStock.value.trim(),
-
-        quantite: Math.max(
-            0,
-            nombre(quantiteStock.value)
-        ),
-
-        couleur: couleurProduit.value.trim(),
-
-        taille: tailleProduit.value.trim(),
-
-        prix: Math.max(
-            0,
-            nombre(prixStock.value)
-        )
-    };
-
-    if (!produit.nom) {
+    if (!nom) {
         alert("Veuillez renseigner le nom du produit.");
         return;
     }
 
+    const donnees = {
+        nom: nom,
+        quantite: Math.max(0, nombre(quantiteStock.value)),
+        couleur: couleurProduit.value.trim(),
+        taille: tailleProduit.value.trim(),
+        prix: Math.max(0, nombre(prixStock.value))
+    };
+
+    // MODIFICATION D'UN PRODUIT EXISTANT
+    if (produitEnCoursModification !== null) {
+
+        const index = produits.findIndex(
+            (item) =>
+                String(item.id) === String(produitEnCoursModification)
+        );
+
+        if (index === -1) {
+            alert("Produit introuvable.");
+            return;
+        }
+
+        produits[index] = {
+            ...produits[index],
+            ...donnees
+        };
+
+        sauvegarderProduits();
+        afficherProduits();
+
+        produitEnCoursModification = null;
+        produitForm.reset();
+        quantiteStock.value = "0";
+
+        btnAjouterProduit.textContent = "➕ Ajouter le produit";
+
+        alert("Produit modifié avec succès.");
+
+        return;
+    }
+
+    // AJOUT D'UN NOUVEAU PRODUIT
+    const produit = {
+        id: genererId(),
+        ...donnees
+    };
+
     produits.push(produit);
 
     sauvegarderProduits();
-
     afficherProduits();
 
     produitForm.reset();
-
     quantiteStock.value = "0";
+
+    btnAjouterProduit.textContent = "➕ Ajouter le produit";
 
     alert("Produit ajouté avec succès.");
 }
 
-produitForm?.addEventListener(
-    "submit",
-    function (evenement) {
-        evenement.preventDefault();
-        ajouterProduit();
-    }
-);
-
 // =========================================================
-// SUPPRIMER UN PRODUIT
+// MODIFIER ET SUPPRIMER UN PRODUIT
 // =========================================================
 
 listeProduits?.addEventListener("click", function (evenement) {
 
     const bouton = evenement.target.closest(
-        '[data-produit-action="supprimer"]'
+        "[data-produit-action]"
     );
 
-    if (!bouton) {
-        return;
-    }
+    if (!bouton) return;
 
     const idProduit = bouton.dataset.produitId;
+    const action = bouton.dataset.produitAction;
 
     const produit = produits.find(
         (item) => String(item.id) === String(idProduit)
     );
 
-    if (!produit) {
+    if (!produit) return;
+
+    // MODIFIER UN PRODUIT
+    if (action === "modifier") {
+
+        produitEnCoursModification = produit.id;
+
+        nomProduitStock.value = produit.nom;
+        quantiteStock.value = produit.quantite;
+        couleurProduit.value = produit.couleur || "";
+        tailleProduit.value = produit.taille || "";
+        prixStock.value = produit.prix;
+
+        btnAjouterProduit.textContent =
+            "💾 Enregistrer les modifications";
+
+        produitForm.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
         return;
     }
 
-    const confirmation = confirm(
-        `Voulez-vous supprimer le produit "${produit.nom}" ?`
-    );
+    // SUPPRIMER UN PRODUIT
+    if (action === "supprimer") {
 
-    if (!confirmation) {
-        return;
+        const confirmation = confirm(
+            `Voulez-vous supprimer le produit "${produit.nom}" ?`
+        );
+
+        if (!confirmation) return;
+
+        produits = produits.filter(
+            (item) => String(item.id) !== String(idProduit)
+        );
+
+        sauvegarderProduits();
+        afficherProduits();
     }
-
-    produits = produits.filter(
-        (item) => String(item.id) !== String(idProduit)
-    );
-
-    sauvegarderProduits();
-
-    afficherProduits();
 
 });
 
