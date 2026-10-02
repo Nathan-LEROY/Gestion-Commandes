@@ -1,5 +1,3 @@
-"use strict";
-
 /* =========================================================
    GESTIONNAIRE DE COMMANDES
    Version complète
@@ -7,6 +5,8 @@
 
 const STORAGE_KEY = "gestionCommandesV1";
 const PRODUITS_STORAGE_KEY = "crystalBoutikProduitsV1";
+const FICHES_PRODUITS_STORAGE_KEY =
+    "crystalBoutikFichesProduitsV1";
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.querySelector(".sidebar");
 
@@ -23,12 +23,13 @@ if (menuToggle && sidebar) {
 function afficherSection(section) {
 
     const sections = [
-        "sectionDashboard",
-        "sectionAjouter",
-        "sectionProduits",
-        "sectionCommandes",
-        "sectionImpression"
-    ];
+    "sectionDashboard",
+    "sectionAjouter",
+    "sectionProduits",
+    "sectionCommandes",
+    "sectionImpression",
+    "sectionFichesProduits"
+];
 
     // Cacher toutes les sections
     sections.forEach((id) => {
@@ -61,6 +62,10 @@ function afficherSection(section) {
     if (section === "impression") {
         idSection = "sectionImpression";
     }
+   
+   if (section === "fichesProduits") {
+    idSection = "sectionFichesProduits";
+}
 
     const sectionElement = document.getElementById(idSection);
 
@@ -193,14 +198,42 @@ const btnAjouterProduit =
 const listeProduits =
     document.getElementById("listeProduits");
 
+const ficheProduitForm =
+    document.getElementById("ficheProduitForm");
+
+const nomFicheProduit =
+    document.getElementById("nomFicheProduit");
+
+const poidsFicheProduit =
+    document.getElementById("poidsFicheProduit");
+
+const fraisFicheProduit =
+    document.getElementById("fraisFicheProduit");
+
+const photoFicheProduit =
+    document.getElementById("photoFicheProduit");
+
+const btnEnregistrerFicheProduit =
+    document.getElementById("btnEnregistrerFicheProduit");
+
+const rechercheFicheProduit =
+    document.getElementById("rechercheFicheProduit");
+
+const listeFichesProduits =
+    document.getElementById("listeFichesProduits");
+
 /* =========================================================
    DONNÉES
 ========================================================= */
 
 let commandes = chargerCommandes();
 let selectionImpression = new Set();
+
 let produits = chargerProduits();
 let produitEnCoursModification = null;
+
+let fichesProduits = chargerFichesProduits();
+let ficheProduitEnCoursModification = null;
 
 function chargerProduits() {
     try {
@@ -233,6 +266,58 @@ function sauvegarderProduits() {
 
         alert(
             "Impossible d'enregistrer le produit."
+        );
+
+        return false;
+    }
+}
+
+function chargerFichesProduits() {
+
+    try {
+
+        const donnees = JSON.parse(
+            localStorage.getItem(
+                FICHES_PRODUITS_STORAGE_KEY
+            ) || "[]"
+        );
+
+        return Array.isArray(donnees)
+            ? donnees
+            : [];
+
+    } catch (erreur) {
+
+        console.error(
+            "Erreur de lecture des fiches produits :",
+            erreur
+        );
+
+        return [];
+    }
+}
+
+
+function sauvegarderFichesProduits() {
+
+    try {
+
+        localStorage.setItem(
+            FICHES_PRODUITS_STORAGE_KEY,
+            JSON.stringify(fichesProduits)
+        );
+
+        return true;
+
+    } catch (erreur) {
+
+        console.error(
+            "Erreur de sauvegarde des fiches produits :",
+            erreur
+        );
+
+        alert(
+            "Impossible d'enregistrer la fiche produit."
         );
 
         return false;
@@ -1408,6 +1493,190 @@ function afficherProduits() {
     }).join("");
 }
 
+function afficherFichesProduits() {
+
+    if (!listeFichesProduits) return;
+
+    const rechercheTexte =
+        rechercheFicheProduit
+            ? rechercheFicheProduit.value.trim().toLowerCase()
+            : "";
+
+    const fichesFiltrees = fichesProduits.filter((fiche) => {
+
+        const nom = String(fiche.nom || "").toLowerCase();
+
+        return nom.includes(rechercheTexte);
+    });
+
+    if (fichesFiltrees.length === 0) {
+
+        listeFichesProduits.innerHTML = `
+            <div class="empty-state">
+                <div>📋</div>
+                <h3>Aucune fiche produit</h3>
+                <p>
+                    Ajoutez une fiche pour conserver
+                    les informations de référence.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    listeFichesProduits.innerHTML =
+        fichesFiltrees.map((fiche) => {
+
+            return `
+                <div class="product-item">
+
+                    <div>
+
+                        ${
+                            fiche.photo
+                                ? `
+                                    <div>
+                                        <img
+                                            src="${echapperHTML(fiche.photo)}"
+                                            alt="${echapperHTML(fiche.nom)}"
+                                            style="
+                                                width:100px;
+                                                height:100px;
+                                                object-fit:cover;
+                                                border-radius:10px;
+                                                margin-bottom:8px;
+                                            "
+                                        >
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                        <strong>
+                            ${echapperHTML(fiche.nom)}
+                        </strong>
+
+                        <div>
+                            ⚖️ Poids :
+                            ${nombre(fiche.poids).toFixed(3)} kg
+                        </div>
+
+                        <div>
+                            🚚 Frais :
+                            ${formaterMontant(fiche.frais)}
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <button
+                            type="button"
+                            class="btn primary"
+                            data-fiche-action="modifier"
+                            data-fiche-id="${echapperHTML(fiche.id)}"
+                            title="Modifier la fiche"
+                            aria-label="Modifier la fiche"
+                        >
+                            ✏️
+                        </button>
+
+                        <button
+                            type="button"
+                            class="btn danger-outline"
+                            data-fiche-action="supprimer"
+                            data-fiche-id="${echapperHTML(fiche.id)}"
+                            title="Supprimer la fiche"
+                            aria-label="Supprimer la fiche"
+                        >
+                            🗑️
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+}
+
+rechercheFicheProduit?.addEventListener("input", function () {
+
+    afficherFichesProduits();
+
+});
+
+ficheProduitForm?.addEventListener("submit", function (evenement) {
+
+    evenement.preventDefault();
+
+    ajouterFicheProduit();
+
+});
+
+async function ajouterFicheProduit() {
+
+    if (!ficheProduitForm) return;
+
+    if (!ficheProduitForm.reportValidity()) {
+        return;
+    }
+
+    const nom = nomFicheProduit.value.trim();
+    const poids = Math.max(
+        0,
+        nombre(poidsFicheProduit.value)
+    );
+    const frais = Math.max(
+        0,
+        nombre(fraisFicheProduit.value)
+    );
+
+    if (!nom) {
+        alert("Veuillez renseigner le nom du produit.");
+        return;
+    }
+
+    let photo = "";
+
+    if (
+        photoFicheProduit &&
+        photoFicheProduit.files &&
+        photoFicheProduit.files.length > 0
+    ) {
+
+        const fichier = photoFicheProduit.files[0];
+
+        photo = await convertirImageEnBase64(fichier);
+    }
+
+    const fiche = {
+        id: genererId(),
+        nom: nom,
+        poids: poids,
+        frais: frais,
+        photo: photo
+    };
+
+    fichesProduits.push(fiche);
+
+    const sauvegardeOK =
+        sauvegarderFichesProduits();
+
+    if (!sauvegardeOK) {
+        return;
+    }
+
+    ficheProduitForm.reset();
+
+    btnEnregistrerFicheProduit.textContent =
+        "➕ Ajouter la fiche";
+
+    afficherFichesProduits();
+
+    alert("Fiche produit ajoutée avec succès.");
+}
 
 function ajouterProduit() {
 
