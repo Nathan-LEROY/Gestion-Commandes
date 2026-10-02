@@ -217,10 +217,26 @@ function chargerProduits() {
 }
 
 function sauvegarderProduits() {
-    localStorage.setItem(
-        PRODUITS_STORAGE_KEY,
-        JSON.stringify(produits)
-    );
+    try {
+        localStorage.setItem(
+            PRODUITS_STORAGE_KEY,
+            JSON.stringify(produits)
+        );
+
+        return true;
+
+    } catch (erreur) {
+        console.error(
+            "Erreur de sauvegarde des produits :",
+            erreur
+        );
+
+        alert(
+            "Impossible d'enregistrer le produit."
+        );
+
+        return false;
+    }
 }
 
 /* =========================================================
