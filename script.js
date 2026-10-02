@@ -1410,36 +1410,54 @@ function ajouterProduit() {
     };
 
     // MODIFICATION D'UN PRODUIT EXISTANT
-    if (produitEnCoursModification !== null) {
+if (produitEnCoursModification !== null) {
 
-        const index = produits.findIndex(
-            (item) =>
-                String(item.id) === String(produitEnCoursModification)
-        );
+    const index = produits.findIndex(
+        item => String(item.id) === String(produitEnCoursModification)
+    );
 
-        if (index === -1) {
-            alert("Produit introuvable.");
-            return;
-        }
-
-        produits[index] = {
-            ...produits[index],
-            ...donnees
-        };
-
-        sauvegarderProduits();
-        afficherProduits();
-
-        produitEnCoursModification = null;
-        produitForm.reset();
-        quantiteStock.value = "0";
-
-        btnAjouterProduit.textContent = "➕ Ajouter le produit";
-
-        alert("Produit modifié avec succès.");
-
+    if (index === -1) {
+        alert("Produit introuvable.");
         return;
     }
+
+    // Conserver l'identifiant du produit
+    const idConserve = produits[index].id;
+
+    // Mettre à jour uniquement les informations du produit
+    produits[index] = {
+        id: idConserve,
+        nom: donnees.nom,
+        quantite: donnees.quantite,
+        couleur: donnees.couleur,
+        taille: donnees.taille,
+        prix: donnees.prix
+    };
+
+    // Sauvegarder
+    const sauvegardeOK = sauvegarderProduits();
+
+    if (!sauvegardeOK) {
+        return;
+    }
+
+    // Sortir du mode modification
+    produitEnCoursModification = null;
+
+    // Réinitialiser le formulaire
+    produitForm.reset();
+    quantiteStock.value = "0";
+
+    // Remettre le bouton normal
+    btnAjouterProduit.textContent = "➕ Ajouter le produit";
+
+    // Réafficher la liste avec les nouveaux boutons
+    afficherProduits();
+
+    alert("Produit modifié avec succès.");
+
+    return;
+}
 
     // AJOUT D'UN NOUVEAU PRODUIT
     const produit = {
