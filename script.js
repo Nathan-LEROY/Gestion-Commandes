@@ -210,6 +210,9 @@ const poidsFicheProduit =
 const fraisFicheProduit =
     document.getElementById("fraisFicheProduit");
 
+const prixFicheProduit =
+    document.getElementById("prixFicheProduit");
+
 const photoFicheProduit =
     document.getElementById("photoFicheProduit");
 
@@ -1567,6 +1570,11 @@ function afficherFichesProduits() {
                             ${formaterMontant(fiche.frais)}
                         </div>
 
+                         <div>
+                            💰 Prix :
+                            ${formaterMontant(fiche.prix)}
+                      </div>
+  
                     </div>
 
                     <div>
@@ -1647,6 +1655,11 @@ async function ajouterFicheProduit() {
         nombre(fraisFicheProduit.value)
     );
 
+   const prix = Math.max(
+    0,
+    nombre(prixFicheProduit.value)
+);
+
     if (!nom) {
         alert("Veuillez renseigner le nom du produit.");
         return;
@@ -1688,12 +1701,13 @@ if (ficheProduitEnCoursModification !== null) {
         photo || fichesProduits[index].photo || "";
 
     fichesProduits[index] = {
-        id: fichesProduits[index].id,
-        nom: nom,
-        poids: poids,
-        frais: frais,
-        photo: photoFinale
-    };
+    id: fichesProduits[index].id,
+    nom: nom,
+    poids: poids,
+    frais: frais,
+    prix: prix,
+    photo: photoFinale
+};
 
     const sauvegardeOK =
         sauvegarderFichesProduits();
@@ -1726,6 +1740,7 @@ const fiche = {
     nom: nom,
     poids: poids,
     frais: frais,
+    prix: prix,
     photo: photo
 };
 
@@ -1778,6 +1793,7 @@ listeFichesProduits?.addEventListener("click", function (evenement) {
         nomFicheProduit.value = fiche.nom || "";
         poidsFicheProduit.value = fiche.poids || "";
         fraisFicheProduit.value = fiche.frais || "";
+        prixFicheProduit.value = fiche.prix || "";
 
         btnEnregistrerFicheProduit.textContent =
             "💾 Enregistrer les modifications";
