@@ -953,63 +953,52 @@ footer {
 
 
 /* =========================================
-   PRODUITS : AFFICHAGE HORIZONTAL
+   GRILLE DES PRODUITS
 ========================================= */
 
 .product-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 15px;
-    padding: 14px;
-    margin-bottom: 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 10px;
+    border: 1px solid #94a3b8;
+    border-radius: 8px;
     background: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 0;
+    overflow: hidden;
 }
 
 .product-item > div:first-child {
     display: flex;
     flex-direction: row;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 0;
+}
+
+.product-item > div:first-child > * {
+    display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
-    line-height: 1.5;
+    padding: 12px;
+    border-right: 1px solid #cbd5e1;
+    margin: 0;
 }
 
 .product-item > div:first-child strong {
-    display: inline-block;
-    font-size: 16px;
-    margin: 0;
-    color: #1e293b;
+    font-weight: bold;
+    background: #f1f5f9;
 }
 
 .product-item > div:last-child {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
+    padding: 8px;
 }
-
-/* Petits écrans */
 
 @media (max-width: 600px) {
     .product-item {
-        flex-wrap: wrap;
+        overflow-x: auto;
     }
 
     .product-item > div:first-child {
-        gap: 8px;
+        flex-wrap: wrap;
     }
 
-    .product-item > div:last-child {
-        width: 100%;
-        justify-content: flex-end;
+    .product-item > div:first-child > * {
+        border-bottom: 1px solid #cbd5e1;
     }
 }
