@@ -1550,7 +1550,7 @@ listeProduits.innerHTML = Object.entries(produitsParCategorie).map(
 </div>
 
             </div>
-        `        `;
+        `;
 
                 }).join("")}
 
