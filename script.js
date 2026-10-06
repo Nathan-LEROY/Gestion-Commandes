@@ -180,6 +180,9 @@ const produitForm = document.getElementById("produitForm");
 const nomProduitStock =
     document.getElementById("nomProduitStock");
 
+const categorieProduit =
+    document.getElementById("categorieProduit");
+
 const quantiteStock =
     document.getElementById("quantiteStock");
 
@@ -1431,7 +1434,31 @@ function afficherProduits() {
         return;
     }
 
-    listeProduits.innerHTML = produits.map((produit) => {
+    const produitsParCategorie = {};
+
+produits.forEach((produit) => {
+
+    const categorie =
+        produit.categorie || "Autres";
+
+    if (!produitsParCategorie[categorie]) {
+        produitsParCategorie[categorie] = [];
+    }
+
+    produitsParCategorie[categorie].push(produit);
+});
+
+listeProduits.innerHTML = Object.entries(produitsParCategorie).map(
+    ([categorie, produitsCategorie]) => {
+
+        return `
+            <div class="categorie-produits">
+
+                <h3>
+                    🏷️ ${echapperHTML(categorie)}
+                </h3>
+
+                ${produitsCategorie.map((produit) => {
 
         return `
 
@@ -1462,6 +1489,10 @@ function afficherProduits() {
     <strong>${echapperHTML(produit.nom)}</strong>
 
     <div>
+
+    <div>
+    🏷️ ${echapperHTML(produit.categorie || "Autres")}
+</div>
         📊 Stock :
     
     ${
@@ -1519,9 +1550,14 @@ function afficherProduits() {
 </div>
 
             </div>
-        `;
+        `        `;
 
-    }).join("");
+                }).join("")}
+
+            </div>
+        `;
+    }
+).join("");
 }
 
 function afficherFichesProduits() {
@@ -1881,12 +1917,13 @@ if (
 }
    
     const donnees = {
-        nom: nom,
-        quantite: Math.max(0, nombre(quantiteStock.value)),
-        couleur: couleurProduit.value.trim(),
-        taille: tailleProduit.value.trim(),
-        prix: Math.max(0, nombre(prixStock.value))
-    };
+    nom: nom,
+    categorie: categorieProduit.value,
+    quantite: Math.max(0, nombre(quantiteStock.value)),
+    couleur: couleurProduit.value.trim(),
+    taille: tailleProduit.value.trim(),
+    prix: Math.max(0, nombre(prixStock.value))
+};
 
     // MODIFICATION D'UN PRODUIT EXISTANT
 if (produitEnCoursModification !== null) {
@@ -1905,6 +1942,7 @@ if (produitEnCoursModification !== null) {
     produits[index] = {
     id: idConserve,
     nom: donnees.nom,
+    categorie: donnees.categorie,
     quantite: donnees.quantite,
     couleur: donnees.couleur,
     taille: donnees.taille,
