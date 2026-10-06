@@ -192,6 +192,9 @@ const tailleProduit =
 const prixStock =
     document.getElementById("prixStock");
 
+const photoProduit =
+    document.getElementById("photoProduit");
+
 const btnAjouterProduit =
     document.getElementById("btnAjouterProduit");
 
@@ -1830,8 +1833,7 @@ listeFichesProduits?.addEventListener("click", function (evenement) {
 
 });
 
-
-function ajouterProduit() {
+async function ajouterProduit() {
 
     if (!produitForm) return;
 
@@ -1846,6 +1848,17 @@ function ajouterProduit() {
         return;
     }
 
+let photo = "";
+
+if (
+    photoProduit &&
+    photoProduit.files &&
+    photoProduit.files.length > 0
+) {
+    const fichier = photoProduit.files[0];
+    photo = await convertirImageEnBase64(fichier);
+}
+   
     const donnees = {
         nom: nom,
         quantite: Math.max(0, nombre(quantiteStock.value)),
@@ -1868,16 +1881,15 @@ if (produitEnCoursModification !== null) {
 
     // Conserver l'identifiant du produit
     const idConserve = produits[index].id;
-
-    // Mettre à jour uniquement les informations du produit
     produits[index] = {
-        id: idConserve,
-        nom: donnees.nom,
-        quantite: donnees.quantite,
-        couleur: donnees.couleur,
-        taille: donnees.taille,
-        prix: donnees.prix
-    };
+    id: idConserve,
+    nom: donnees.nom,
+    quantite: donnees.quantite,
+    couleur: donnees.couleur,
+    taille: donnees.taille,
+    prix: donnees.prix,
+    photo: photo || produits[index].photo || ""
+};
 
     // Sauvegarder
     const sauvegardeOK = sauvegarderProduits();
@@ -1906,9 +1918,10 @@ if (produitEnCoursModification !== null) {
 
     // AJOUT D'UN NOUVEAU PRODUIT
     const produit = {
-        id: genererId(),
-        ...donnees
-    };
+    id: genererId(),
+    ...donnees,
+    photo: photo
+};
 
     produits.push(produit);
 
