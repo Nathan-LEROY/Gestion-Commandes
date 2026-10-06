@@ -1274,7 +1274,9 @@ async function importerCommandes(evenement) {
                     nombre(c.fraisLivraison)
                 ),
                 statut: String(c.statut || "En attente"),
-                dateCreation: c.dateCreation || new Date().toISOString()
+        dateCommande: String(c.dateCommande || ""),
+dateCreation: c.dateCreation || new Date().toISOString()
+               
             }))
             .filter(c => c.client && c.produit);
 
