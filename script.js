@@ -389,6 +389,7 @@ function chargerCommandes() {
                 client: String(c.client || ""),
                 telephone: String(c.telephone || ""),
                 whatsapp: String(c.whatsapp || ""),
+                facebook: String(c.facebook || ""),
                 lieu: String(c.lieu || ""),
                 produit: String(c.produit || ""),
                 quantite: Math.max(1, nombre(c.quantite || 1)),
