@@ -1437,12 +1437,33 @@ function afficherProduits() {
 
             <div class="product-item">
 
+<div>
+
+    ${
+        produit.photo
+            ? `
+                <div>
+                    <img
+                        src="${echapperHTML(produit.photo)}"
+                        alt="${echapperHTML(produit.nom)}"
+                        style="
+                            width:100px;
+                            height:100px;
+                            object-fit:cover;
+                            border-radius:10px;
+                            margin-bottom:8px;
+                        "
+                    >
+                </div>
+            `
+            : ""
+    }
+
+    <strong>${echapperHTML(produit.nom)}</strong>
+
     <div>
-
-        <strong>${echapperHTML(produit.nom)}</strong>
-
-        <div>
-    📊 Stock :
+        📊 Stock :
+    
     ${
         nombre(produit.quantite) === 0
             ? "🔴 Rupture de stock"
