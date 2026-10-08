@@ -1454,11 +1454,17 @@ listeProduits.innerHTML = Object.entries(produitsParCategorie).map(
         return `
             <div class="categorie-produits">
 
-                <h3>
-                    🏷️ ${echapperHTML(categorie)}
-                </h3>
+                <h3
+    class="categorie-toggle"
+    data-categorie="${echapperHTML(categorie)}"
+    style="cursor:pointer;"
+>
+    📂 🏷️ ${echapperHTML(categorie)}
+</h3>
 
-                ${produitsCategorie.map((produit) => {
+                <div class="categorie-contenu" style="display:none;">
+
+    ${produitsCategorie.map((produit) => {
 
         return `
 
@@ -1554,11 +1560,35 @@ listeProduits.innerHTML = Object.entries(produitsParCategorie).map(
 
                 }).join("")}
 
+</div>
+
             </div>
         `;
     }
 ).join("");
 }
+
+document.querySelectorAll(".categorie-toggle").forEach((titre) => {
+
+    titre.addEventListener("click", () => {
+
+        const contenu = titre.nextElementSibling;
+
+        if (!contenu) return;
+
+        if (contenu.style.display === "none") {
+
+            contenu.style.display = "";
+
+        } else {
+
+            contenu.style.display = "none";
+
+        }
+
+    });
+
+});
 
 function afficherFichesProduits() {
 
