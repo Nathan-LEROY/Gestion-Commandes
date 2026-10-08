@@ -150,6 +150,7 @@ const whatsappClient = document.getElementById("whatsappClient");
 const facebookClient = document.getElementById("facebookClient");
 const lieuLivraison = document.getElementById("lieuLivraison");
 const nomProduit = document.getElementById("nomProduit");
+const photoCommande = document.getElementById("photoCommande");
 const nombreProduit = document.getElementById("nombreProduit");
 const prixProduit = document.getElementById("prixProduit");
 const acompte = document.getElementById("acompte");
@@ -941,7 +942,7 @@ function supprimerCommande(id) {
    ENREGISTREMENT
 ========================================================= */
 
-function enregistrerCommande(evenement) {
+async function enregistrerCommande(evenement) {
     evenement.preventDefault();
 
     if (!commandeForm.reportValidity()) return;
@@ -966,6 +967,18 @@ function enregistrerCommande(evenement) {
 
     const ancienne = commandes.find(c => c.id === id);
 
+   let photo = "";
+
+if (
+    photoCommande &&
+    photoCommande.files &&
+    photoCommande.files.length > 0
+) {
+    const fichier = photoCommande.files[0];
+
+    photo = await convertirImageEnBase64(fichier);
+}
+   
     const commande = {
     id,
     numeroCommande: obtenirValeur(numeroCommande).trim(),
@@ -975,6 +988,7 @@ function enregistrerCommande(evenement) {
     facebook: obtenirValeur(facebookClient).trim(),
     lieu: obtenirValeur(lieuLivraison).trim(),
     produit: nomProduit.value.trim(),
+        photo: photo || ancienne?.photo || "",
         quantite,
         prix,
         acompte: avance,
