@@ -892,6 +892,7 @@ function modifierCommande(id) {
     const commande = commandes.find(c => c.id === id);
     if (!commande || !commandeForm) return;
 
+    console.log("ÉTAPE 1 : commande trouvée");
     commandeId.value = commande.id;
     numeroCommande.value = commande.numeroCommande || "";
     dateCommande.value = commande.dateCommande || "";
