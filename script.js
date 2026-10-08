@@ -521,6 +521,22 @@ function recalculerFormulaire() {
         0
     );
 
+      /* -----------------------------------------------------
+   COMMANDES EN ATTENTE
+----------------------------------------------------- */
+
+const totalEnAttente = commandes.filter(
+    commande => commande.statut !== "Payé"
+).length;
+
+
+/* -----------------------------------------------------
+   COMMANDES SOLDÉES
+----------------------------------------------------- */
+
+const totalSolde = commandes.filter(
+    commande => commande.statut === "Payé"
+).length;
 
     /* -----------------------------------------------------
        AFFICHAGE
@@ -550,6 +566,17 @@ function recalculerFormulaire() {
         document.getElementById("statRestes"),
         formaterMontant(totalRestes)
     );
+
+      definirTexte(
+    document.getElementById("statEnAttente"),
+    String(totalEnAttente)
+);
+
+definirTexte(
+    document.getElementById("statSolde"),
+    String(totalSolde)
+);
+      
 }
 
 /* =========================================================
