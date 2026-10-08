@@ -1565,30 +1565,31 @@ listeProduits.innerHTML = Object.entries(produitsParCategorie).map(
             </div>
         `;
     }
-).join("");
-}
 
-document.querySelectorAll(".categorie-toggle").forEach((titre) => {
+   ).join("");
 
-    titre.addEventListener("click", () => {
+    document.querySelectorAll(".categorie-toggle").forEach((titre) => {
 
-        const contenu = titre.nextElementSibling;
+        titre.addEventListener("click", () => {
 
-        if (!contenu) return;
+            const contenu = titre.nextElementSibling;
 
-        if (contenu.style.display === "none") {
+            if (!contenu) return;
 
-            contenu.style.display = "";
+            if (contenu.style.display === "none") {
 
-        } else {
+                contenu.style.display = "";
 
-            contenu.style.display = "none";
+            } else {
 
-        }
+                contenu.style.display = "none";
+
+            }
+
+        });
 
     });
-
-});
+}
 
 function afficherFichesProduits() {
 
