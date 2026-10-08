@@ -893,8 +893,11 @@ function modifierCommande(id) {
     if (!commande || !commandeForm) return;
 
     console.log("ÉTAPE 1 : commande trouvée");
-    commandeId.value = commande.id;
-    numeroCommande.value = commande.numeroCommande || "";
+    console.log("ÉTAPE 2 : commandeId");
+commandeId.value = commande.id;
+
+console.log("ÉTAPE 3 : numeroCommande");
+numeroCommande.value = commande.numeroCommande || "";
     dateCommande.value = commande.dateCommande || "";
     nomClient.value = commande.client;
     nomProduit.value = commande.produit;
