@@ -399,6 +399,7 @@ function chargerCommandes() {
                 facebook: String(c.facebook || ""),
                 lieu: String(c.lieu || ""),
                 produit: String(c.produit || ""),
+                photo: String(c.photo || ""),
                 quantite: Math.max(1, nombre(c.quantite || 1)),
                 prix: Math.max(0, nombre(c.prix)),
                 acompte: Math.max(0, nombre(c.acompte)),
@@ -743,11 +744,31 @@ if (commande.dateCommande) {
                 </td>
 
                 <td>
-                    ${echapperHTML(commande.produit)}
-                    ${commande.lieu
-                        ? `<br><small>${echapperHTML(commande.lieu)}</small>`
-                        : ""}
-                </td>
+    ${
+        commande.photo
+            ? `
+                <div style="margin-bottom:8px;">
+                    <img
+                        src="${echapperHTML(commande.photo)}"
+                        alt="${echapperHTML(commande.produit)}"
+                        style="
+                            width:80px;
+                            height:80px;
+                            object-fit:cover;
+                            border-radius:8px;
+                        "
+                    >
+                </div>
+            `
+            : ""
+    }
+
+    ${echapperHTML(commande.produit)}
+
+    ${commande.lieu
+        ? `<br><small>${echapperHTML(commande.lieu)}</small>`
+        : ""}
+</td>
 
                 <td>${echapperHTML(commande.quantite)}</td>
 
