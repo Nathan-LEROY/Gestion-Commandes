@@ -1409,7 +1409,11 @@ commandesBody?.addEventListener("click", evenement => {
     const id = bouton.dataset.id;
     const action = bouton.dataset.action;
 
-    if (action === "modifier") {
+   if (action === "modifier") {
+    console.log("MODIFIER CLIQUÉ");
+    console.log("ID reçu :", id);
+    console.log("Commande trouvée :", commandes.find(c => c.id === id));
+
     modifierCommande(id);
 } else if (action === "supprimer") {
     supprimerCommande(id);
