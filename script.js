@@ -111,6 +111,8 @@ document.querySelectorAll(".menu-item").forEach((bouton) => {
 
             document.getElementById("commandeForm").reset();
 
+            commandeEnCoursModification = null;
+
             document.getElementById("commandeId").value = "";
 
             document.getElementById("formTitle").textContent =
@@ -238,6 +240,8 @@ const listeFichesProduits =
 
 let commandes = chargerCommandes();
 let selectionImpression = new Set();
+
+let commandeEnCoursModification = null;
 
 let produits = chargerProduits();
 let produitEnCoursModification = null;
@@ -867,6 +871,8 @@ function reinitialiserFormulaire() {
 
     commandeForm.reset();
 
+   commandeEnCoursModification = null;
+   
     if (commandeId) commandeId.value = "";
     if (nombreProduit) nombreProduit.value = "1";
     if (acompte) acompte.value = "0";
@@ -897,7 +903,7 @@ function modifierCommande(id) {
 console.log("numeroCommande =", numeroCommande);
 console.log("commandeForm =", commandeForm);
     console.log("ÉTAPE 2 : commandeId");
-commandeId.value = commande.id;
+commandeEnCoursModification = commande.id;
 
 console.log("ÉTAPE 3 : numeroCommande");
 numeroCommande.value = commande.numeroCommande || "";
@@ -1001,7 +1007,7 @@ async function enregistrerCommande(evenement) {
         return;
     }
 
-    const id = commandeId?.value || genererId();
+    const id = commandeEnCoursModification || genererId();
 
     const ancienne = commandes.find(c => c.id === id);
 
