@@ -497,19 +497,7 @@ function recalculerFormulaire() {
         },
         0
     );
-
-
-    /* -----------------------------------------------------
-       NOMBRE DE STATUTS
-    ----------------------------------------------------- */
-
-    const statuts = new Set(
-        commandes
-            .map(c => c.statut)
-            .filter(Boolean)
-    );
-
-
+ 
     /* -----------------------------------------------------
        RESTES À PAYER
     ----------------------------------------------------- */
@@ -557,12 +545,7 @@ const totalSolde = commandes.filter(
         formaterMontant(totalAcomptes)
     );
 
-    definirTexte(
-        document.getElementById("statStatuts"),
-        String(statuts.size)
-    );
-
-    definirTexte(
+        definirTexte(
         document.getElementById("statRestes"),
         formaterMontant(totalRestes)
     );
