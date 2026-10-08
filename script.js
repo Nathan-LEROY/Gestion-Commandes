@@ -893,6 +893,9 @@ function modifierCommande(id) {
     if (!commande || !commandeForm) return;
 
     console.log("ÉTAPE 1 : commande trouvée");
+   console.log("commandeId =", commandeId);
+console.log("numeroCommande =", numeroCommande);
+console.log("commandeForm =", commandeForm);
     console.log("ÉTAPE 2 : commandeId");
 commandeId.value = commande.id;
 
