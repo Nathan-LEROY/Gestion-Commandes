@@ -1496,10 +1496,7 @@ listeProduits.innerHTML = Object.entries(produitsParCategorie).map(
 
     <div>
 
-    <div>
-    🏷️ ${echapperHTML(produit.categorie || "Autres")}
-</div>
-        📊 Stock :
+            📊 Stock :
     
     ${
         nombre(produit.quantite) === 0
