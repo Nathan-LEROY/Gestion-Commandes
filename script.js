@@ -898,6 +898,15 @@ function modifierCommande(id) {
     const commande = commandes.find(c => c.id === id);
     if (!commande || !commandeForm) return;
 
+       afficherSection("ajouter");
+
+    document.querySelectorAll(".menu-item").forEach(item => {
+        item.classList.toggle(
+            "active",
+            item.dataset.section === "ajouter"
+        );
+    });
+
     console.log("ÉTAPE 1 : commande trouvée");
    console.log("commandeId =", commandeId);
 console.log("numeroCommande =", numeroCommande);
