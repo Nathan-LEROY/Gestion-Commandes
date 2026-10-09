@@ -147,6 +147,133 @@ afficherSection("dashboard");
 ========================================================= */
 
 const commandeForm = document.getElementById("commandeForm");
+
+// =====================================================
+// FOND D'ÉCRAN PERSONNALISÉ
+// =====================================================
+
+const fondEcranImage = document.getElementById("fondEcranImage");
+const apercuFondEcran = document.getElementById("apercuFondEcran");
+const btnAppliquerFond = document.getElementById("btnAppliquerFond");
+const btnRetablirFond = document.getElementById("btnRetablirFond");
+
+
+let imageFondSelectionnee = "";
+
+if (fondEcranImage && apercuFondEcran) {
+    fondEcranImage.addEventListener("change", function () {
+        const fichier = this.files[0];
+
+        if (!fichier) {
+            return;
+        }
+
+        if (!fichier.type.startsWith("image/")) {
+            alert("Veuillez choisir une image valide.");
+            this.value = "";
+            return;
+        }
+
+        const lecteur = new FileReader();
+
+        lecteur.onload = function (evenement) {
+            imageFondSelectionnee = evenement.target.result;
+
+            apercuFondEcran.innerHTML = "";
+
+            const image = document.createElement("img");
+            image.src = imageFondSelectionnee;
+            image.alt = "Aperçu du fond d'écran";
+
+            image.style.width = "100%";
+            image.style.maxHeight = "220px";
+            image.style.objectFit = "cover";
+            image.style.borderRadius = "10px";
+
+            apercuFondEcran.appendChild(image);
+        };
+
+        
+        lecteur.readAsDataURL(fichier);
+    });
+}
+
+// =====================================================
+// APPLICATION ET SAUVEGARDE DU FOND D'ÉCRAN
+// =====================================================
+
+const CLE_FOND_ECRAN = "gestionCommandesFondEcranV1";
+
+function appliquerFondEcran(image) {
+    document.body.style.backgroundImage = `url("${image}")`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.backgroundRepeat = "no-repeat";
+}
+
+if (btnAppliquerFond) {
+    btnAppliquerFond.addEventListener("click", function () {
+        if (!imageFondSelectionnee) {
+            alert("Veuillez d'abord choisir une photo.");
+            return;
+        }
+
+        try {
+            localStorage.setItem(CLE_FOND_ECRAN, imageFondSelectionnee);
+            appliquerFondEcran(imageFondSelectionnee);
+            alert("Fond d'écran appliqué et enregistré !");
+        } catch (erreur) {
+            alert("Cette photo est trop volumineuse. Choisissez une image plus petite.");
+        }
+    });
+}
+
+// Restaurer automatiquement le fond enregistré au démarrage
+try {
+    const fondEnregistre = localStorage.getItem(CLE_FOND_ECRAN);
+
+    if (fondEnregistre) {
+        appliquerFondEcran(fondEnregistre);
+    }
+} catch (erreur) {
+    console.error("Impossible de charger le fond d'écran.", erreur);
+}
+
+
+if (btnRetablirFond) {
+    btnRetablirFond.addEventListener("click", function () {
+        const confirmation = confirm(
+            "Voulez-vous vraiment rétablir le fond d'écran d'origine ?"
+        );
+
+        if (!confirmation) {
+            return;
+        }
+
+        localStorage.removeItem(CLE_FOND_ECRAN);
+
+        document.body.style.backgroundImage = "";
+        document.body.style.backgroundSize = "";
+        document.body.style.backgroundPosition = "";
+        document.body.style.backgroundAttachment = "";
+        document.body.style.backgroundRepeat = "";
+
+        imageFondSelectionnee = "";
+
+        if (fondEcranImage) {
+            fondEcranImage.value = "";
+        }
+
+        if (apercuFondEcran) {
+            apercuFondEcran.innerHTML =
+                "<p>Aucun fond personnalisé sélectionné.</p>";
+        }
+
+        alert("Le fond d'écran d'origine a été rétabli.");
+    });
+}
+
 const commandeId = document.getElementById("commandeId");
 
 const numeroCommande = document.getElementById("numeroCommande");
