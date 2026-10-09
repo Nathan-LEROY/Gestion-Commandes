@@ -28,7 +28,8 @@ function afficherSection(section) {
     "sectionProduits",
     "sectionCommandes",
     "sectionImpression",
-    "sectionFichesProduits"
+    "sectionFichesProduits",
+    "sectionParametres"
 ];
 
     // Cacher toutes les sections
@@ -65,6 +66,10 @@ function afficherSection(section) {
    
    if (section === "fichesProduits") {
     idSection = "sectionFichesProduits";
+}
+
+   if (section === "parametres") {
+    idSection = "sectionParametres";
 }
 
     const sectionElement = document.getElementById(idSection);
