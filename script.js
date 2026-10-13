@@ -29,7 +29,8 @@ function afficherSection(section) {
     "sectionCommandes",
     "sectionImpression",
     "sectionFichesProduits",
-    "sectionParametres"
+    "sectionParametres",
+    "sectionAchatsPinduoduo"
 ];
 
     // Cacher toutes les sections
@@ -70,6 +71,10 @@ function afficherSection(section) {
 
    if (section === "parametres") {
     idSection = "sectionParametres";
+}
+
+   if (section === "achatsPinduoduo") {
+    idSection = "sectionAchatsPinduoduo";
 }
 
     const sectionElement = document.getElementById(idSection);
@@ -158,7 +163,14 @@ const btnAppliquerFond = document.getElementById("btnAppliquerFond");
 const btnRetablirFond = document.getElementById("btnRetablirFond");
 const modeApparence = document.getElementById("modeApparence");
 const btnAppliquerMode = document.getElementById("btnAppliquerMode");
-
+const formAchat = document.getElementById("formAchat");
+const nomClientAchat = document.getElementById("nomClientAchat");
+const trackingAchat = document.getElementById("trackingAchat");
+const nomProduitAchat = document.getElementById("nomProduitAchat");
+const dateAchat = document.getElementById("dateAchat");
+const photoAchat = document.getElementById("photoAchat");
+const listeAchats = document.getElementById("listeAchats");
+const CLE_ACHATS = "crystalBoutikAchatsV1";
 
 const CLE_MODE_APPARENCE = "gestionCommandesModeApparenceV1";
 
@@ -2338,6 +2350,158 @@ listeProduits?.addEventListener("click", function (evenement) {
 
 });
 
+
+/* =========================================================
+   GESTION DES ACHATS PINDUODUO
+========================================================= */
+
+function chargerAchats() {
+    try {
+        const donnees = localStorage.getItem(CLE_ACHATS);
+        const achats = donnees ? JSON.parse(donnees) : [];
+
+        return Array.isArray(achats) ? achats : [];
+    } catch (erreur) {
+        console.error("Erreur de lecture des achats :", erreur);
+        return [];
+    }
+}
+
+function sauvegarderAchats(achats) {
+    localStorage.setItem(CLE_ACHATS, JSON.stringify(achats));
+}
+
+function afficherAchats() {
+    if (!listeAchats) return;
+
+    const achats = chargerAchats();
+
+    if (achats.length === 0) {
+        listeAchats.innerHTML =
+            "<p>Aucun achat enregistré pour le moment.</p>";
+        return;
+    }
+
+    listeAchats.innerHTML = `
+        <h3>📦 Achats enregistrés (${achats.length})</h3>
+
+        ${achats.map(achat => `
+            <article class="card" style="margin-top: 12px;">
+
+                ${achat.photo ? `
+                    <img
+                        src="${achat.photo}"
+                        alt="Photo du produit"
+                        style="max-width: 180px; max-height: 180px;
+                               object-fit: contain;"
+                    >
+                ` : ""}
+
+                <p><strong>Client :</strong>
+                    ${echapperHTML(achat.nomClient)}</p>
+
+                <p><strong>Tracking :</strong>
+                    ${echapperHTML(achat.tracking)}</p>
+
+                <p><strong>Produit :</strong>
+                    ${echapperHTML(achat.nomProduit)}</p>
+
+                <p><strong>Date d'achat :</strong>
+                    ${echapperHTML(achat.dateAchat)}</p>
+
+                <button
+                    type="button"
+                    class="btn"
+                    data-supprimer-achat="${echapperHTML(achat.id)}"
+                >
+                    🗑️ Supprimer cet achat
+                </button>
+
+            </article>
+        `).join("")}
+    `;
+}
+
+formAchat?.addEventListener("submit", async function (evenement) {
+    evenement.preventDefault();
+
+    if (!formAchat.reportValidity()) return;
+
+    const nomClient = nomClientAchat.value.trim();
+    const tracking = trackingAchat.value.trim();
+    const nomProduit = nomProduitAchat.value.trim();
+    const date = dateAchat.value;
+    const fichier = photoAchat.files[0];
+
+    let photo = "";
+
+    try {
+        if (fichier) {
+            if (!fichier.type.startsWith("image/")) {
+                alert("Veuillez sélectionner une image valide.");
+                return;
+            }
+
+            // Limite la taille pour éviter de saturer le stockage.
+            if (fichier.size > 1024 * 1024) {
+                alert(
+                    "La photo dépasse 1 Mo. Choisissez une image plus légère."
+                );
+                return;
+            }
+
+            photo = await convertirImageEnBase64(fichier);
+        }
+
+        const achats = chargerAchats();
+
+        achats.unshift({
+            id: genererId(),
+            nomClient: nomClient,
+            tracking: tracking,
+            nomProduit: nomProduit,
+            dateAchat: date,
+            photo: photo
+        });
+
+        sauvegarderAchats(achats);
+
+        formAchat.reset();
+        afficherAchats();
+
+        alert("Achat enregistré avec succès !");
+    } catch (erreur) {
+        console.error("Erreur d'enregistrement de l'achat :", erreur);
+
+        alert(
+            "Impossible d'enregistrer cet achat. " +
+            "Vérifiez l'espace de stockage disponible."
+        );
+    }
+});
+
+listeAchats?.addEventListener("click", function (evenement) {
+    const bouton = evenement.target.closest("[data-supprimer-achat]");
+
+    if (!bouton) return;
+
+    const id = bouton.dataset.supprimerAchat;
+
+    if (!confirm("Voulez-vous supprimer cet achat ?")) return;
+
+    const achats = chargerAchats().filter(
+        achat => String(achat.id) !== String(id)
+    );
+
+    try {
+        sauvegarderAchats(achats);
+        afficherAchats();
+    } catch (erreur) {
+        console.error("Erreur de suppression :", erreur);
+        alert("Impossible de mettre à jour la liste des achats.");
+    }
+});
+
 /* =========================================================
    SERVICE WORKER
 ========================================================= */
@@ -2363,3 +2527,4 @@ recalculerFormulaire();
 mettreAJourCompteurImpression();
 afficherProduits();
 afficherFichesProduits();
+afficherAchats();
