@@ -1002,3 +1002,54 @@ footer {
         border-bottom: 1px solid #cbd5e1;
     }
 }
+
+
+/* =====================================================
+   THÈME SOMBRE — GESTION COMMANDES
+===================================================== */
+
+body.theme-sombre {
+    color: #f1f5f9;
+    background-color: #111827;
+}
+
+body.theme-sombre .card,
+body.theme-sombre .data-section,
+body.theme-sombre .stat-card {
+    background-color: rgba(31, 41, 55, 0.95);
+    color: #f1f5f9;
+}
+
+body.theme-sombre h1,
+body.theme-sombre h2,
+body.theme-sombre h3,
+body.theme-sombre p,
+body.theme-sombre label {
+    color: #f1f5f9;
+}
+
+body.theme-sombre input,
+body.theme-sombre select,
+body.theme-sombre textarea {
+    background-color: #1f2937;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+body.theme-sombre table {
+    color: #f1f5f9;
+}
+
+body.theme-sombre th {
+    background-color: #374151;
+    color: #ffffff;
+}
+
+body.theme-sombre td {
+    border-color: #4b5563;
+}
+
+body.theme-sombre a {
+    color: #93c5fd;
+}
+
