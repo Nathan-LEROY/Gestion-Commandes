@@ -1053,3 +1053,22 @@ body.theme-sombre a {
     color: #93c5fd;
 }
 
+
+/* =====================================================
+   IDENTITÉ VISUELLE — CRYSTAL BOUTIK
+===================================================== */
+
+h1 {
+    font-family: "Georgia", "Palatino Linotype", serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.slogan-crystal {
+    font-family: "Brush Script MT", "Segoe Script", cursive;
+    font-size: 1.4em;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+
