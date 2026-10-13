@@ -1135,3 +1135,33 @@ h1 {
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* Amélioration de la lisibilité en mode sombre */
+[data-theme="dark"] #sectionAchatsPinduoduo,
+[data-theme="dark"] #sectionAchatsPinduoduo table,
+[data-theme="dark"] #sectionAchatsPinduoduo th,
+[data-theme="dark"] #sectionAchatsPinduoduo td {
+    color: #f5f5f5;
+}
+
+[data-theme="dark"] #sectionAchatsPinduoduo table {
+    background-color: #20242b;
+    border-color: #505762;
+}
+
+[data-theme="dark"] #sectionAchatsPinduoduo th {
+    background-color: #303641;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+[data-theme="dark"] #sectionAchatsPinduoduo td {
+    background-color: #20242b;
+    border-color: #505762;
+}
+
+[data-theme="dark"] #sectionAchatsPinduoduo h3,
+[data-theme="dark"] #sectionAchatsPinduoduo p,
+[data-theme="dark"] #sectionAchatsPinduoduo label {
+    color: #f5f5f5;
+}
