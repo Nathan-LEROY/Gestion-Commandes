@@ -156,6 +156,44 @@ const fondEcranImage = document.getElementById("fondEcranImage");
 const apercuFondEcran = document.getElementById("apercuFondEcran");
 const btnAppliquerFond = document.getElementById("btnAppliquerFond");
 const btnRetablirFond = document.getElementById("btnRetablirFond");
+const modeApparence = document.getElementById("modeApparence");
+const btnAppliquerMode = document.getElementById("btnAppliquerMode");
+
+
+const CLE_MODE_APPARENCE = "gestionCommandesModeApparenceV1";
+
+function appliquerModeApparence(mode) {
+    if (mode === "sombre") {
+        document.body.classList.add("theme-sombre");
+    } else {
+        document.body.classList.remove("theme-sombre");
+    }
+}
+
+if (btnAppliquerMode && modeApparence) {
+    btnAppliquerMode.addEventListener("click", function () {
+        const modeChoisi = modeApparence.value;
+
+        appliquerModeApparence(modeChoisi);
+
+        localStorage.setItem(CLE_MODE_APPARENCE, modeChoisi);
+
+        alert(
+            modeChoisi === "sombre"
+                ? "Mode sombre activé !"
+                : "Mode clair activé !"
+        );
+    });
+}
+
+// Charger le thème enregistré
+const modeEnregistre = localStorage.getItem(CLE_MODE_APPARENCE) || "clair";
+
+if (modeApparence) {
+    modeApparence.value = modeEnregistre;
+}
+
+appliquerModeApparence(modeEnregistre);
 
 
 let imageFondSelectionnee = "";
