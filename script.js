@@ -2431,10 +2431,14 @@ function afficherAchats() {
 
                     ${achat.photo ? `
                         <img
-                            class="photo-achat"
-                            src="${achat.photo}"
-                            alt="${echapperHTML(achat.nomProduit)}"
-                        >
+                            
+<img
+    class="photo-achat"
+    src="${achat.photo}"
+    alt="${echapperHTML(achat.nomProduit)}"
+    style="width: 100%; max-width: 180px; height: 160px; object-fit: contain; display: block; margin: 0 auto 12px;"
+>
+
                     ` : `
                         <div class="photo-achat-absente">
                             📦 Aucune photo
