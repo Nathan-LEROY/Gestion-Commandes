@@ -169,6 +169,45 @@ const trackingAchat = document.getElementById("trackingAchat");
 const nomProduitAchat = document.getElementById("nomProduitAchat");
 const dateAchat = document.getElementById("dateAchat");
 const photoAchat = document.getElementById("photoAchat");
+
+const zoneApercuPhotoAchat = document.getElementById("zoneApercuPhotoAchat");
+const apercuPhotoAchat = document.getElementById("apercuPhotoAchat");
+
+photoAchat?.addEventListener("change", function () {
+    const fichier = photoAchat.files[0];
+
+    if (!fichier) {
+        zoneApercuPhotoAchat.style.display = "none";
+        apercuPhotoAchat.removeAttribute("src");
+        return;
+    }
+
+    if (!fichier.type.startsWith("image/")) {
+        alert("Veuillez sélectionner une image valide.");
+        photoAchat.value = "";
+        zoneApercuPhotoAchat.style.display = "none";
+        apercuPhotoAchat.removeAttribute("src");
+        return;
+    }
+
+    if (fichier.size > 1024 * 1024) {
+        alert("La photo dépasse 1 Mo. Choisissez une image plus légère.");
+        photoAchat.value = "";
+        zoneApercuPhotoAchat.style.display = "none";
+        apercuPhotoAchat.removeAttribute("src");
+        return;
+    }
+
+    const lecteur = new FileReader();
+
+    lecteur.onload = function () {
+        apercuPhotoAchat.src = lecteur.result;
+        zoneApercuPhotoAchat.style.display = "block";
+    };
+
+    lecteur.readAsDataURL(fichier);
+});
+
 const listeAchats = document.getElementById("listeAchats");
 const CLE_ACHATS = "crystalBoutikAchatsV1";
 
@@ -2371,6 +2410,7 @@ function sauvegarderAchats(achats) {
     localStorage.setItem(CLE_ACHATS, JSON.stringify(achats));
 }
 
+
 function afficherAchats() {
     if (!listeAchats) return;
 
@@ -2385,42 +2425,48 @@ function afficherAchats() {
     listeAchats.innerHTML = `
         <h3>📦 Achats enregistrés (${achats.length})</h3>
 
-        ${achats.map(achat => `
-            <article class="card" style="margin-top: 12px;">
+        <div class="grille-achats">
+            ${achats.map(achat => `
+                <article class="carte-achat">
 
-                ${achat.photo ? `
-                    <img
-                        src="${achat.photo}"
-                        alt="Photo du produit"
-                        style="max-width: 180px; max-height: 180px;
-                               object-fit: contain;"
-                    >
-                ` : ""}
+                    ${achat.photo ? `
+                        <img
+                            class="photo-achat"
+                            src="${achat.photo}"
+                            alt="${echapperHTML(achat.nomProduit)}"
+                        >
+                    ` : `
+                        <div class="photo-achat-absente">
+                            📦 Aucune photo
+                        </div>
+                    `}
 
-                <p><strong>Client :</strong>
-                    ${echapperHTML(achat.nomClient)}</p>
+                    <div class="contenu-carte-achat">
+                        <h4>${echapperHTML(achat.nomProduit)}</h4>
 
-                <p><strong>Tracking :</strong>
-                    ${echapperHTML(achat.tracking)}</p>
+                        <p><strong>Client :</strong>
+                            ${echapperHTML(achat.nomClient)}</p>
 
-                <p><strong>Produit :</strong>
-                    ${echapperHTML(achat.nomProduit)}</p>
+                        <p><strong>Tracking :</strong>
+                            ${echapperHTML(achat.tracking)}</p>
 
-                <p><strong>Date d'achat :</strong>
-                    ${echapperHTML(achat.dateAchat)}</p>
+                        <p><strong>Date d'achat :</strong>
+                            ${echapperHTML(achat.dateAchat)}</p>
 
-                <button
-                    type="button"
-                    class="btn"
-                    data-supprimer-achat="${echapperHTML(achat.id)}"
-                >
-                    🗑️ Supprimer cet achat
-                </button>
-
-            </article>
-        `).join("")}
+                        <button
+                            type="button"
+                            class="btn"
+                            data-supprimer-achat="${echapperHTML(achat.id)}"
+                        >
+                            🗑️ Supprimer
+                        </button>
+                    </div>
+                </article>
+            `).join("")}
+        </div>
     `;
 }
+
 
 formAchat?.addEventListener("submit", async function (evenement) {
     evenement.preventDefault();
