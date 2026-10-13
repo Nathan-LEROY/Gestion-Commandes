@@ -39,12 +39,10 @@
     <button type="button" class="menu-item" data-section="ajouter">
         ➕ Ajouter une commande
     </button>
-
     
 <button type="button" class="menu-item" data-section="achatsPinduoduo">
     🛒 Suivi des achats
 </button>
-
     
     <button type="button" class="menu-item" data-section="produits">
         📦 Produits
@@ -972,7 +970,76 @@
 
     </div>
 
-    
+    </section>
+
+        <!-- =================================================
+     SUIVI DES ACHATS
+================================================== -->
+
+<section class="card" id="sectionAchatsPinduoduo" style="display: none;">
+
+    <h2>🛒 Suivi des achats</h2>
+
+    <p>Enregistre les achats et les informations de suivi des colis.</p>
+
+    <form id="formAchat">
+
+        <div class="field">
+            <label for="nomClientAchat">Nom du client</label>
+            <input
+                type="text"
+                id="nomClientAchat"
+                placeholder="Nom du client"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="trackingAchat">Numéro de tracking</label>
+            <input
+                type="text"
+                id="trackingAchat"
+                placeholder="Numéro de suivi du colis"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="nomProduitAchat">Nom du produit</label>
+            <input
+                type="text"
+                id="nomProduitAchat"
+                placeholder="Nom du produit acheté"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="dateAchat">Date d'achat</label>
+            <input
+                type="date"
+                id="dateAchat"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="photoAchat">Photo du produit</label>
+            <input
+                type="file"
+                id="photoAchat"
+                accept="image/*"
+            >
+        </div>
+
+        <button type="submit" class="btn primary">
+            💾 Enregistrer l'achat
+        </button>
+
+    </form>
+
+    <div id="listeAchats"></div>
+
 </section>
 
         <!-- =================================================
