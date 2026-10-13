@@ -1023,14 +1023,25 @@
             >
         </div>
 
-        <div class="field">
-            <label for="photoAchat">Photo du produit</label>
-            <input
-                type="file"
-                id="photoAchat"
-                accept="image/*"
-            >
-        </div>
+        
+<div class="field">
+    <label for="photoAchat">Photo du produit</label>
+    <input
+        type="file"
+        id="photoAchat"
+        accept="image/*"
+    >
+</div>
+
+<div class="field" id="zoneApercuPhotoAchat" style="display: none;">
+    <label>Aperçu de la photo</label>
+    <img
+        id="apercuPhotoAchat"
+        alt="Aperçu du produit acheté"
+        style="max-width: 220px; max-height: 220px; object-fit: contain; border-radius: 8px;"
+    >
+</div>
+
 
         <button type="submit" class="btn primary">
             💾 Enregistrer l'achat
