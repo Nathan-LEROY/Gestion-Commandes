@@ -1181,51 +1181,55 @@ body.theme-sombre #sectionAchatsPinduoduo textarea::placeholder {
    PERSONNALISATION GLOBALE DU TEXTE
 ========================================= */
 
-body {
+:root {
     --couleur-texte-app: #222222;
     --police-texte-app: Arial, sans-serif;
     --taille-texte-app: 16px;
+}
 
+/* Couleur et police générales */
+body {
+    color: var(--couleur-texte-app) !important;
+    font-family: var(--police-texte-app) !important;
+    font-size: var(--taille-texte-app) !important;
+}
+
+/* Appliquer les réglages aux textes et composants */
+body :is(
+    p, label, li, td, th, span, strong, small,
+    div, section, article, h1, h2, h3, h4, h5, h6,
+    button, input, select, textarea, option
+) {
+    font-family: var(--police-texte-app) !important;
+}
+
+/* Taille globale du texte */
+body :is(
+    p, label, li, td, th, span, strong, small,
+    button, input, select, textarea, option
+) {
+    font-size: var(--taille-texte-app) !important;
+}
+
+/* Couleur du texte courant */
+body :is(
+    p, label, li, td, th, span, strong, small,
+    .field, .data-section, .card
+) {
     color: var(--couleur-texte-app);
-    font-family: var(--police-texte-app);
-    font-size: var(--taille-texte-app);
 }
 
-/* Appliquer la police et la taille aux éléments de l'application */
-body,
-body button,
-body input,
-body select,
-body textarea,
-body label,
-body p,
-body li,
-body td,
-body th {
-    font-family: var(--police-texte-app);
-    font-size: var(--taille-texte-app);
+/* Conserver un bon contraste pour les éléments colorés */
+body .header,
+body .header *,
+body .btn,
+body .btn *,
+body button.primary,
+body button.primary * {
+    color: white;
 }
 
-/* Garder la couleur choisie pour le texte courant */
-body p,
-body label,
-body li,
-body td,
-body th,
-body .field,
-body .data-section {
-    color: var(--couleur-texte-app);
-}
-
-/* Garder les titres lisibles */
-body h1,
-body h2,
-body h3,
-body h4 {
-    font-family: var(--police-texte-app);
-}
-
-/* Contraste en mode sombre */
+/* Mode sombre : couleur par défaut si aucun réglage n'est enregistré */
 body.theme-sombre {
     --couleur-texte-app: #f2f2f2;
 }
