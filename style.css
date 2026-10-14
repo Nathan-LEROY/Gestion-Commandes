@@ -1175,3 +1175,57 @@ body.theme-sombre #sectionAchatsPinduoduo textarea::placeholder {
     color: #cbd5e1 !important;
     opacity: 1;
 }
+
+
+/* =========================================
+   PERSONNALISATION GLOBALE DU TEXTE
+========================================= */
+
+body {
+    --couleur-texte-app: #222222;
+    --police-texte-app: Arial, sans-serif;
+    --taille-texte-app: 16px;
+
+    color: var(--couleur-texte-app);
+    font-family: var(--police-texte-app);
+    font-size: var(--taille-texte-app);
+}
+
+/* Appliquer la police et la taille aux éléments de l'application */
+body,
+body button,
+body input,
+body select,
+body textarea,
+body label,
+body p,
+body li,
+body td,
+body th {
+    font-family: var(--police-texte-app);
+    font-size: var(--taille-texte-app);
+}
+
+/* Garder la couleur choisie pour le texte courant */
+body p,
+body label,
+body li,
+body td,
+body th,
+body .field,
+body .data-section {
+    color: var(--couleur-texte-app);
+}
+
+/* Garder les titres lisibles */
+body h1,
+body h2,
+body h3,
+body h4 {
+    font-family: var(--police-texte-app);
+}
+
+/* Contraste en mode sombre */
+body.theme-sombre {
+    --couleur-texte-app: #f2f2f2;
+}
