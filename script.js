@@ -2578,3 +2578,85 @@ mettreAJourCompteurImpression();
 afficherProduits();
 afficherFichesProduits();
 afficherAchats();
+
+
+/* =========================================
+   PERSONNALISATION GLOBALE DU TEXTE
+========================================= */
+
+const CLE_REGLAGES_TEXTE = "gestionCommandesReglagesTexteV1";
+
+function appliquerReglagesTexte(reglages) {
+    const couleur = reglages.couleur || "#222222";
+    const police = reglages.police || "Arial, sans-serif";
+    const taille = reglages.taille || "16px";
+
+    document.documentElement.style.setProperty(
+        "--couleur-texte-app",
+        couleur
+    );
+
+    document.documentElement.style.setProperty(
+        "--police-texte-app",
+        police
+    );
+
+    document.documentElement.style.setProperty(
+        "--taille-texte-app",
+        taille
+    );
+
+    const champCouleur = document.getElementById("couleurTexteApp");
+    const champPolice = document.getElementById("policeTexteApp");
+    const champTaille = document.getElementById("tailleTexteApp");
+
+    if (champCouleur) champCouleur.value = couleur;
+    if (champPolice) champPolice.value = police;
+    if (champTaille) champTaille.value = taille;
+}
+
+function chargerReglagesTexte() {
+    let reglages = {};
+
+    try {
+        reglages = JSON.parse(
+            localStorage.getItem(CLE_REGLAGES_TEXTE) || "{}"
+        );
+    } catch (erreur) {
+        reglages = {};
+    }
+
+    appliquerReglagesTexte(reglages);
+}
+
+const btnAppliquerTexte = document.getElementById("btnAppliquerTexte");
+
+if (btnAppliquerTexte) {
+    btnAppliquerTexte.addEventListener("click", function () {
+        const champCouleur = document.getElementById("couleurTexteApp");
+        const champPolice = document.getElementById("policeTexteApp");
+        const champTaille = document.getElementById("tailleTexteApp");
+
+        if (!champCouleur || !champPolice || !champTaille) {
+            alert("Les réglages du texte sont introuvables dans la page.");
+            return;
+        }
+
+        const reglages = {
+            couleur: champCouleur.value,
+            police: champPolice.value,
+            taille: champTaille.value
+        };
+
+        appliquerReglagesTexte(reglages);
+
+        localStorage.setItem(
+            CLE_REGLAGES_TEXTE,
+            JSON.stringify(reglages)
+        );
+
+        alert("Les réglages du texte ont été appliqués !");
+    });
+}
+
+chargerReglagesTexte();
