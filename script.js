@@ -2410,7 +2410,6 @@ function sauvegarderAchats(achats) {
     localStorage.setItem(CLE_ACHATS, JSON.stringify(achats));
 }
 
-
 function afficherAchats() {
     if (!listeAchats) return;
 
@@ -2422,55 +2421,118 @@ function afficherAchats() {
         return;
     }
 
+    // Regrouper les achats par date
+    const groupes = {};
+
+    achats.forEach(achat => {
+        const date = String(achat.dateAchat || "Date inconnue");
+
+        if (!groupes[date]) {
+            groupes[date] = [];
+        }
+
+        groupes[date].push(achat);
+    });
+
+    // Trier les dates de la plus récente à la plus ancienne
+    const dates = Object.keys(groupes).sort((a, b) => {
+        const dateA = Date.parse(a);
+        const dateB = Date.parse(b);
+
+        if (Number.isNaN(dateA) || Number.isNaN(dateB)) {
+            return b.localeCompare(a);
+        }
+
+        return dateB - dateA;
+    });
+
     listeAchats.innerHTML = `
         <h3>📦 Achats enregistrés (${achats.length})</h3>
 
-        <div class="grille-achats">
-            ${achats.map(achat => `
-                <article class="carte-achat">
+        ${dates.map((date, index) => `
+            <section class="groupe-achats-date"
+                     style="margin-top: 16px;">
 
-                    ${achat.photo ? `
-                        <img
-                            
-<img
-    class="photo-achat"
-    src="${achat.photo}"
-    alt="${echapperHTML(achat.nomProduit)}"
-    style="width: 100%; max-width: 180px; height: 160px; object-fit: contain; display: block; margin: 0 auto 12px;"
->
+                <button
+                    type="button"
+                    class="btn"
+                    data-toggle-date="${echapperHTML(date)}"
+                    aria-expanded="true"
+                    style="width: 100%; text-align: left; margin-bottom: 12px;"
+                >
+                    <span data-fleche-date="${echapperHTML(date)}">▼</span>
+                    📅 ${echapperHTML(date)}
+                    — ${groupes[date].length} achat(s)
+                </button>
 
-                    ` : `
-                        <div class="photo-achat-absente">
-                            📦 Aucune photo
-                        </div>
-                    `}
+                <div data-contenu-date="${echapperHTML(date)}">
+                    <div class="grille-achats">
+                        ${groupes[date].map(achat => `
+                            <article class="carte-achat">
 
-                    <div class="contenu-carte-achat">
-                        <h4>${echapperHTML(achat.nomProduit)}</h4>
+                                ${achat.photo ? `
+                                    <img
+                                        class="photo-achat"
+                                        src="${achat.photo}"
+                                        alt="${echapperHTML(achat.nomProduit)}"
+                                        style="width: 100%; max-width: 180px; height: 160px; object-fit: contain; display: block; margin: 0 auto 12px;"
+                                    >
+                                ` : `
+                                    <div class="photo-achat-absente">
+                                        📦 Aucune photo
+                                    </div>
+                                `}
 
-                        <p><strong>Client :</strong>
-                            ${echapperHTML(achat.nomClient)}</p>
+                                <div class="contenu-carte-achat">
+                                    <h4>${echapperHTML(achat.nomProduit)}</h4>
 
-                        <p><strong>Tracking :</strong>
-                            ${echapperHTML(achat.tracking)}</p>
+                                    <p><strong>Client :</strong>
+                                        ${echapperHTML(achat.nomClient)}</p>
 
-                        <p><strong>Date d'achat :</strong>
-                            ${echapperHTML(achat.dateAchat)}</p>
+                                    <p><strong>Tracking :</strong>
+                                        ${echapperHTML(achat.tracking)}</p>
 
-                        <button
-                            type="button"
-                            class="btn"
-                            data-supprimer-achat="${echapperHTML(achat.id)}"
-                        >
-                            🗑️ Supprimer
-                        </button>
+                                    <p><strong>Date d'achat :</strong>
+                                        ${echapperHTML(achat.dateAchat)}</p>
+
+                                    <button
+                                        type="button"
+                                        class="btn"
+                                        data-supprimer-achat="${echapperHTML(achat.id)}"
+                                    >
+                                        🗑️ Supprimer
+                                    </button>
+                                </div>
+                            </article>
+                        `).join("")}
                     </div>
-                </article>
-            `).join("")}
-        </div>
+                </div>
+            </section>
+        `).join("")}
     `;
-}
 
+    // Masquer ou afficher les achats d'une date au clic
+    listeAchats.querySelectorAll("[data-toggle-date]").forEach(bouton => {
+        bouton.addEventListener("click", () => {
+            const date = bouton.getAttribute("data-toggle-date");
+            const contenu = listeAchats.querySelector(
+                `[data-contenu-date="${CSS.escape(date)}"]`
+            );
+            const fleche = bouton.querySelector("[data-fleche-date]");
+
+            if (!contenu) return;
+
+            const estVisible = contenu.style.display !== "none";
+
+            contenu.style.display = estVisible ? "none" : "block";
+            bouton.setAttribute("aria-expanded", String(!estVisible));
+
+            if (fleche) {
+                fleche.textContent = estVisible ? "▶" : "▼";
+            }
+        });
+    });
+}
 
 formAchat?.addEventListener("submit", async function (evenement) {
     evenement.preventDefault();
