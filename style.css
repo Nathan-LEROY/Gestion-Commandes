@@ -1136,36 +1136,63 @@ h1 {
     }
 }
 
-/* Amélioration de la lisibilité des achats en mode sombre */
-body.theme-sombre #sectionAchatsPinduoduo,
-body.theme-sombre #sectionAchatsPinduoduo h3,
-body.theme-sombre #sectionAchatsPinduoduo p,
-body.theme-sombre #sectionAchatsPinduoduo label,
-body.theme-sombre #sectionAchatsPinduoduo strong,
-body.theme-sombre #sectionAchatsPinduoduo td {
-    color: #f5f5f5 !important;
+```css
+/* =====================================================
+   ACHATS ENREGISTRÉS — MODE SOMBRE
+===================================================== */
+
+body.theme-sombre #sectionAchatsPinduoduo .carte-achat {
+    background: #1f2937 !important;
+    color: #f9fafb !important;
+    border: 1px solid #4b5563 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+}
+
+body.theme-sombre #sectionAchatsPinduoduo .contenu-carte-achat {
+    background: #1f2937 !important;
+    color: #f9fafb !important;
+}
+
+body.theme-sombre #sectionAchatsPinduoduo .contenu-carte-achat h4,
+body.theme-sombre #sectionAchatsPinduoduo .contenu-carte-achat p,
+body.theme-sombre #sectionAchatsPinduoduo .contenu-carte-achat span,
+body.theme-sombre #sectionAchatsPinduoduo .contenu-carte-achat strong,
+body.theme-sombre #sectionAchatsPinduoduo .contenu-carte-achat small {
+    color: #f9fafb !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+
+body.theme-sombre #sectionAchatsPinduoduo .photo-achat,
+body.theme-sombre #sectionAchatsPinduoduo .photo-achat-absente {
+    background: #111827 !important;
+    border-color: #4b5563 !important;
 }
 
 body.theme-sombre #sectionAchatsPinduoduo table {
-    background-color: #20242b !important;
+    background: #20242b !important;
     color: #f5f5f5 !important;
 }
 
 body.theme-sombre #sectionAchatsPinduoduo th {
-    background-color: #303641 !important;
+    background: #303641 !important;
     color: #ffffff !important;
-    font-weight: 700;
 }
 
 body.theme-sombre #sectionAchatsPinduoduo td {
-    background-color: #20242b !important;
+    background: #20242b !important;
+    color: #f5f5f5 !important;
     border-color: #505762 !important;
 }
 
 body.theme-sombre #sectionAchatsPinduoduo input,
 body.theme-sombre #sectionAchatsPinduoduo select,
 body.theme-sombre #sectionAchatsPinduoduo textarea {
-    background-color: #303641 !important;
+    background: #303641 !important;
     color: #ffffff !important;
     border-color: #606875 !important;
 }
@@ -1173,9 +1200,9 @@ body.theme-sombre #sectionAchatsPinduoduo textarea {
 body.theme-sombre #sectionAchatsPinduoduo input::placeholder,
 body.theme-sombre #sectionAchatsPinduoduo textarea::placeholder {
     color: #cbd5e1 !important;
-    opacity: 1;
+    opacity: 1 !important;
 }
-
+```
 
 /* =========================================
    PERSONNALISATION GLOBALE DU TEXTE
