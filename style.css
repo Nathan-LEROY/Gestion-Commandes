@@ -1233,3 +1233,28 @@ body button.primary * {
 body.theme-sombre {
     --couleur-texte-app: #f2f2f2;
 }
+
+/* =========================================
+   CORRECTION DE LISIBILITÉ — ACHATS ENREGISTRÉS
+========================================= */
+
+body.theme-sombre .achats-enregistres,
+body.theme-sombre .achats-enregistres * {
+    text-shadow: none !important;
+    filter: none;
+}
+
+body.theme-sombre .achats-enregistres {
+    color: #f2f2f2 !important;
+}
+
+body.theme-sombre .achats-enregistres p,
+body.theme-sombre .achats-enregistres span,
+body.theme-sombre .achats-enregistres label,
+body.theme-sombre .achats-enregistres td,
+body.theme-sombre .achats-enregistres th,
+body.theme-sombre .achats-enregistres strong,
+body.theme-sombre .achats-enregistres small {
+    color: #f2f2f2 !important;
+    opacity: 1 !important;
+}
