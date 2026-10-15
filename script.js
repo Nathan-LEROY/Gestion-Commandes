@@ -2415,17 +2415,17 @@ async function synchroniserAchatsAvecSupabase() {
     const client = window.clientSupabase;
 
     if (!client) {
-        console.warn("Supabase n'est pas encore prêt.");
-        return;
-    }
+    console.warn("Supabase n'est pas encore prêt.");
+    return false;
+}
 
     const { data: sessionData, error: sessionError } =
         await client.auth.getSession();
 
     if (sessionError || !sessionData.session) {
-        console.warn("Aucune session active pour synchroniser les achats.");
-        return;
-    }
+    console.warn("Aucune session active pour synchroniser les achats.");
+    return false;
+}
 
     const userId = sessionData.session.user.id;
     const achatsLocaux = chargerAchats();
@@ -2438,7 +2438,7 @@ async function synchroniserAchatsAvecSupabase() {
 
     if (lectureErreur) {
         console.error("Erreur de lecture Supabase :", lectureErreur.message);
-        return;
+return false;
     }
 
     const idsDistants = new Set(
@@ -2467,7 +2467,7 @@ async function synchroniserAchatsAvecSupabase() {
 
         if (error) {
             console.error("Erreur d'enregistrement Supabase :", error.message);
-            return;
+return false;
         }
 
         nouveauxAchats = data || [];
@@ -2496,6 +2496,7 @@ async function synchroniserAchatsAvecSupabase() {
     afficherAchats();
 
     console.log("Synchronisation des achats terminée.");
+   return true;
 }
 
 
@@ -2670,12 +2671,24 @@ formAchat?.addEventListener("submit", async function (evenement) {
 
         // Synchroniser avec Supabase sans perdre
         // la sauvegarde locale si Internet est indisponible.
-        await synchroniserAchatsAvecSupabase();
+        let synchronisationOK = false;
+
+try {
+    synchronisationOK = await synchroniserAchatsAvecSupabase();
+} catch (erreur) {
+    console.error("Erreur de synchronisation :", erreur);
+}
 
         formAchat.reset();
         afficherAchats();
 
-        alert("Achat enregistré sur cet appareil. Vérifie la console pour confirmer la synchronisation.");
+       
+alert(
+    synchronisationOK
+        ? "Achat enregistré et synchronisé avec Supabase !"
+        : "Achat enregistré sur cet appareil, mais la synchronisation a échoué. Réessaie après avoir vérifié ta connexion."
+);
+
 
     } catch (erreur) {
         console.error("Erreur d'enregistrement de l'achat :", erreur);
