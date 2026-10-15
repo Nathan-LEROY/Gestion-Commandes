@@ -1,8 +1,7 @@
 
 const SUPABASE_URL = "https://nypnmshgyzptlmuvfsud.supabase.co";
 
-// sb_publishable_xDV9CG2ZEDCi-AhP7_Z9TQ_PfJX356z
-const SUPABASE_PUBLISHABLE_KEY = "COLLER_TA_CLE_PUBLIQUE_ICI";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_xDV9CG2ZEDCi-AhP7_Z9TQ_PfJX356z";
 
 let clientSupabase = null;
 
