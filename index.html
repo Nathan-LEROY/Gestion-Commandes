@@ -13,6 +13,49 @@
 
 <body>
 
+    
+<!-- ZONE DE CONNEXION SUPABASE -->
+<section id="zoneConnexion" class="card" hidden
+         style="max-width: 420px; margin: 60px auto; padding: 24px;">
+
+    <h2>🔐 Connexion — Crystal Boutik</h2>
+
+    <p>Connecte-toi pour accéder à tes commandes.</p>
+
+    <form id="formConnexion">
+        <div class="field">
+            <label for="emailConnexion">Adresse e-mail</label>
+            <input
+                type="email"
+                id="emailConnexion"
+                autocomplete="username"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="motDePasseConnexion">Mot de passe</label>
+            <input
+                type="password"
+                id="motDePasseConnexion"
+                autocomplete="current-password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn primary">
+            🔓 Se connecter
+        </button>
+
+        <p id="messageConnexion" role="status"></p>
+    </form>
+
+    <button type="button" id="btnDeconnexion" class="btn secondary" hidden>
+        Se déconnecter
+    </button>
+</section>
+
+    
     <!-- BOUTON MENU -->
 <button
     type="button"
@@ -1232,10 +1275,14 @@
 
     </div>
 
+    <!-- Bibliothèque Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- JAVASCRIPT -->
+<!-- Connexion utilisateur -->
+<script src="supabase-auth.js"></script>
 
-    <script src="script.js"></script>
+<!-- JavaScript de l'application -->
+<script src="script.js"></script>
 
 </body>
 
