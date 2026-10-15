@@ -49,6 +49,8 @@ async function initialiserConnexionSupabase() {
         SUPABASE_PUBLISHABLE_KEY
     );
 
+    window.clientSupabase = clientSupabase;
+    
     async function actualiserAffichage(session) {
         if (session) {
             zoneConnexion.hidden = true;
