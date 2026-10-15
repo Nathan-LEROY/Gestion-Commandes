@@ -2665,12 +2665,18 @@ formAchat?.addEventListener("submit", async function (evenement) {
             photo: photo
         });
 
+        
         sauvegarderAchats(achats);
+
+        // Synchroniser avec Supabase sans perdre
+        // la sauvegarde locale si Internet est indisponible.
+        await synchroniserAchatsAvecSupabase();
 
         formAchat.reset();
         afficherAchats();
 
-        alert("Achat enregistré avec succès !");
+        alert("Achat enregistré sur cet appareil. Vérifie la console pour confirmer la synchronisation.");
+
     } catch (erreur) {
         console.error("Erreur d'enregistrement de l'achat :", erreur);
 
@@ -2681,7 +2687,7 @@ formAchat?.addEventListener("submit", async function (evenement) {
     }
 });
 
-listeAchats?.addEventListener("click", function (evenement) {
+listeAchats?.addEventListener("click", async function (evenement) {
     const bouton = evenement.target.closest("[data-supprimer-achat]");
 
     if (!bouton) return;
@@ -2690,16 +2696,47 @@ listeAchats?.addEventListener("click", function (evenement) {
 
     if (!confirm("Voulez-vous supprimer cet achat ?")) return;
 
-    const achats = chargerAchats().filter(
-        achat => String(achat.id) !== String(id)
-    );
+    const client = window.clientSupabase;
 
     try {
+        // Supprimer d'abord dans Supabase si une session est active.
+        if (client) {
+            const { data: sessionData, error: sessionError } =
+                await client.auth.getSession();
+
+            if (sessionError) {
+                throw sessionError;
+            }
+
+            if (sessionData.session) {
+                const { error: suppressionErreur } = await client
+                    .from("achats_pinduoduo")
+                    .delete()
+                    .eq("id", String(id))
+                    .eq("user_id", sessionData.session.user.id);
+
+                if (suppressionErreur) {
+                    throw suppressionErreur;
+                }
+            }
+        }
+
+        // Mettre ensuite à jour la sauvegarde locale.
+        const achats = chargerAchats().filter(
+            achat => String(achat.id) !== String(id)
+        );
+
         sauvegarderAchats(achats);
         afficherAchats();
+
+        alert("Achat supprimé.");
     } catch (erreur) {
         console.error("Erreur de suppression :", erreur);
-        alert("Impossible de mettre à jour la liste des achats.");
+
+        alert(
+            "La suppression n'a pas pu être confirmée sur Supabase. " +
+            "L'achat est conservé sur cet appareil. Réessaie avec Internet."
+        );
     }
 });
 
