@@ -59,6 +59,11 @@ async function initialiserConnexionSupabase() {
             if (boutonDeconnexion) {
                 boutonDeconnexion.hidden = false;
             }
+
+             if (typeof window.synchroniserAchatsAvecSupabase === "function") {
+                await window.synchroniserAchatsAvecSupabase();
+            }
+            
         } else {
             application.hidden = true;
             zoneConnexion.hidden = false;
