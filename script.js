@@ -2410,6 +2410,95 @@ function sauvegarderAchats(achats) {
     localStorage.setItem(CLE_ACHATS, JSON.stringify(achats));
 }
 
+
+async function synchroniserAchatsAvecSupabase() {
+    const client = window.clientSupabase;
+
+    if (!client) {
+        console.warn("Supabase n'est pas encore prêt.");
+        return;
+    }
+
+    const { data: sessionData, error: sessionError } =
+        await client.auth.getSession();
+
+    if (sessionError || !sessionData.session) {
+        console.warn("Aucune session active pour synchroniser les achats.");
+        return;
+    }
+
+    const userId = sessionData.session.user.id;
+    const achatsLocaux = chargerAchats();
+
+    const { data: achatsDistants, error: lectureErreur } =
+        await client
+            .from("achats_pinduoduo")
+            .select("id, user_id, nom_client, tracking, nom_produit, date_achat, photo")
+            .eq("user_id", userId);
+
+    if (lectureErreur) {
+        console.error("Erreur de lecture Supabase :", lectureErreur.message);
+        return;
+    }
+
+    const idsDistants = new Set(
+        (achatsDistants || []).map(achat => String(achat.id))
+    );
+
+    const achatsANvoyer = achatsLocaux
+        .filter(achat => !idsDistants.has(String(achat.id)))
+        .map(achat => ({
+            id: String(achat.id),
+            user_id: userId,
+            nom_client: achat.nomClient,
+            tracking: achat.tracking,
+            nom_produit: achat.nomProduit,
+            date_achat: achat.dateAchat,
+            photo: achat.photo
+        }));
+
+    let nouveauxAchats = [];
+
+    if (achatsANvoyer.length > 0) {
+        const { data, error } = await client
+            .from("achats_pinduoduo")
+            .insert(achatsANvoyer)
+            .select("id, user_id, nom_client, tracking, nom_produit, date_achat, photo");
+
+        if (error) {
+            console.error("Erreur d'enregistrement Supabase :", error.message);
+            return;
+        }
+
+        nouveauxAchats = data || [];
+    }
+
+    const tousLesAchats = new Map();
+
+    [...(achatsDistants || []), ...nouveauxAchats].forEach(achat => {
+        tousLesAchats.set(String(achat.id), {
+            id: String(achat.id),
+            nomClient: achat.nom_client,
+            tracking: achat.tracking,
+            nomProduit: achat.nom_produit,
+            dateAchat: achat.date_achat,
+            photo: achat.photo
+        });
+    });
+
+    achatsLocaux.forEach(achat => {
+        tousLesAchats.set(String(achat.id), achat);
+    });
+
+    const achatsFusionnes = Array.from(tousLesAchats.values());
+
+    sauvegarderAchats(achatsFusionnes);
+    afficherAchats();
+
+    console.log("Synchronisation des achats terminée.");
+}
+
+
 function afficherAchats() {
     if (!listeAchats) return;
 
