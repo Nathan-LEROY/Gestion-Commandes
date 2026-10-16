@@ -2411,7 +2411,7 @@ function sauvegarderAchats(achats) {
 }
 
 
-async function synchroniserAchatsAvecSupabase() {
+window.synchroniserAchatsAvecSupabase = async function () {
     const client = window.clientSupabase;
 
     if (!client) {
