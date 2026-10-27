@@ -1285,3 +1285,83 @@ body.theme-sombre .achats-enregistres small {
     color: #f2f2f2 !important;
     opacity: 1 !important;
 }
+
+
+/* =====================================================
+   DÉPENSES DE PUBLICATION
+===================================================== */
+
+#sectionDepensesPublications {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#sectionDepensesPublications .card {
+    margin-bottom: 18px;
+}
+
+#sectionDepensesPublications hr {
+    border: 0;
+    border-top: 1px solid var(--border-color, #dddddd);
+    margin: 22px 0;
+}
+
+#sectionDepensesPublications details.card {
+    padding: 16px;
+    border-radius: 10px;
+}
+
+#sectionDepensesPublications details > summary {
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+#sectionDepensesPublications details > summary:hover {
+    opacity: 0.8;
+}
+
+#sectionDepensesPublications details[open] > summary {
+    margin-bottom: 16px;
+}
+
+#sectionDepensesPublications #totalDepensesPublication,
+#sectionDepensesPublications #gainNetPublication {
+    display: block;
+    font-size: 1.15rem;
+    margin-top: 6px;
+    overflow-wrap: anywhere;
+}
+
+#sectionDepensesPublications #listeLignesDepensesPublication .card {
+    padding: 12px;
+    margin-top: 12px;
+}
+
+#sectionDepensesPublications .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+#sectionDepensesPublications button {
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    #sectionDepensesPublications .form-actions {
+        flex-direction: column;
+    }
+
+    #sectionDepensesPublications .form-actions .btn,
+    #sectionDepensesPublications #btnAjouterLigneDepense {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #sectionDepensesPublications details.card {
+        padding: 12px;
+    }
+}
