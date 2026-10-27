@@ -308,23 +308,6 @@ function appliquerFondEcran(image) {
     document.body.style.backgroundRepeat = "no-repeat";
 }
 
-if (btnAppliquerFond) {
-    btnAppliquerFond.addEventListener("click", function () {
-        if (!imageFondSelectionnee) {
-            alert("Veuillez d'abord choisir une photo.");
-            return;
-        }
-
-        try {
-            localStorage.setItem(CLE_FOND_ECRAN, imageFondSelectionnee);
-            appliquerFondEcran(imageFondSelectionnee);
-            alert("Fond d'écran appliqué et enregistré !");
-        } catch (erreur) {
-            alert("Cette photo est trop volumineuse. Choisissez une image plus petite.");
-        }
-    });
-}
-
 // Restaurer automatiquement le fond enregistré au démarrage
 try {
     const fondEnregistre = localStorage.getItem(CLE_FOND_ECRAN);
@@ -3249,3 +3232,63 @@ if (btnAppliquerTexte) {
 }
 
 chargerReglagesTexte();
+
+
+/* =========================================
+   BOUTON UNIQUE : APPLIQUER TOUS LES PARAMÈTRES
+========================================= */
+
+const btnAppliquerTout = document.getElementById("btnAppliquerTout");
+
+if (btnAppliquerTout) {
+    btnAppliquerTout.addEventListener("click", function () {
+        const modeChoisi = modeApparence
+            ? modeApparence.value
+            : "clair";
+
+        const reglagesTexte = {
+            couleur: document.getElementById("couleurTexteApp")?.value || "#222222",
+            police: document.getElementById("policeTexteApp")?.value || "Arial, sans-serif",
+            taille: document.getElementById("tailleTexteApp")?.value || "16px"
+        };
+
+        try {
+            // Enregistrer d'abord la nouvelle photo, si une photo a été choisie
+            if (imageFondSelectionnee) {
+                localStorage.setItem(
+                    CLE_FOND_ECRAN,
+                    imageFondSelectionnee
+                );
+            }
+
+            // Enregistrer le thème et les réglages du texte
+            localStorage.setItem(CLE_MODE_APPARENCE, modeChoisi);
+            localStorage.setItem(
+                CLE_REGLAGES_TEXTE,
+                JSON.stringify(reglagesTexte)
+            );
+
+            // Appliquer le thème et le texte
+            appliquerModeApparence(modeChoisi);
+            appliquerReglagesTexte(reglagesTexte);
+
+            // Appliquer la photo choisie ou conserver le fond enregistré
+            const fondAUtiliser =
+                imageFondSelectionnee ||
+                localStorage.getItem(CLE_FOND_ECRAN);
+
+            if (fondAUtiliser) {
+                appliquerFondEcran(fondAUtiliser);
+            }
+
+            alert("Tous les paramètres ont été appliqués et enregistrés !");
+        } catch (erreur) {
+            console.error("Erreur lors de l'enregistrement des paramètres :", erreur);
+            alert(
+                "Impossible d'enregistrer tous les paramètres. " +
+                "La photo est peut-être trop volumineuse."
+            );
+        }
+    });
+}
+
