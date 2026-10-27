@@ -930,8 +930,8 @@
     </p>
 
     </section>
-
         
+
 <!-- =================================================
      PARAMÈTRES — APPARENCE
 ================================================== -->
@@ -945,115 +945,76 @@
     </p>
 
     <div class="data-section">
-
         <h3>🖼️ Fond d'écran personnalisé</h3>
 
         <p>
-            Choisis une photo depuis ton ordinateur ou ton téléphone
-            pour personnaliser le fond de toute l'application.
+            Choisis une photo depuis ton ordinateur ou ton téléphone.
         </p>
 
         <div class="field">
-            <label for="fondEcranImage">
-                📷 Choisir une photo
-            </label>
-
-            <input
-                id="fondEcranImage"
-                type="file"
-                accept="image/*"
-            >
+            <label for="fondEcranImage">📷 Choisir une photo</label>
+            <input id="fondEcranImage" type="file" accept="image/*">
         </div>
 
         <div id="apercuFondEcran" class="apercu-fond-ecran">
             <p>Aucun fond personnalisé sélectionné.</p>
         </div>
 
-        <div class="form-actions">
-
-            <button
-                type="button"
-                class="btn primary"
-                id="btnAppliquerFond"
-            >
-                🎨 Appliquer ce fond
-            </button>
-
-            <button
-                type="button"
-                class="btn secondary"
-                id="btnRetablirFond"
-            >
-                ↩️ Rétablir le fond d'origine
-            </button>
-
-        </div>
-
+        <button type="button" class="btn secondary" id="btnRetablirFond">
+            ↩️ Rétablir le fond d'origine
+        </button>
     </div>
 
-    
     <div class="data-section">
-
         <h3>☀️ / 🌙 Apparence de l'application</h3>
 
         <div class="field">
-            <label for="modeApparence">
-                Choisir le thème
-            </label>
-
+            <label for="modeApparence">Choisir le thème</label>
             <select id="modeApparence">
                 <option value="clair">☀️ Mode clair</option>
                 <option value="sombre">🌙 Mode sombre</option>
             </select>
         </div>
+    </div>
 
-        <button
-            type="button"
-            class="btn primary"
-            id="btnAppliquerMode"
-        >
-            Appliquer le thème
+    <div class="data-section">
+        <h3>🎨 Personnalisation du texte</h3>
+
+        <div class="field">
+            <label for="couleurTexteApp">Couleur du texte</label>
+            <input type="color" id="couleurTexteApp" value="#222222">
+        </div>
+
+        <div class="field">
+            <label for="policeTexteApp">Style de police</label>
+            <select id="policeTexteApp">
+                <option value="Arial, sans-serif">Arial — simple</option>
+                <option value="Verdana, sans-serif">Verdana — très lisible</option>
+                <option value="Tahoma, sans-serif">Tahoma — moderne</option>
+                <option value="Georgia, serif">Georgia — classique</option>
+                <option value="Trebuchet MS, sans-serif">Trebuchet MS — moderne</option>
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="tailleTexteApp">Taille du texte</label>
+            <select id="tailleTexteApp">
+                <option value="14px">Petite</option>
+                <option value="16px" selected>Normale</option>
+                <option value="18px">Grande</option>
+                <option value="20px">Très grande</option>
+                <option value="22px">Extra grande</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="button" class="btn primary" id="btnAppliquerTout">
+            💾 APPLIQUER TOUT
         </button>
-
     </div>
 
-    
-<div class="data-section">
-    <h3>🎨 Personnalisation du texte</h3>
-
-    <div class="field">
-        <label for="couleurTexteApp">Couleur du texte</label>
-        <input type="color" id="couleurTexteApp" value="#222222">
-    </div>
-
-    <div class="field">
-        <label for="policeTexteApp">Style de police</label>
-        <select id="policeTexteApp">
-            <option value="Arial, sans-serif">Arial — simple</option>
-            <option value="Verdana, sans-serif">Verdana — très lisible</option>
-            <option value="Tahoma, sans-serif">Tahoma — moderne</option>
-            <option value="Georgia, serif">Georgia — classique</option>
-            <option value="Trebuchet MS, sans-serif">Trebuchet MS — moderne</option>
-        </select>
-    </div>
-
-    <div class="field">
-        <label for="tailleTexteApp">Taille du texte</label>
-        <select id="tailleTexteApp">
-            <option value="14px">Petite</option>
-            <option value="16px" selected>Normale</option>
-            <option value="18px">Grande</option>
-            <option value="20px">Très grande</option>
-            <option value="22px">Extra grande</option>
-        </select>
-    </div>
-
-    <button type="button" class="btn primary" id="btnAppliquerTexte">
-        💾 Appliquer les réglages du texte
-    </button>
-</div>
-
-    </section>
+</section>
 
         <!-- =================================================
      SUIVI DES ACHATS
