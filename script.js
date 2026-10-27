@@ -2788,6 +2788,362 @@ afficherFichesProduits();
 afficherAchats();
 
 
+/* =========================================================
+   DÉPENSES DE PUBLICATION
+========================================================= */
+
+const CLE_DEPENSES_PUBLICATIONS = "crystalBoutikDepensesPublicationsV1";
+
+let lignesDepensesPublication = [];
+
+function chargerPublicationsDepenses() {
+    try {
+        return JSON.parse(
+            localStorage.getItem(CLE_DEPENSES_PUBLICATIONS) || "[]"
+        );
+    } catch (erreur) {
+        console.error("Erreur de lecture des publications :", erreur);
+        return [];
+    }
+}
+
+function sauvegarderPublicationsDepenses(publications) {
+    localStorage.setItem(
+        CLE_DEPENSES_PUBLICATIONS,
+        JSON.stringify(publications)
+    );
+}
+
+function formaterArPublication(montant) {
+    return Math.round(Number(montant) || 0).toLocaleString("fr-FR") + " Ar";
+}
+
+function calculerTotalDepensesPublication(lignes, taux) {
+    return lignes.reduce((total, ligne) => {
+        const montant = Number(ligne.montant) || 0;
+
+        return total + (
+            ligne.devise === "USD" ? montant * taux : montant
+        );
+    }, 0);
+}
+
+function actualiserTotauxPublication() {
+    const taux = Number(
+        document.getElementById("tauxUsdArDepense").value
+    ) || 0;
+
+    const recettes = Number(
+        document.getElementById("recettesPublicationAr").value
+    ) || 0;
+
+    const total = calculerTotalDepensesPublication(
+        lignesDepensesPublication,
+        taux
+    );
+
+    document.getElementById("totalDepensesPublication").textContent =
+        formaterArPublication(total);
+
+    document.getElementById("gainNetPublication").textContent =
+        formaterArPublication(recettes - total);
+}
+
+function afficherLignesDepensesPublication() {
+    const liste = document.getElementById(
+        "listeLignesDepensesPublication"
+    );
+
+    if (!liste) return;
+
+    if (lignesDepensesPublication.length === 0) {
+        liste.innerHTML = "<p>Aucune dépense ajoutée.</p>";
+        actualiserTotauxPublication();
+        return;
+    }
+
+    liste.innerHTML = lignesDepensesPublication.map((ligne, index) => `
+        <div class="card">
+            <strong>${echapperHTML(ligne.libelle)}</strong>
+            <p>
+                Montant : ${Number(ligne.montant).toLocaleString("fr-FR")}
+                ${echapperHTML(ligne.devise)}
+            </p>
+            <button type="button" class="btn"
+                data-retirer-ligne-depense="${index}">
+                Supprimer
+            </button>
+        </div>
+    `).join("");
+
+    actualiserTotauxPublication();
+}
+
+function afficherPublicationsDepenses() {
+    const liste = document.getElementById("listePublicationsDepenses");
+
+    if (!liste) return;
+
+    const publications = chargerPublicationsDepenses();
+
+    if (publications.length === 0) {
+        liste.innerHTML = "<p>Aucune publication enregistrée.</p>";
+        return;
+    }
+
+    liste.innerHTML = publications.map(publication => {
+        const total = calculerTotalDepensesPublication(
+            publication.depenses || [],
+            Number(publication.taux) || 0
+        );
+
+        const recettes = Number(publication.recettes) || 0;
+
+        return `
+            <details class="card">
+                <summary>
+                    <strong>${echapperHTML(publication.nom)}</strong>
+                    — ${echapperHTML(publication.date)}
+                </summary>
+
+                <p>Recettes : ${formaterArPublication(recettes)}</p>
+                <p>Dépenses : ${formaterArPublication(total)}</p>
+                <p>Gain net : ${formaterArPublication(recettes - total)}</p>
+
+                <ul>
+                    ${(publication.depenses || []).map(ligne => `
+                        <li>
+                            ${echapperHTML(ligne.libelle)} :
+                            ${Number(ligne.montant).toLocaleString("fr-FR")}
+                            ${echapperHTML(ligne.devise)}
+                        </li>
+                    `).join("")}
+                </ul>
+
+                <button type="button" class="btn"
+                    data-modifier-publication="${echapperHTML(publication.id)}">
+                    Modifier
+                </button>
+
+                <button type="button" class="btn"
+                    data-supprimer-publication="${echapperHTML(publication.id)}">
+                    Supprimer
+                </button>
+            </details>
+        `;
+    }).join("");
+}
+
+const formulairePublicationDepense = document.getElementById(
+    "formPublicationDepense"
+);
+
+const categorieDepensePublication = document.getElementById(
+    "categorieDepensePublication"
+);
+
+const champLibelleDepensePublication = document.getElementById(
+    "champLibelleDepensePublication"
+);
+
+categorieDepensePublication?.addEventListener("change", () => {
+    const autre = categorieDepensePublication.value === "Autre";
+
+    champLibelleDepensePublication.style.display = autre ? "" : "none";
+
+    document.getElementById("libelleDepensePublication").required = autre;
+});
+
+document.getElementById("btnAjouterLigneDepense")?.addEventListener(
+    "click",
+    () => {
+        const categorie = categorieDepensePublication.value;
+        const libelleAutre = document.getElementById(
+            "libelleDepensePublication"
+        ).value.trim();
+
+        const montant = Number(
+            document.getElementById("montantDepensePublication").value
+        );
+
+        const devise = document.getElementById(
+            "deviseDepensePublication"
+        ).value;
+
+        if (!Number.isFinite(montant) || montant <= 0) {
+            alert("Saisissez un montant supérieur à zéro.");
+            return;
+        }
+
+        if (categorie === "Autre" && !libelleAutre) {
+            alert("Saisissez le nom de cette dépense.");
+            return;
+        }
+
+        lignesDepensesPublication.push({
+            libelle: categorie === "Autre" ? libelleAutre : categorie,
+            montant,
+            devise
+        });
+
+        document.getElementById("montantDepensePublication").value = "";
+        document.getElementById("libelleDepensePublication").value = "";
+
+        afficherLignesDepensesPublication();
+    }
+);
+
+document.getElementById("listeLignesDepensesPublication")?.addEventListener(
+    "click",
+    evenement => {
+        const bouton = evenement.target.closest(
+            "[data-retirer-ligne-depense]"
+        );
+
+        if (!bouton) return;
+
+        lignesDepensesPublication.splice(
+            Number(bouton.dataset.retirerLigneDepense),
+            1
+        );
+
+        afficherLignesDepensesPublication();
+    }
+);
+
+[
+    "tauxUsdArDepense",
+    "recettesPublicationAr"
+].forEach(id => {
+    document.getElementById(id)?.addEventListener(
+        "input",
+        actualiserTotauxPublication
+    );
+});
+
+formulairePublicationDepense?.addEventListener("submit", evenement => {
+    evenement.preventDefault();
+
+    const nom = document.getElementById("nomPublicationDepense").value.trim();
+    const date = document.getElementById("datePublicationDepense").value;
+    const taux = Number(document.getElementById("tauxUsdArDepense").value);
+    const recettes = Number(
+        document.getElementById("recettesPublicationAr").value
+    );
+
+    if (!nom || !date || !Number.isFinite(taux) || taux <= 0) {
+        alert("Vérifiez le nom, la date et le taux de conversion.");
+        return;
+    }
+
+    const publications = chargerPublicationsDepenses();
+    const idExistant = document.getElementById("publicationDepenseId").value;
+
+    const publication = {
+        id: idExistant || genererId(),
+        nom,
+        date,
+        taux,
+        recettes,
+        depenses: lignesDepensesPublication
+    };
+
+    const index = publications.findIndex(
+        item => String(item.id) === String(publication.id)
+    );
+
+    if (index >= 0) {
+        publications[index] = publication;
+    } else {
+        publications.unshift(publication);
+    }
+
+    try {
+        sauvegarderPublicationsDepenses(publications);
+        formulairePublicationDepense.reset();
+        document.getElementById("publicationDepenseId").value = "";
+        document.getElementById("btnEnregistrerPublicationDepense").textContent =
+            "💾 Enregistrer la publication";
+        document.getElementById("btnAnnulerModificationPublication").style.display =
+            "none";
+
+        lignesDepensesPublication = [];
+        afficherLignesDepensesPublication();
+        afficherPublicationsDepenses();
+
+        alert("Publication enregistrée sur cet appareil.");
+    } catch (erreur) {
+        console.error("Erreur d'enregistrement :", erreur);
+        alert("Impossible d'enregistrer. L'espace de stockage est peut-être plein.");
+    }
+});
+
+document.getElementById("btnAnnulerModificationPublication")?.addEventListener(
+    "click",
+    () => {
+        formulairePublicationDepense.reset();
+        document.getElementById("publicationDepenseId").value = "";
+        lignesDepensesPublication = [];
+        document.getElementById("btnEnregistrerPublicationDepense").textContent =
+            "💾 Enregistrer la publication";
+        document.getElementById("btnAnnulerModificationPublication").style.display =
+            "none";
+        afficherLignesDepensesPublication();
+    }
+);
+
+document.getElementById("listePublicationsDepenses")?.addEventListener(
+    "click",
+    evenement => {
+        const modifier = evenement.target.closest("[data-modifier-publication]");
+        const supprimer = evenement.target.closest("[data-supprimer-publication]");
+
+        if (!modifier && !supprimer) return;
+
+        const id = (modifier || supprimer).dataset.modifierPublication ||
+            (modifier || supprimer).dataset.supprimerPublication;
+
+        const publications = chargerPublicationsDepenses();
+        const publication = publications.find(
+            item => String(item.id) === String(id)
+        );
+
+        if (!publication) return;
+
+        if (supprimer) {
+            if (!confirm("Supprimer cette publication et ses dépenses ?")) return;
+
+            sauvegarderPublicationsDepenses(
+                publications.filter(item => String(item.id) !== String(id))
+            );
+            afficherPublicationsDepenses();
+            return;
+        }
+
+        document.getElementById("publicationDepenseId").value = publication.id;
+        document.getElementById("nomPublicationDepense").value = publication.nom;
+        document.getElementById("datePublicationDepense").value = publication.date;
+        document.getElementById("tauxUsdArDepense").value = publication.taux;
+        document.getElementById("recettesPublicationAr").value = publication.recettes;
+
+        lignesDepensesPublication = (publication.depenses || []).map(ligne => ({ ...ligne }));
+        afficherLignesDepensesPublication();
+
+        document.getElementById("btnEnregistrerPublicationDepense").textContent =
+            "💾 Enregistrer les modifications";
+        document.getElementById("btnAnnulerModificationPublication").style.display = "";
+
+        formulairePublicationDepense.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+);
+
+afficherLignesDepensesPublication();
+afficherPublicationsDepenses();
+actualiserTotauxPublication();
+
 /* =========================================
    PERSONNALISATION GLOBALE DU TEXTE
 ========================================= */
