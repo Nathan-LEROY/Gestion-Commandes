@@ -28,10 +28,12 @@ function afficherSection(section) {
     "sectionProduits",
     "sectionCommandes",
     "sectionImpression",
-    "sectionFichesProduits",
+    "sectionFichesProduits",    
     "sectionParametres",
-    "sectionAchatsPinduoduo"
+    "sectionAchatsPinduoduo",
+    "sectionDepensesPublications"
 ];
+
 
     // Cacher toutes les sections
     sections.forEach((id) => {
@@ -76,6 +78,11 @@ function afficherSection(section) {
    if (section === "achatsPinduoduo") {
     idSection = "sectionAchatsPinduoduo";
 }
+   
+if (section === "depensesPublications") {
+    idSection = "sectionDepensesPublications";
+}
+
 
     const sectionElement = document.getElementById(idSection);
 
