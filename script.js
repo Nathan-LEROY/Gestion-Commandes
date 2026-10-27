@@ -2818,35 +2818,34 @@ function formaterArPublication(montant) {
     return Math.round(Number(montant) || 0).toLocaleString("fr-FR") + " Ar";
 }
 
-function calculerTotalDepensesPublication(lignes, taux) {
-    return lignes.reduce((total, ligne) => {
+function calculerTotalDepensesPublication(lignes) {
+    return (lignes || []).reduce((total, ligne) => {
         const montant = Number(ligne.montant) || 0;
 
-        return total + (
-            ligne.devise === "USD" ? montant * taux : montant
-        );
+        // Les anciennes dépenses en USD sont converties avec
+        // le taux enregistré dans leur ancienne publication.
+        if (ligne.devise === "USD") {
+            return total + montant;
+        }
+
+        return total + montant;
     }, 0);
 }
 
 function actualiserTotauxPublication() {
-    const taux = Number(
-        document.getElementById("tauxUsdArDepense").value
-    ) || 0;
-
-    const recettes = Number(
-        document.getElementById("recettesPublicationAr").value
-    ) || 0;
-
     const total = calculerTotalDepensesPublication(
-        lignesDepensesPublication,
-        taux
+        lignesDepensesPublication
     );
 
-    document.getElementById("totalDepensesPublication").textContent =
-        formaterArPublication(total);
+    const champTotal = document.getElementById("totalDepensesPublication");
+    if (champTotal) {
+        champTotal.textContent = formaterArPublication(total);
+    }
 
-    document.getElementById("gainNetPublication").textContent =
-        formaterArPublication(recettes - total);
+    const champGain = document.getElementById("gainNetPublication");
+    if (champGain) {
+        champGain.textContent = "Non calculé";
+    }
 }
 
 function afficherLignesDepensesPublication() {
@@ -2865,10 +2864,7 @@ function afficherLignesDepensesPublication() {
     liste.innerHTML = lignesDepensesPublication.map((ligne, index) => `
         <div class="card">
             <strong>${echapperHTML(ligne.libelle)}</strong>
-            <p>
-                Montant : ${Number(ligne.montant).toLocaleString("fr-FR")}
-                ${echapperHTML(ligne.devise)}
-            </p>
+            <p>Montant : ${formaterArPublication(ligne.montant)}</p>
             <button type="button" class="btn"
                 data-retirer-ligne-depense="${index}">
                 Supprimer
@@ -2881,7 +2877,6 @@ function afficherLignesDepensesPublication() {
 
 function afficherPublicationsDepenses() {
     const liste = document.getElementById("listePublicationsDepenses");
-
     if (!liste) return;
 
     const publications = chargerPublicationsDepenses();
@@ -2892,12 +2887,24 @@ function afficherPublicationsDepenses() {
     }
 
     liste.innerHTML = publications.map(publication => {
-        const total = calculerTotalDepensesPublication(
-            publication.depenses || [],
-            Number(publication.taux) || 0
-        );
+        const depenses = (publication.depenses || []).map(ligne => {
+            // Compatibilité avec les anciennes publications :
+            // les anciens montants USD sont convertis en Ar
+            // à l'aide du taux sauvegardé.
+            const montantAr = ligne.devise === "USD"
+                ? (Number(ligne.montant) || 0) * (Number(publication.taux) || 0)
+                : Number(ligne.montant) || 0;
 
-        const recettes = Number(publication.recettes) || 0;
+            return {
+                ...ligne,
+                montantAr
+            };
+        });
+
+        const total = depenses.reduce(
+            (somme, ligne) => somme + ligne.montantAr,
+            0
+        );
 
         return `
             <details class="card">
@@ -2906,16 +2913,13 @@ function afficherPublicationsDepenses() {
                     — ${echapperHTML(publication.date)}
                 </summary>
 
-                <p>Recettes : ${formaterArPublication(recettes)}</p>
-                <p>Dépenses : ${formaterArPublication(total)}</p>
-                <p>Gain net : ${formaterArPublication(recettes - total)}</p>
+                <p>Dépenses totales : ${formaterArPublication(total)}</p>
 
                 <ul>
-                    ${(publication.depenses || []).map(ligne => `
+                    ${depenses.map(ligne => `
                         <li>
                             ${echapperHTML(ligne.libelle)} :
-                            ${Number(ligne.montant).toLocaleString("fr-FR")}
-                            ${echapperHTML(ligne.devise)}
+                            ${formaterArPublication(ligne.montantAr)}
                         </li>
                     `).join("")}
                 </ul>
@@ -2949,15 +2953,21 @@ const champLibelleDepensePublication = document.getElementById(
 categorieDepensePublication?.addEventListener("change", () => {
     const autre = categorieDepensePublication.value === "Autre";
 
-    champLibelleDepensePublication.style.display = autre ? "" : "none";
+    if (champLibelleDepensePublication) {
+        champLibelleDepensePublication.style.display = autre ? "" : "none";
+    }
 
-    document.getElementById("libelleDepensePublication").required = autre;
+    const champLibelle = document.getElementById("libelleDepensePublication");
+    if (champLibelle) {
+        champLibelle.required = autre;
+    }
 });
 
 document.getElementById("btnAjouterLigneDepense")?.addEventListener(
     "click",
     () => {
         const categorie = categorieDepensePublication.value;
+
         const libelleAutre = document.getElementById(
             "libelleDepensePublication"
         ).value.trim();
@@ -2966,12 +2976,8 @@ document.getElementById("btnAjouterLigneDepense")?.addEventListener(
             document.getElementById("montantDepensePublication").value
         );
 
-        const devise = document.getElementById(
-            "deviseDepensePublication"
-        ).value;
-
         if (!Number.isFinite(montant) || montant <= 0) {
-            alert("Saisissez un montant supérieur à zéro.");
+            alert("Saisissez un montant en Ariary supérieur à zéro.");
             return;
         }
 
@@ -2983,7 +2989,7 @@ document.getElementById("btnAjouterLigneDepense")?.addEventListener(
         lignesDepensesPublication.push({
             libelle: categorie === "Autre" ? libelleAutre : categorie,
             montant,
-            devise
+            devise: "Ar"
         });
 
         document.getElementById("montantDepensePublication").value = "";
@@ -3011,41 +3017,33 @@ document.getElementById("listeLignesDepensesPublication")?.addEventListener(
     }
 );
 
-[
-    "tauxUsdArDepense",
-    "recettesPublicationAr"
-].forEach(id => {
-    document.getElementById(id)?.addEventListener(
-        "input",
-        actualiserTotauxPublication
-    );
-});
-
 formulairePublicationDepense?.addEventListener("submit", evenement => {
     evenement.preventDefault();
 
     const nom = document.getElementById("nomPublicationDepense").value.trim();
     const date = document.getElementById("datePublicationDepense").value;
-    const taux = Number(document.getElementById("tauxUsdArDepense").value);
-    const recettes = Number(
-        document.getElementById("recettesPublicationAr").value
-    );
 
-    if (!nom || !date || !Number.isFinite(taux) || taux <= 0) {
-        alert("Vérifiez le nom, la date et le taux de conversion.");
+    if (!nom || !date) {
+        alert("Vérifiez le nom et la date de la publication.");
         return;
     }
 
     const publications = chargerPublicationsDepenses();
     const idExistant = document.getElementById("publicationDepenseId").value;
 
+    const anciennePublication = publications.find(
+        item => String(item.id) === String(idExistant)
+    );
+
     const publication = {
+        ...(anciennePublication || {}),
         id: idExistant || genererId(),
         nom,
         date,
-        taux,
-        recettes,
-        depenses: lignesDepensesPublication
+        depenses: lignesDepensesPublication.map(ligne => ({
+            ...ligne,
+            devise: "Ar"
+        }))
     };
 
     const index = publications.findIndex(
@@ -3060,12 +3058,17 @@ formulairePublicationDepense?.addEventListener("submit", evenement => {
 
     try {
         sauvegarderPublicationsDepenses(publications);
+
         formulairePublicationDepense.reset();
         document.getElementById("publicationDepenseId").value = "";
-        document.getElementById("btnEnregistrerPublicationDepense").textContent =
-            "💾 Enregistrer la publication";
-        document.getElementById("btnAnnulerModificationPublication").style.display =
-            "none";
+
+        document.getElementById(
+            "btnEnregistrerPublicationDepense"
+        ).textContent = "💾 Enregistrer la publication";
+
+        document.getElementById(
+            "btnAnnulerModificationPublication"
+        ).style.display = "none";
 
         lignesDepensesPublication = [];
         afficherLignesDepensesPublication();
@@ -3083,11 +3086,17 @@ document.getElementById("btnAnnulerModificationPublication")?.addEventListener(
     () => {
         formulairePublicationDepense.reset();
         document.getElementById("publicationDepenseId").value = "";
+
         lignesDepensesPublication = [];
-        document.getElementById("btnEnregistrerPublicationDepense").textContent =
-            "💾 Enregistrer la publication";
-        document.getElementById("btnAnnulerModificationPublication").style.display =
-            "none";
+
+        document.getElementById(
+            "btnEnregistrerPublicationDepense"
+        ).textContent = "💾 Enregistrer la publication";
+
+        document.getElementById(
+            "btnAnnulerModificationPublication"
+        ).style.display = "none";
+
         afficherLignesDepensesPublication();
     }
 );
@@ -3100,10 +3109,12 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
 
         if (!modifier && !supprimer) return;
 
-        const id = (modifier || supprimer).dataset.modifierPublication ||
-            (modifier || supprimer).dataset.supprimerPublication;
+        const id = modifier
+            ? modifier.dataset.modifierPublication
+            : supprimer.dataset.supprimerPublication;
 
         const publications = chargerPublicationsDepenses();
+
         const publication = publications.find(
             item => String(item.id) === String(id)
         );
@@ -3116,6 +3127,7 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
             sauvegarderPublicationsDepenses(
                 publications.filter(item => String(item.id) !== String(id))
             );
+
             afficherPublicationsDepenses();
             return;
         }
@@ -3123,15 +3135,28 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
         document.getElementById("publicationDepenseId").value = publication.id;
         document.getElementById("nomPublicationDepense").value = publication.nom;
         document.getElementById("datePublicationDepense").value = publication.date;
-        document.getElementById("tauxUsdArDepense").value = publication.taux;
-        document.getElementById("recettesPublicationAr").value = publication.recettes;
 
-        lignesDepensesPublication = (publication.depenses || []).map(ligne => ({ ...ligne }));
+        lignesDepensesPublication = (publication.depenses || []).map(ligne => {
+            const montantAr = ligne.devise === "USD"
+                ? (Number(ligne.montant) || 0) * (Number(publication.taux) || 0)
+                : Number(ligne.montant) || 0;
+
+            return {
+                libelle: ligne.libelle,
+                montant: montantAr,
+                devise: "Ar"
+            };
+        });
+
         afficherLignesDepensesPublication();
 
-        document.getElementById("btnEnregistrerPublicationDepense").textContent =
-            "💾 Enregistrer les modifications";
-        document.getElementById("btnAnnulerModificationPublication").style.display = "";
+        document.getElementById(
+            "btnEnregistrerPublicationDepense"
+        ).textContent = "💾 Enregistrer les modifications";
+
+        document.getElementById(
+            "btnAnnulerModificationPublication"
+        ).style.display = "";
 
         formulairePublicationDepense.scrollIntoView({
             behavior: "smooth",
