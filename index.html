@@ -1266,6 +1266,160 @@
 
 </section>
         
+<!-- =====================================================
+     DÉPENSES DE PUBLICATION
+====================================================== -->
+
+<section class="card" id="sectionDepensesPublications" style="display: none;">
+
+    <h2>📣 Dépenses de publication</h2>
+
+    <p>
+        Suivez les dépenses, les recettes et le gain net de chaque publication Facebook.
+    </p>
+
+    <form id="formPublicationDepense">
+        <input type="hidden" id="publicationDepenseId">
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label for="nomPublicationDepense">Nom de la publication *</label>
+                <input
+                    type="text"
+                    id="nomPublicationDepense"
+                    placeholder="Ex. Publication bracelet du 27/10/2026"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="datePublicationDepense">Date de publication *</label>
+                <input type="date" id="datePublicationDepense" required>
+            </div>
+
+            <div class="field">
+                <label for="tauxUsdArDepense">Taux de conversion : 1 USD en Ar *</label>
+                <input
+                    type="number"
+                    id="tauxUsdArDepense"
+                    min="1"
+                    step="1"
+                    placeholder="Saisir le taux actuel"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="recettesPublicationAr">Recettes générées (Ar)</label>
+                <input
+                    type="number"
+                    id="recettesPublicationAr"
+                    min="0"
+                    step="1"
+                    value="0"
+                    required
+                >
+            </div>
+
+        </div>
+
+        <hr>
+
+        <h3>Ajouter une dépense</h3>
+
+        <div class="form-grid">
+
+            <div class="field">
+                <label for="categorieDepensePublication">Catégorie</label>
+                <select id="categorieDepensePublication">
+                    <option value="Booster">Booster</option>
+                    <option value="Frais total">Frais total</option>
+                    <option value="Crédit">Crédit</option>
+                    <option value="Autre">Autre (personnalisée)</option>
+                </select>
+            </div>
+
+            <div class="field" id="champLibelleDepensePublication" style="display: none;">
+                <label for="libelleDepensePublication">Nom personnalisé</label>
+                <input
+                    type="text"
+                    id="libelleDepensePublication"
+                    placeholder="Nom de la dépense"
+                >
+            </div>
+
+            <div class="field">
+                <label for="deviseDepensePublication">Devise</label>
+                <select id="deviseDepensePublication">
+                    <option value="USD">USD ($)</option>
+                    <option value="Ar">Ariary (Ar)</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="montantDepensePublication">Montant</label>
+                <input
+                    type="number"
+                    id="montantDepensePublication"
+                    min="0"
+                    step="0.01"
+                    placeholder="Saisir le montant"
+                >
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn" id="btnAjouterLigneDepense">
+                ➕ Ajouter cette dépense
+            </button>
+        </div>
+
+        <div id="listeLignesDepensesPublication"></div>
+
+        <hr>
+
+        <div class="form-grid">
+            <div class="field">
+                <label>Total des dépenses</label>
+                <strong id="totalDepensesPublication">0 Ar</strong>
+            </div>
+
+            <div class="field">
+                <label>Gain net</label>
+                <strong id="gainNetPublication">0 Ar</strong>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button
+                type="submit"
+                class="btn primary"
+                id="btnEnregistrerPublicationDepense"
+            >
+                💾 Enregistrer la publication
+            </button>
+
+            <button
+                type="button"
+                class="btn"
+                id="btnAnnulerModificationPublication"
+                style="display: none;"
+            >
+                Annuler la modification
+            </button>
+        </div>
+
+    </form>
+
+    <div class="data-section">
+        <h3>📚 Mes publications</h3>
+        <div id="listePublicationsDepenses"></div>
+    </div>
+
+</section>
+
         <!-- =====================================================
              PIED DE PAGE
         ====================================================== -->
