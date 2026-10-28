@@ -2623,6 +2623,62 @@ function afficherAchats() {
 }
 
 
+listeAchats?.addEventListener("click", function (evenement) {
+    const bouton = evenement.target.closest("[data-modifier-achat]");
+
+    if (!bouton) return;
+
+    const id = bouton.dataset.modifierAchat;
+
+    const achat = chargerAchats().find(
+        element => String(element.id) === String(id)
+    );
+
+    if (!achat) {
+        alert("Impossible de retrouver cet achat.");
+        return;
+    }
+
+    achatEnCoursModification = achat.id;
+
+    nomClientAchat.value = achat.nomClient || "";
+    trackingAchat.value = achat.tracking || "";
+    nomProduitAchat.value = achat.nomProduit || "";
+    dateAchat.value = achat.dateAchat || "";
+
+    if (photoAchat) {
+        photoAchat.value = "";
+    }
+
+    if (zoneApercuPhotoAchat && apercuPhotoAchat) {
+        if (achat.photo) {
+            apercuPhotoAchat.src = achat.photo;
+            zoneApercuPhotoAchat.style.display = "block";
+        } else {
+            apercuPhotoAchat.removeAttribute("src");
+            zoneApercuPhotoAchat.style.display = "none";
+        }
+    }
+
+    const boutonEnregistrer = formAchat.querySelector(
+        'button[type="submit"]'
+    );
+
+    if (boutonEnregistrer) {
+        boutonEnregistrer.textContent =
+            "💾 Enregistrer les modifications";
+    }
+
+    formAchat.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+    setTimeout(() => {
+        nomClientAchat.focus();
+    }, 400);
+});
+
 formAchat?.addEventListener("submit", async function (evenement) {
     evenement.preventDefault();
 
