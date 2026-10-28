@@ -2971,7 +2971,7 @@ window.synchroniserCommandesAvecSupabase = async function () {
 
             const { error: envoiErreur } = await client
                 .from("commandes")
-                .upsert(lot, { onConflict: "id" });
+                .upsert(lot, { onConflict: "id,user_id" });
 
             if (envoiErreur) throw envoiErreur;
         }
