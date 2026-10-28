@@ -2860,6 +2860,157 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
     });
 }
 
+
+/* =========================================================
+   SYNCHRONISATION DES COMMANDES AVEC SUPABASE
+========================================================= */
+
+window.synchroniserCommandesAvecSupabase = async function () {
+    const client = window.clientSupabase;
+
+    if (!client) {
+        console.warn("Supabase n'est pas encore prêt.");
+        return false;
+    }
+
+    try {
+        const { data: sessionData, error: sessionError } =
+            await client.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        const utilisateur = sessionData.session?.user;
+
+        if (!utilisateur) {
+            console.warn("Aucun utilisateur connecté.");
+            return false;
+        }
+
+        // 1. Récupérer les commandes du compte connecté
+        const { data: lignesDistantes, error: lectureErreur } =
+            await client
+                .from("commandes")
+                .select("*")
+                .eq("user_id", utilisateur.id);
+
+        if (lectureErreur) throw lectureErreur;
+
+        const locales = Array.isArray(commandes) ? commandes : [];
+        const distantes = (lignesDistantes || []).map(ligne => {
+            const donnees = ligne.donnees;
+
+            if (donnees && typeof donnees === "object") {
+                return {
+                    ...donnees,
+                    id: String(ligne.id)
+                };
+            }
+
+            return {
+                id: String(ligne.id),
+                numeroCommande: ligne.numero_commande || "",
+                client: ligne.nom_client || "",
+                telephone: ligne.telephone || "",
+                whatsapp: ligne.whatsapp || "",
+                facebook: ligne.facebook || "",
+                lieu: ligne.lieu_livraison || "",
+                produit: ligne.nom_produit || "",
+                photo: ligne.photo || "",
+                quantite: Number(ligne.nombre_produit || 1),
+                prix: Number(ligne.prix_produit || 0),
+                acompte: Number(ligne.avance || 0),
+                fraisLivraison: Number(ligne.frais_livraison || 0),
+                statut: ligne.statut || "En attente",
+                dateCommande: ligne.date_commande || "",
+                dateCreation: ligne.created_at || new Date().toISOString()
+            };
+        });
+
+        // 2. Fusionner par identifiant sans créer de doublons.
+        // En cas de même identifiant, conserver la version locale.
+        const fusion = new Map();
+
+        distantes.forEach(commande => {
+            fusion.set(String(commande.id), commande);
+        });
+
+        locales.forEach(commande => {
+            fusion.set(String(commande.id), commande);
+        });
+
+        const commandesFusionnees = Array.from(fusion.values());
+
+        // 3. Préparer les commandes pour Supabase
+        const lignesAEnvoyer = commandesFusionnees.map(commande => ({
+            id: String(commande.id),
+            user_id: utilisateur.id,
+            numero_commande: String(commande.numeroCommande || ""),
+            nom_client: String(commande.client || ""),
+            telephone: String(commande.telephone || ""),
+            whatsapp: String(commande.whatsapp || ""),
+            facebook: String(commande.facebook || ""),
+            lieu_livraison: String(commande.lieu || ""),
+            nom_produit: String(commande.produit || ""),
+            photo: String(commande.photo || ""),
+            nombre_produit: Math.max(1, Number(commande.quantite || 1)),
+            prix_produit: Math.max(0, Number(commande.prix || 0)),
+            avance: Math.max(0, Number(commande.acompte || 0)),
+            frais_livraison: Math.max(
+                0,
+                Number(commande.fraisLivraison || 0)
+            ),
+            statut: String(commande.statut || "En attente"),
+            date_commande: String(commande.dateCommande || ""),
+            donnees: commande,
+            updated_at: new Date().toISOString()
+        }));
+
+        // 4. Envoyer les commandes par lots
+        for (let i = 0; i < lignesAEnvoyer.length; i += 50) {
+            const lot = lignesAEnvoyer.slice(i, i + 50);
+
+            const { error: envoiErreur } = await client
+                .from("commandes")
+                .upsert(lot, { onConflict: "id" });
+
+            if (envoiErreur) throw envoiErreur;
+        }
+
+        // 5. Enregistrer la fusion sur cet appareil
+        commandes = commandesFusionnees;
+
+        if (!sauvegarderCommandes()) {
+            throw new Error(
+                "La fusion n'a pas pu être enregistrée sur cet appareil."
+            );
+        }
+
+        if (typeof afficherCommandes === "function") {
+            afficherCommandes();
+        }
+
+        if (typeof afficherStatistiques === "function") {
+            afficherStatistiques();
+        }
+
+        console.info(
+            "Synchronisation terminée :",
+            commandesFusionnees.length,
+            "commande(s)."
+        );
+
+        return true;
+
+    } catch (erreur) {
+        console.error(
+            "Erreur de synchronisation des commandes :",
+            erreur
+        );
+
+        return false;
+    }
+};
+
 /* =========================================================
    DÉMARRAGE
 ========================================================= */
