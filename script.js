@@ -2576,12 +2576,20 @@ function afficherAchats() {
                                         ${echapperHTML(achat.dateAchat)}</p>
 
                                     <button
-                                        type="button"
-                                        class="btn"
-                                        data-supprimer-achat="${echapperHTML(achat.id)}"
-                                    >
-                                        🗑️ Supprimer
-                                    </button>
+    type="button"
+    class="btn"
+    data-modifier-achat="${echapperHTML(achat.id)}"
+>
+    ✏️ Modifier
+</button>
+
+<button
+    type="button"
+    class="btn"
+    data-supprimer-achat="${echapperHTML(achat.id)}"
+>
+    🗑️ Supprimer
+</button>
                                 </div>
                             </article>
                         `).join("")}
