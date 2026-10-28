@@ -2622,6 +2622,7 @@ function afficherAchats() {
     });
 }
 
+
 formAchat?.addEventListener("submit", async function (evenement) {
     evenement.preventDefault();
 
@@ -2633,70 +2634,106 @@ formAchat?.addEventListener("submit", async function (evenement) {
     const date = dateAchat.value;
     const fichier = photoAchat.files[0];
 
-    let photo = "";
-
     try {
+        let photo = "";
+        const achats = chargerAchats();
+
         if (fichier) {
             if (!fichier.type.startsWith("image/")) {
                 alert("Veuillez sélectionner une image valide.");
                 return;
             }
 
-            // Limite la taille pour éviter de saturer le stockage.
             if (fichier.size > 1024 * 1024) {
-                alert(
-                    "La photo dépasse 1 Mo. Choisissez une image plus légère."
-                );
+                alert("La photo dépasse 1 Mo. Choisissez une image plus légère.");
                 return;
             }
 
             photo = await convertirImageEnBase64(fichier);
         }
 
-        const achats = chargerAchats();
+        if (achatEnCoursModification !== null) {
+            const index = achats.findIndex(
+                achat => String(achat.id) === String(achatEnCoursModification)
+            );
 
-        achats.unshift({
-            id: genererId(),
-            nomClient: nomClient,
-            tracking: tracking,
-            nomProduit: nomProduit,
-            dateAchat: date,
-            photo: photo
-        });
+            if (index === -1) {
+                alert("Cet achat est introuvable. Recharge la page et réessaie.");
+                return;
+            }
 
-        
+            achats[index] = {
+                ...achats[index],
+                nomClient,
+                tracking,
+                nomProduit,
+                dateAchat: date,
+                photo: fichier ? photo : (achats[index].photo || "")
+            };
+        } else {
+            achats.unshift({
+                id: genererId(),
+                nomClient,
+                tracking,
+                nomProduit,
+                dateAchat: date,
+                photo
+            });
+        }
+
         sauvegarderAchats(achats);
 
-        // Synchroniser avec Supabase sans perdre
-        // la sauvegarde locale si Internet est indisponible.
         let synchronisationOK = false;
 
-try {
-    synchronisationOK = await synchroniserAchatsAvecSupabase();
-} catch (erreur) {
-    console.error("Erreur de synchronisation :", erreur);
-}
+        try {
+            synchronisationOK = await synchroniserAchatsAvecSupabase();
+        } catch (erreur) {
+            console.error("Erreur de synchronisation :", erreur);
+        }
 
+        const modification = achatEnCoursModification !== null;
+
+        achatEnCoursModification = null;
         formAchat.reset();
+
+        if (zoneApercuPhotoAchat) {
+            zoneApercuPhotoAchat.style.display = "none";
+        }
+
+        if (apercuPhotoAchat) {
+            apercuPhotoAchat.removeAttribute("src");
+        }
+
+        const boutonEnregistrer = formAchat.querySelector(
+            'button[type="submit"]'
+        );
+
+        if (boutonEnregistrer) {
+            boutonEnregistrer.textContent = "💾 Enregistrer l'achat";
+        }
+
         afficherAchats();
 
-       
-alert(
-    synchronisationOK
-        ? "Achat enregistré et synchronisé avec Supabase !"
-        : "Achat enregistré sur cet appareil, mais la synchronisation a échoué. Réessaie après avoir vérifié ta connexion."
-);
-
+        alert(
+            modification
+                ? (synchronisationOK
+                    ? "Achat modifié et synchronisé avec Supabase !"
+                    : "Achat modifié sur cet appareil, mais la synchronisation Supabase a échoué.")
+                : (synchronisationOK
+                    ? "Achat enregistré et synchronisé avec Supabase !"
+                    : "Achat enregistré sur cet appareil, mais la synchronisation Supabase a échoué.")
+        );
 
     } catch (erreur) {
         console.error("Erreur d'enregistrement de l'achat :", erreur);
 
         alert(
             "Impossible d'enregistrer cet achat. " +
-            "Vérifiez l'espace de stockage disponible."
+            "Vérifie l'espace de stockage disponible."
         );
     }
 });
+
 
 listeAchats?.addEventListener("click", async function (evenement) {
     const bouton = evenement.target.closest("[data-supprimer-achat]");
