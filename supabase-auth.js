@@ -61,10 +61,14 @@ async function initialiserConnexionSupabase() {
             }
 
              if (typeof window.synchroniserAchatsAvecSupabase === "function") {
-                await window.synchroniserAchatsAvecSupabase();
-            }
-            
-        } else {
+    await window.synchroniserAchatsAvecSupabase();
+}
+
+if (typeof window.synchroniserCommandesAvecSupabase === "function") {
+    await window.synchroniserCommandesAvecSupabase();
+}
+
+} else {
             application.hidden = true;
             zoneConnexion.hidden = false;
 
