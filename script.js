@@ -217,6 +217,7 @@ photoAchat?.addEventListener("change", function () {
 
 const listeAchats = document.getElementById("listeAchats");
 const CLE_ACHATS = "crystalBoutikAchatsV1";
+let achatEnCoursModification = null;
 
 const CLE_MODE_APPARENCE = "gestionCommandesModeApparenceV1";
 
