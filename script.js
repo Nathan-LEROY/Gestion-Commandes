@@ -357,6 +357,28 @@ if (btnRetablirFond) {
 const commandeId = document.getElementById("commandeId");
 
 const numeroCommande = document.getElementById("numeroCommande");
+
+// =====================================================
+// GÉNÉRATION AUTOMATIQUE DU NUMÉRO DE COMMANDE
+// =====================================================
+
+function genererNumeroCommande() {
+
+    const annee = new Date().getFullYear();
+    const prefixe = `CB-${annee}-`;
+
+    const numerosExistants = commandes
+        .map(c => String(c.numeroCommande || ""))
+        .filter(n => n.startsWith(prefixe))
+        .map(n => Number(n.slice(prefixe.length)))
+        .filter(n => Number.isInteger(n) && n > 0);
+
+    const prochainNumero = Math.max(0, ...numerosExistants) + 1;
+
+    return prefixe + String(prochainNumero).padStart(5, "0");
+}
+
+numeroCommande.readOnly = true;
 const nomClient = document.getElementById("nomClient");
 const dateCommande = document.getElementById("dateCommande");
 const telephoneClient = document.getElementById("telephoneClient");
@@ -1099,6 +1121,7 @@ function reinitialiserFormulaire() {
 
     btnAnnuler?.classList.add("hidden");
 
+   numeroCommande.value = genererNumeroCommande();
     recalculerFormulaire();
 }
 
