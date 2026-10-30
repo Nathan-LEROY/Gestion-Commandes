@@ -132,6 +132,8 @@ document.querySelectorAll(".menu-item").forEach((bouton) => {
 
             document.getElementById("commandeId").value = "";
 
+           numeroCommande.value = obtenirProchainNumeroCommande();
+           
             document.getElementById("formTitle").textContent =
                 "➕ Nouvelle commande";
 
@@ -673,6 +675,54 @@ function sauvegarderCommandes() {
 }
 
 /* =========================================================
+   NUMÉROTATION AUTOMATIQUE DES COMMANDES
+========================================================= */
+
+function renumeroterCommandes(annee = new Date().getFullYear()) {
+
+    const prefixe = `CB-${annee}-`;
+
+    // Garder uniquement les commandes de cette année
+    const commandesAnnee = commandes
+        .filter(c => String(c.numeroCommande || "").startsWith(prefixe))
+        .sort((a, b) => {
+            const dateA = new Date(a.dateCreation || 0).getTime();
+            const dateB = new Date(b.dateCreation || 0).getTime();
+
+            return dateA - dateB || String(a.id).localeCompare(String(b.id));
+        });
+
+    // Réattribuer les numéros sans interruption
+    commandesAnnee.forEach((commande, index) => {
+        commande.numeroCommande =
+            prefixe + String(index + 1).padStart(4, "0");
+    });
+}
+
+function obtenirProchainNumeroCommande() {
+
+    const annee = new Date().getFullYear();
+    const prefixe = `CB-${annee}-`;
+
+    const numerosUtilises = new Set(
+        commandes
+            .map(c => String(c.numeroCommande || ""))
+            .filter(numero => numero.startsWith(prefixe))
+    );
+
+    let numero = 1;
+
+    while (
+        numerosUtilises.has(
+            prefixe + String(numero).padStart(4, "0")
+        )
+    ) {
+        numero++;
+    }
+
+    return prefixe + String(numero).padStart(4, "0");
+}
+/* =========================================================
    CALCULS
 ========================================================= */
 
@@ -1108,6 +1158,9 @@ function reinitialiserFormulaire() {
    commandeEnCoursModification = null;
    
     if (commandeId) commandeId.value = "";
+   if (numeroCommande) {
+    numeroCommande.value = obtenirProchainNumeroCommande();
+}
     if (nombreProduit) nombreProduit.value = "1";
     if (acompte) acompte.value = "0";
     if (fraisLivraison) fraisLivraison.value = "0";
@@ -1205,6 +1258,7 @@ if (lieuLivraison) {
 ========================================================= */
 
 function supprimerCommande(id) {
+
     const commande = commandes.find(c => c.id === id);
     if (!commande) return;
 
@@ -1214,15 +1268,33 @@ function supprimerCommande(id) {
 
     if (!confirmation) return;
 
+    // Conserver une copie en cas d'échec de sauvegarde
+    const anciennesCommandes = [...commandes];
+
+    // Supprimer la commande choisie
     commandes = commandes.filter(c => c.id !== id);
+
     selectionImpression.delete(id);
 
+    // Renuméroter les commandes restantes
+    renumeroterCommandes();
+
+    // Enregistrer les changements sur cet appareil
     if (sauvegarderCommandes()) {
+
         afficherCommandes();
 
-        if (commandeId?.value === id) {
+        if (commandeEnCoursModification === id) {
             reinitialiserFormulaire();
         }
+
+        alert("Commande supprimée et numérotation mise à jour.");
+
+    } else {
+
+        // Restaurer les commandes si la sauvegarde échoue
+        commandes = anciennesCommandes;
+        afficherCommandes();
     }
 }
 
