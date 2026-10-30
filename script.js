@@ -1257,30 +1257,81 @@ if (lieuLivraison) {
    SUPPRESSION
 ========================================================= */
 
-function supprimerCommande(id) {
+
+async function supprimerCommande(id) {
 
     const commande = commandes.find(c => c.id === id);
     if (!commande) return;
 
     const confirmation = confirm(
-        `Supprimer la commande de ${commande.client} ?`
+        `Supprimer définitivement la commande de ${commande.client} ?`
     );
 
     if (!confirmation) return;
 
-    // Conserver une copie en cas d'échec de sauvegarde
-    const anciennesCommandes = [...commandes];
+    // Vérifier la connexion Internet
+    if (!navigator.onLine) {
+        alert("Connexion Internet obligatoire pour supprimer une commande.");
+        return;
+    }
 
-    // Supprimer la commande choisie
-    commandes = commandes.filter(c => c.id !== id);
+    // Vérifier le client Supabase
+    const client = window.clientSupabase;
 
-    selectionImpression.delete(id);
+    if (!client) {
+        alert("Connexion à Supabase indisponible. Aucune suppression effectuée.");
+        return;
+    }
 
-    // Renuméroter les commandes restantes
-    renumeroterCommandes();
+    try {
 
-    // Enregistrer les changements sur cet appareil
-    if (sauvegarderCommandes()) {
+        // Vérifier la session utilisateur
+        const { data: sessionData, error: sessionError } =
+            await client.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        const utilisateur = sessionData.session?.user;
+
+        if (!utilisateur) {
+            alert("Veuillez vous connecter avant de supprimer une commande.");
+            return;
+        }
+
+        // Supprimer d'abord la commande sur Supabase
+        const { data: suppression, error: suppressionErreur } =
+            await client
+                .from("commandes")
+                .delete()
+                .eq("id", String(id))
+                .eq("user_id", utilisateur.id)
+                .select("id");
+
+        if (suppressionErreur) throw suppressionErreur;
+
+        // Vérifier que Supabase a réellement supprimé la commande
+        if (!suppression || suppression.length === 0) {
+            alert(
+                "Supabase n'a pas confirmé la suppression. La commande est conservée."
+            );
+            return;
+        }
+
+        // Supabase a confirmé : supprimer localement
+        commandes = commandes.filter(c => c.id !== id);
+
+        selectionImpression.delete(id);
+
+        // Renuméroter les commandes restantes
+        renumeroterCommandes();
+
+        // Enregistrer sur cet appareil
+        if (!sauvegarderCommandes()) {
+            alert(
+                "La commande a été supprimée sur Supabase, mais l'enregistrement local a échoué. Recharge l'application et vérifie la synchronisation."
+            );
+            return;
+        }
 
         afficherCommandes();
 
@@ -1288,13 +1339,15 @@ function supprimerCommande(id) {
             reinitialiserFormulaire();
         }
 
-        alert("Commande supprimée et numérotation mise à jour.");
+        alert("Commande supprimée de Supabase et de cet appareil.");
 
-    } else {
+    } catch (erreur) {
 
-        // Restaurer les commandes si la sauvegarde échoue
-        commandes = anciennesCommandes;
-        afficherCommandes();
+        console.error("Erreur de suppression :", erreur);
+
+        alert(
+            "La suppression n'a pas pu être confirmée sur Supabase. La commande est conservée sur cet appareil."
+        );
     }
 }
 
