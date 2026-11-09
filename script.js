@@ -8,6 +8,68 @@ const STORAGE_KEY = "gestionCommandesV1";
 const PRODUITS_STORAGE_KEY = "crystalBoutikProduitsV1";
 const FICHES_PRODUITS_STORAGE_KEY =
     "crystalBoutikFichesProduitsV1";
+
+// =====================================================
+// DIAGNOSTIC DU STOCKAGE — LECTURE UNIQUEMENT
+// Ne modifie et ne supprime aucune donnée.
+// =====================================================
+
+async function diagnostiquerStockageGestionCommandes() {
+    const details = [];
+    let totalOctets = 0;
+
+    for (let i = 0; i < localStorage.length; i++) {
+        const cle = localStorage.key(i);
+        const valeur = localStorage.getItem(cle) || "";
+        const octets = new Blob([valeur]).size;
+
+        totalOctets += octets;
+
+        details.push({
+            cle: cle,
+            tailleKo: (octets / 1024).toFixed(2),
+            tailleMo: (octets / 1024 / 1024).toFixed(2)
+        });
+    }
+
+    details.sort((a, b) =>
+        Number(b.tailleKo) - Number(a.tailleKo)
+    );
+
+    console.table(details);
+
+    console.log(
+        "TOTAL localStorage approximatif :",
+        (totalOctets / 1024 / 1024).toFixed(2),
+        "Mo"
+    );
+
+    if (navigator.storage?.estimate) {
+        try {
+            const estimation = await navigator.storage.estimate();
+
+            console.log("Utilisation globale du stockage :",
+                estimation.usage, "octets");
+
+            console.log("Quota global estimé :",
+                estimation.quota, "octets");
+
+            if (estimation.quota) {
+                console.log("Pourcentage utilisé :",
+                    ((estimation.usage / estimation.quota) * 100)
+                    .toFixed(2) + "%");
+            }
+        } catch (erreur) {
+            console.log("Estimation indisponible :", erreur);
+        }
+    }
+
+    return details;
+}
+
+window.diagnostiquerStockageGestionCommandes =
+    diagnostiquerStockageGestionCommandes;
+
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.querySelector(".sidebar");
 
