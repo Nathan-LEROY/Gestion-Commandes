@@ -1390,7 +1390,7 @@ if (
 ) {
     const fichier = photoCommande.files[0];
 
-    photo = await convertirImageEnBase64(fichier);
+    photo = await compresserPhotoCommande(fichier);
 }
    
     const commande = {
@@ -2157,6 +2157,62 @@ function convertirImageEnBase64(fichier) {
         );
 
         lecteur.readAsDataURL(fichier);
+    });
+}
+
+
+// =========================================================
+// COMPRESSION DES PHOTOS DES COMMANDES
+// =========================================================
+
+function compresserPhotoCommande(fichier) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        const url = URL.createObjectURL(fichier);
+
+        image.onload = function () {
+            try {
+                const limite = 1000;
+                const rapport = Math.min(
+                    1,
+                    limite / Math.max(image.width, image.height)
+                );
+
+                const largeur = Math.round(image.width * rapport);
+                const hauteur = Math.round(image.height * rapport);
+
+                const canvas = document.createElement("canvas");
+                canvas.width = largeur;
+                canvas.height = hauteur;
+
+                const contexte = canvas.getContext("2d");
+
+                // Fond blanc pour les photos avec transparence
+                contexte.fillStyle = "#ffffff";
+                contexte.fillRect(0, 0, largeur, hauteur);
+
+                contexte.drawImage(image, 0, 0, largeur, hauteur);
+
+                const photoCompressee = canvas.toDataURL(
+                    "image/jpeg",
+                    0.70
+                );
+
+                URL.revokeObjectURL(url);
+                resolve(photoCompressee);
+
+            } catch (erreur) {
+                URL.revokeObjectURL(url);
+                reject(erreur);
+            }
+        };
+
+        image.onerror = function () {
+            URL.revokeObjectURL(url);
+            reject(new Error("Impossible de compresser cette photo."));
+        };
+
+        image.src = url;
     });
 }
 
