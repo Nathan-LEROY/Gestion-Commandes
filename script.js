@@ -1,3 +1,4 @@
+
 /* =========================================================
    GESTIONNAIRE DE COMMANDES
    Version complète
@@ -665,16 +666,11 @@ function sauvegarderCommandes() {
         );
         return true;
     } catch (erreur) {
-        console.error("Erreur de sauvegarde locale :", erreur);
-
-        const message = erreur && (
-            erreur.name === "QuotaExceededError" ||
-            erreur.name === "NS_ERROR_DOM_QUOTA_REACHED"
-        )
-            "Le stockage local du téléphone est plein. Libère de l'espace ou réduis la taille des photos, puis réessaie."
-            : "Impossible d'enregistrer les commandes localement. Vérifie les paramètres de stockage du navigateur.";
-
-        alert(message);
+        console.error("Erreur de sauvegarde :", erreur);
+        alert(
+            "Impossible d'enregistrer les commandes. " +
+            "Vérifie l'espace de stockage disponible."
+        );
         return false;
     }
 }
@@ -1394,18 +1390,7 @@ if (
 ) {
     const fichier = photoCommande.files[0];
 
-    if (fichier.size > 500 * 1024) {
-        alert("La photo dépasse 500 Ko. Choisis une photo plus légère.");
-        return;
-    }
-
-    try {
-        photo = await convertirImageEnBase64(fichier);
-    } catch (erreur) {
-        console.error("Erreur de lecture de la photo :", erreur);
-        alert("Impossible de lire la photo. Réessaie.");
-        return;
-    }
+    photo = await convertirImageEnBase64(fichier);
 }
    
     const commande = {
@@ -3708,4 +3693,3 @@ if (btnAppliquerTout) {
         }
     });
 }
-
