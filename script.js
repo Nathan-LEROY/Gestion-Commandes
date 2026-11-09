@@ -1394,7 +1394,18 @@ if (
 ) {
     const fichier = photoCommande.files[0];
 
-    photo = await convertirImageEnBase64(fichier);
+    if (fichier.size > 500 * 1024) {
+        alert("La photo dépasse 500 Ko. Choisis une photo plus légère.");
+        return;
+    }
+
+    try {
+        photo = await convertirImageEnBase64(fichier);
+    } catch (erreur) {
+        console.error("Erreur de lecture de la photo :", erreur);
+        alert("Impossible de lire la photo. Réessaie.");
+        return;
+    }
 }
    
     const commande = {
