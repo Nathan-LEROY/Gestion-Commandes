@@ -665,11 +665,16 @@ function sauvegarderCommandes() {
         );
         return true;
     } catch (erreur) {
-        console.error("Erreur de sauvegarde :", erreur);
-        alert(
-            "Impossible d'enregistrer les commandes. " +
-            "Vérifie l'espace de stockage disponible."
-        );
+        console.error("Erreur de sauvegarde locale :", erreur);
+
+        const message = erreur && (
+            erreur.name === "QuotaExceededError" ||
+            erreur.name === "NS_ERROR_DOM_QUOTA_REACHED"
+        )
+            "Le stockage local du téléphone est plein. Libère de l'espace ou réduis la taille des photos, puis réessaie."
+            : "Impossible d'enregistrer les commandes localement. Vérifie les paramètres de stockage du navigateur.";
+
+        alert(message);
         return false;
     }
 }
