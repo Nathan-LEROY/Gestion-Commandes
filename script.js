@@ -86,6 +86,8 @@ async function enregistrerCommandesIndexedDB(liste) {
             COMMANDES_STORE_NAME
         );
 
+        magasin.clear();
+
         liste.forEach(commande => {
             magasin.put(commande);
         });
@@ -97,13 +99,13 @@ async function enregistrerCommandesIndexedDB(liste) {
         };
 
         transaction.onabort = () => {
-            reject(transaction.error || new Error(
-                "Enregistrement IndexedDB interrompu."
-            ));
+            reject(
+                transaction.error ||
+                new Error("Enregistrement IndexedDB interrompu.")
+            );
         };
     });
 }
-
 async function lireCommandesIndexedDB() {
     const db = await ouvrirBaseCommandes();
 
