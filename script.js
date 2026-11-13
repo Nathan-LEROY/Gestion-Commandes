@@ -3128,7 +3128,6 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
     });
 }
 
-
 /* =========================================================
    SYNCHRONISATION DES COMMANDES AVEC SUPABASE
 ========================================================= */
@@ -3154,102 +3153,103 @@ window.synchroniserCommandesAvecSupabase = async function () {
             return false;
         }
 
-        // 1. Récupérer les commandes du compte connecté
-        const { data: lignesDistantes, error: lectureErreur } =
-            await client
+        console.info("Récupération des commandes depuis Supabase...");
+
+        const commandesDistantes = [];
+        const tailleLot = 5;
+        let debut = 0;
+
+        // Récupérer les commandes en petits lots.
+        // Aucune écriture ou suppression sur Supabase.
+        while (true) {
+            const { data, error } = await client
                 .from("commandes")
                 .select("*")
-                .eq("user_id", utilisateur.id);
+                .eq("user_id", utilisateur.id)
+                .order("id", { ascending: true })
+                .range(debut, debut + tailleLot - 1);
 
-        if (lectureErreur) throw lectureErreur;
+            if (error) throw error;
 
-        const locales = Array.isArray(commandes) ? commandes : [];
-        const distantes = (lignesDistantes || []).map(ligne => {
-            const donnees = ligne.donnees;
+            if (!data || data.length === 0) break;
 
-            if (donnees && typeof donnees === "object") {
-                return {
-                    ...donnees,
-                    id: String(ligne.id)
-                };
-            }
+            data.forEach(ligne => {
+                if (
+                    ligne.donnees &&
+                    typeof ligne.donnees === "object"
+                ) {
+                    commandesDistantes.push({
+                        ...ligne.donnees,
+                        id: String(ligne.id)
+                    });
+                } else {
+                    commandesDistantes.push({
+                        id: String(ligne.id),
+                        numeroCommande: ligne.numero_commande || "",
+                        client: ligne.nom_client || "",
+                        telephone: ligne.telephone || "",
+                        whatsapp: ligne.whatsapp || "",
+                        facebook: ligne.facebook || "",
+                        lieu: ligne.lieu_livraison || "",
+                        produit: ligne.nom_produit || "",
+                        photo: ligne.photo || "",
+                        quantite: Number(ligne.nombre_produit || 1),
+                        prix: Number(ligne.prix_produit || 0),
+                        acompte: Number(ligne.avance || 0),
+                        fraisLivraison: Number(
+                            ligne.frais_livraison || 0
+                        ),
+                        statut: ligne.statut || "En attente",
+                        dateCommande: ligne.date_commande || "",
+                        dateCreation:
+                            ligne.created_at || new Date().toISOString()
+                    });
+                }
+            });
 
-            return {
-                id: String(ligne.id),
-                numeroCommande: ligne.numero_commande || "",
-                client: ligne.nom_client || "",
-                telephone: ligne.telephone || "",
-                whatsapp: ligne.whatsapp || "",
-                facebook: ligne.facebook || "",
-                lieu: ligne.lieu_livraison || "",
-                produit: ligne.nom_produit || "",
-                photo: ligne.photo || "",
-                quantite: Number(ligne.nombre_produit || 1),
-                prix: Number(ligne.prix_produit || 0),
-                acompte: Number(ligne.avance || 0),
-                fraisLivraison: Number(ligne.frais_livraison || 0),
-                statut: ligne.statut || "En attente",
-                dateCommande: ligne.date_commande || "",
-                dateCreation: ligne.created_at || new Date().toISOString()
-            };
-        });
+            debut += data.length;
 
-        // 2. Fusionner par identifiant sans créer de doublons.
-        // En cas de même identifiant, conserver la version locale.
+            if (data.length < tailleLot) break;
+        }
+
+        // Fusionner les commandes par identifiant.
+        // Les données distantes sont prioritaires.
         const fusion = new Map();
 
-        distantes.forEach(commande => {
-            fusion.set(String(commande.id), commande);
-        });
+        const locales = Array.isArray(commandes)
+            ? commandes
+            : [];
 
         locales.forEach(commande => {
             fusion.set(String(commande.id), commande);
         });
 
-        const commandesFusionnees = Array.from(fusion.values());
+        commandesDistantes.forEach(commande => {
+            fusion.set(String(commande.id), commande);
+        });
 
-        // 3. Préparer les commandes pour Supabase
-        const lignesAEnvoyer = commandesFusionnees.map(commande => ({
-            id: String(commande.id),
-            user_id: utilisateur.id,
-            numero_commande: String(commande.numeroCommande || ""),
-            nom_client: String(commande.client || ""),
-            telephone: String(commande.telephone || ""),
-            whatsapp: String(commande.whatsapp || ""),
-            facebook: String(commande.facebook || ""),
-            lieu_livraison: String(commande.lieu || ""),
-            nom_produit: String(commande.produit || ""),
-            photo: String(commande.photo || ""),
-            nombre_produit: Math.max(1, Number(commande.quantite || 1)),
-            prix_produit: Math.max(0, Number(commande.prix || 0)),
-            avance: Math.max(0, Number(commande.acompte || 0)),
-            frais_livraison: Math.max(
-                0,
-                Number(commande.fraisLivraison || 0)
-            ),
-            statut: String(commande.statut || "En attente"),
-            date_commande: String(commande.dateCommande || ""),
-            donnees: commande,
-            updated_at: new Date().toISOString()
-        }));
+        commandes = Array.from(fusion.values());
 
-        // 4. Envoyer les commandes par lots
-        for (let i = 0; i < lignesAEnvoyer.length; i += 50) {
-            const lot = lignesAEnvoyer.slice(i, i + 50);
+        // Enregistrer uniquement sur cet appareil.
+        sauvegarderCommandes();
 
-            const { error: envoiErreur } = await client
-                .from("commandes")
-                .upsert(lot, { onConflict: "id,user_id" });
+        // Vérifier que la sauvegarde locale a bien été effectuée.
+        const sauvegarde = localStorage.getItem("gestionCommandesV1");
 
-            if (envoiErreur) throw envoiErreur;
+        if (!sauvegarde) {
+            throw new Error(
+                "La sauvegarde locale des commandes a échoué."
+            );
         }
 
-        // 5. Enregistrer la fusion sur cet appareil
-        commandes = commandesFusionnees;
+        const commandesVerifiees = JSON.parse(sauvegarde);
 
-        if (!sauvegarderCommandes()) {
+        if (
+            !Array.isArray(commandesVerifiees) ||
+            commandesVerifiees.length !== commandes.length
+        ) {
             throw new Error(
-                "La fusion n'a pas pu être enregistrée sur cet appareil."
+                "La vérification des commandes enregistrées a échoué."
             );
         }
 
@@ -3262,16 +3262,16 @@ window.synchroniserCommandesAvecSupabase = async function () {
         }
 
         console.info(
-            "Synchronisation terminée :",
-            commandesFusionnees.length,
-            "commande(s)."
+            "Récupération terminée :",
+            commandesDistantes.length,
+            "commande(s) depuis Supabase."
         );
 
         return true;
 
     } catch (erreur) {
         console.error(
-            "Erreur de synchronisation des commandes :",
+            "Erreur de récupération des commandes :",
             erreur
         );
 
