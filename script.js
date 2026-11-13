@@ -889,19 +889,49 @@ dateCreation: c.dateCreation || new Date().toISOString()
     }
 }
 
-function sauvegarderCommandes() {
+
+async function sauvegarderCommandes() {
     try {
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(commandes)
+        if (!Array.isArray(commandes)) {
+            throw new Error("La liste des commandes est invalide.");
+        }
+
+        // Enregistrer les commandes dans IndexedDB.
+        await enregistrerCommandesIndexedDB(commandes);
+
+        // Vérifier que les commandes sont bien enregistrées.
+        const commandesVerifiees = await lireCommandesIndexedDB();
+
+        const idsEnregistres = new Set(
+            commandesVerifiees.map(c => String(c.id))
         );
+
+        const toutesEnregistrees = commandes.every(
+            c => idsEnregistres.has(String(c.id))
+        );
+
+        if (!toutesEnregistrees) {
+            throw new Error(
+                "Certaines commandes n'ont pas été enregistrées."
+            );
+        }
+
+        console.info(
+            "Sauvegarde IndexedDB réussie :",
+            commandes.length,
+            "commande(s)."
+        );
+
         return true;
+
     } catch (erreur) {
-        console.error("Erreur de sauvegarde :", erreur);
+        console.error("Erreur de sauvegarde IndexedDB :", erreur);
+
         alert(
-            "Impossible d'enregistrer les commandes. " +
-            "Vérifie l'espace de stockage disponible."
+            "Impossible d'enregistrer les commandes dans IndexedDB. " +
+            erreur.message
         );
+
         return false;
     }
 }
@@ -1489,10 +1519,9 @@ if (lieuLivraison) {
    SUPPRESSION
 ========================================================= */
 
-
 async function supprimerCommande(id) {
 
-    const commande = commandes.find(c => c.id === id);
+    const commande = commandes.find(c => String(c.id) === String(id));
     if (!commande) return;
 
     const confirmation = confirm(
@@ -1501,13 +1530,11 @@ async function supprimerCommande(id) {
 
     if (!confirmation) return;
 
-    // Vérifier la connexion Internet
     if (!navigator.onLine) {
         alert("Connexion Internet obligatoire pour supprimer une commande.");
         return;
     }
 
-    // Vérifier le client Supabase
     const client = window.clientSupabase;
 
     if (!client) {
@@ -1515,9 +1542,11 @@ async function supprimerCommande(id) {
         return;
     }
 
+    // Conserver une copie pour pouvoir restaurer la commande.
+    const commandesAvantSuppression = [...commandes];
+
     try {
 
-        // Vérifier la session utilisateur
         const { data: sessionData, error: sessionError } =
             await client.auth.getSession();
 
@@ -1530,7 +1559,7 @@ async function supprimerCommande(id) {
             return;
         }
 
-        // Supprimer d'abord la commande sur Supabase
+        // Supprimer sur Supabase.
         const { data: suppression, error: suppressionErreur } =
             await client
                 .from("commandes")
@@ -1541,7 +1570,6 @@ async function supprimerCommande(id) {
 
         if (suppressionErreur) throw suppressionErreur;
 
-        // Vérifier que Supabase a réellement supprimé la commande
         if (!suppression || suppression.length === 0) {
             alert(
                 "Supabase n'a pas confirmé la suppression. La commande est conservée."
@@ -1549,19 +1577,30 @@ async function supprimerCommande(id) {
             return;
         }
 
-        // Supabase a confirmé : supprimer localement
-        commandes = commandes.filter(c => c.id !== id);
+        // Supabase a confirmé la suppression.
+        commandes = commandes.filter(
+            c => String(c.id) !== String(id)
+        );
 
         selectionImpression.delete(id);
 
-        // Renuméroter les commandes restantes
         renumeroterCommandes();
 
-        // Enregistrer sur cet appareil
-        if (!sauvegarderCommandes()) {
+        // Enregistrer le nouvel état dans IndexedDB.
+        const sauvegardeReussie = await sauvegarderCommandes();
+
+        if (!sauvegardeReussie) {
+
+            // Restaurer la liste en mémoire.
+            commandes = commandesAvantSuppression;
+
+            afficherCommandes();
+
             alert(
-                "La commande a été supprimée sur Supabase, mais l'enregistrement local a échoué. Recharge l'application et vérifie la synchronisation."
+                "Supabase a supprimé la commande, mais IndexedDB n'a pas confirmé l'enregistrement. " +
+                "Ne supprime rien d'autre. Une vérification de synchronisation est nécessaire."
             );
+
             return;
         }
 
@@ -1571,14 +1610,15 @@ async function supprimerCommande(id) {
             reinitialiserFormulaire();
         }
 
-        alert("Commande supprimée de Supabase et de cet appareil.");
+        alert("Commande supprimée de Supabase et enregistrée dans IndexedDB.");
 
     } catch (erreur) {
 
         console.error("Erreur de suppression :", erreur);
 
         alert(
-            "La suppression n'a pas pu être confirmée sur Supabase. La commande est conservée sur cet appareil."
+            "La suppression n'a pas pu être confirmée sur Supabase. " +
+            "Vérifie ta connexion et réessaie."
         );
     }
 }
@@ -1586,7 +1626,6 @@ async function supprimerCommande(id) {
 /* =========================================================
    ENREGISTREMENT
 ========================================================= */
-
 async function enregistrerCommande(evenement) {
     evenement.preventDefault();
 
@@ -1612,27 +1651,26 @@ async function enregistrerCommande(evenement) {
 
     const ancienne = commandes.find(c => c.id === id);
 
-   let photo = "";
+    let photo = "";
 
-if (
-    photoCommande &&
-    photoCommande.files &&
-    photoCommande.files.length > 0
-) {
-    const fichier = photoCommande.files[0];
+    if (
+        photoCommande &&
+        photoCommande.files &&
+        photoCommande.files.length > 0
+    ) {
+        const fichier = photoCommande.files[0];
+        photo = await compresserPhotoCommande(fichier);
+    }
 
-    photo = await compresserPhotoCommande(fichier);
-}
-   
     const commande = {
-    id,
-    numeroCommande: obtenirValeur(numeroCommande).trim(),
-    client: nomClient.value.trim(),
-    telephone: obtenirValeur(telephoneClient).trim(),
-    whatsapp: obtenirValeur(whatsappClient).trim(),
-    facebook: obtenirValeur(facebookClient).trim(),
-    lieu: obtenirValeur(lieuLivraison).trim(),
-    produit: nomProduit.value.trim(),
+        id,
+        numeroCommande: obtenirValeur(numeroCommande).trim(),
+        client: nomClient.value.trim(),
+        telephone: obtenirValeur(telephoneClient).trim(),
+        whatsapp: obtenirValeur(whatsappClient).trim(),
+        facebook: obtenirValeur(facebookClient).trim(),
+        lieu: obtenirValeur(lieuLivraison).trim(),
+        produit: nomProduit.value.trim(),
         photo: photo || ancienne?.photo || "",
         quantite,
         prix,
@@ -1640,7 +1678,7 @@ if (
         fraisLivraison: frais,
         statut: obtenirValeur(statut, "En attente"),
         dateCommande: obtenirValeur(dateCommande),
-dateCreation: ancienne?.dateCreation || new Date().toISOString()
+        dateCreation: ancienne?.dateCreation || new Date().toISOString()
     };
 
     if (!commande.client || !commande.produit) {
@@ -1649,12 +1687,16 @@ dateCreation: ancienne?.dateCreation || new Date().toISOString()
     }
 
     if (ancienne) {
-        commandes = commandes.map(c => c.id === id ? commande : c);
+        commandes = commandes.map(c =>
+            c.id === id ? commande : c
+        );
     } else {
         commandes.push(commande);
     }
 
-    if (sauvegarderCommandes()) {
+    const sauvegardeReussie = await sauvegarderCommandes();
+
+    if (sauvegardeReussie) {
         reinitialiserFormulaire();
         afficherCommandes();
     }
@@ -1917,6 +1959,9 @@ async function importerCommandes(evenement) {
     const fichier = evenement.target.files?.[0];
     if (!fichier) return;
 
+    // Garder une copie pour restaurer les données en cas d'échec.
+    const commandesAvantImportation = [...commandes];
+
     try {
         const texte = await fichier.text();
         const donnees = JSON.parse(texte);
@@ -1929,10 +1974,14 @@ async function importerCommandes(evenement) {
             .filter(c => c && typeof c === "object")
             .map(c => ({
                 id: String(c.id || genererId()),
+                numeroCommande: String(c.numeroCommande || ""),
                 client: String(c.client || ""),
                 telephone: String(c.telephone || ""),
+                whatsapp: String(c.whatsapp || ""),
+                facebook: String(c.facebook || ""),
                 lieu: String(c.lieu || ""),
                 produit: String(c.produit || ""),
+                photo: String(c.photo || ""),
                 quantite: Math.max(1, nombre(c.quantite || 1)),
                 prix: Math.max(0, nombre(c.prix)),
                 acompte: Math.max(0, nombre(c.acompte)),
@@ -1941,9 +1990,8 @@ async function importerCommandes(evenement) {
                     nombre(c.fraisLivraison)
                 ),
                 statut: String(c.statut || "En attente"),
-        dateCommande: String(c.dateCommande || ""),
-dateCreation: c.dateCreation || new Date().toISOString()
-               
+                dateCommande: String(c.dateCommande || ""),
+                dateCreation: c.dateCreation || new Date().toISOString()
             }))
             .filter(c => c.client && c.produit);
 
@@ -1954,33 +2002,49 @@ dateCreation: c.dateCreation || new Date().toISOString()
             return;
         }
 
-        const ids = new Set(commandes.map(c => c.id));
+        const ids = new Set(commandes.map(c => String(c.id)));
 
         nouvelles.forEach(c => {
-            if (ids.has(c.id)) {
+            if (ids.has(String(c.id))) {
                 c.id = genererId();
             }
-            ids.add(c.id);
+
+            ids.add(String(c.id));
             commandes.push(c);
         });
 
-        if (sauvegarderCommandes()) {
+        const sauvegardeReussie = await sauvegarderCommandes();
+
+        if (sauvegardeReussie) {
             afficherCommandes();
             alert(`${nouvelles.length} commande(s) importée(s).`);
+        } else {
+            commandes = commandesAvantImportation;
+            afficherCommandes();
+
+            alert(
+                "L'importation a échoué dans IndexedDB. " +
+                "Les commandes précédentes ont été conservées en mémoire."
+            );
         }
+
     } catch (erreur) {
+        commandes = commandesAvantImportation;
+
         console.error("Erreur d'importation :", erreur);
         alert("Le fichier JSON est invalide ou illisible.");
+
     } finally {
         evenement.target.value = "";
     }
 }
 
+
 /* =========================================================
    SUPPRESSION DE TOUTES LES COMMANDES
 ========================================================= */
 
-function toutSupprimer() {
+async function toutSupprimer() {
     if (commandes.length === 0) {
         alert("Aucune commande à supprimer.");
         return;
@@ -1999,23 +2063,32 @@ function toutSupprimer() {
 
     if (!secondeConfirmation) return;
 
-    const anciennesCommandes = commandes;
+    const anciennesCommandes = [...commandes];
+
     commandes = [];
 
-    if (sauvegarderCommandes()) {
+    const sauvegardeReussie = await sauvegarderCommandes();
+
+    if (sauvegardeReussie) {
         selectionImpression.clear();
         reinitialiserFormulaire();
         afficherCommandes();
+
+        alert("Toutes les commandes locales ont été supprimées.");
     } else {
         commandes = anciennesCommandes;
         afficherCommandes();
+
+        alert(
+            "La suppression n'a pas pu être enregistrée. " +
+            "Les commandes précédentes ont été conservées."
+        );
     }
 }
 
 /* =========================================================
    ÉVÉNEMENTS DU TABLEAU
 ========================================================= */
-
 commandesBody?.addEventListener("click", evenement => {
     const bouton = evenement.target.closest("button[data-action]");
     if (!bouton) return;
@@ -3328,8 +3401,7 @@ window.synchroniserCommandesAvecSupabase = async function () {
         const tailleLot = 5;
         let debut = 0;
 
-        // Récupérer les commandes en petits lots.
-        // Aucune écriture ou suppression sur Supabase.
+        // Récupération des commandes par petits lots.
         while (true) {
             const { data, error } = await client
                 .from("commandes")
@@ -3382,7 +3454,7 @@ window.synchroniserCommandesAvecSupabase = async function () {
         }
 
         // Fusionner les commandes par identifiant.
-        // Les données distantes sont prioritaires.
+        // Les données Supabase sont prioritaires.
         const fusion = new Map();
 
         const locales = Array.isArray(commandes)
@@ -3399,26 +3471,21 @@ window.synchroniserCommandesAvecSupabase = async function () {
 
         commandes = Array.from(fusion.values());
 
-        // Enregistrer uniquement sur cet appareil.
-        sauvegarderCommandes();
+        // Enregistrement dans IndexedDB, sans utiliser localStorage.
+        const sauvegardeReussie = await sauvegarderCommandes();
 
-        // Vérifier que la sauvegarde locale a bien été effectuée.
-        const sauvegarde = localStorage.getItem("gestionCommandesV1");
-
-        if (!sauvegarde) {
+        if (!sauvegardeReussie) {
             throw new Error(
-                "La sauvegarde locale des commandes a échoué."
+                "L'enregistrement des commandes dans IndexedDB a échoué."
             );
         }
 
-        const commandesVerifiees = JSON.parse(sauvegarde);
+        // Vérification finale.
+        const commandesVerifiees = await lireCommandesIndexedDB();
 
-        if (
-            !Array.isArray(commandesVerifiees) ||
-            commandesVerifiees.length !== commandes.length
-        ) {
+        if (commandesVerifiees.length < commandes.length) {
             throw new Error(
-                "La vérification des commandes enregistrées a échoué."
+                "La vérification du stockage IndexedDB a échoué."
             );
         }
 
@@ -3436,6 +3503,11 @@ window.synchroniserCommandesAvecSupabase = async function () {
             "commande(s) depuis Supabase."
         );
 
+        console.info(
+            "Commandes enregistrées dans IndexedDB :",
+            commandesVerifiees.length
+        );
+
         return true;
 
     } catch (erreur) {
@@ -3447,6 +3519,7 @@ window.synchroniserCommandesAvecSupabase = async function () {
         return false;
     }
 };
+
 
 /* =========================================================
    DÉMARRAGE
