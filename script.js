@@ -9,6 +9,175 @@ const PRODUITS_STORAGE_KEY = "crystalBoutikProduitsV1";
 const FICHES_PRODUITS_STORAGE_KEY =
     "crystalBoutikFichesProduitsV1";
 
+
+/* =========================================================
+   STOCKAGE INDEXEDDB DES COMMANDES
+   Migration sécurisée — Crystal Boutik
+========================================================= */
+
+const COMMANDES_DB_NAME = "CrystalBoutikCommandesDB";
+const COMMANDES_DB_VERSION = 1;
+const COMMANDES_STORE_NAME = "commandes";
+
+let commandesDB = null;
+
+function ouvrirBaseCommandes() {
+    return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+            reject(
+                new Error("IndexedDB n'est pas disponible dans ce navigateur.")
+            );
+            return;
+        }
+
+        if (commandesDB) {
+            resolve(commandesDB);
+            return;
+        }
+
+        const requete = indexedDB.open(
+            COMMANDES_DB_NAME,
+            COMMANDES_DB_VERSION
+        );
+
+        requete.onupgradeneeded = evenement => {
+            const db = evenement.target.result;
+
+            if (!db.objectStoreNames.contains(COMMANDES_STORE_NAME)) {
+                db.createObjectStore(COMMANDES_STORE_NAME, {
+                    keyPath: "id"
+                });
+            }
+        };
+
+        requete.onsuccess = evenement => {
+            commandesDB = evenement.target.result;
+
+            commandesDB.onversionchange = () => {
+                commandesDB.close();
+                commandesDB = null;
+            };
+
+            resolve(commandesDB);
+        };
+
+        requete.onerror = () => {
+            reject(requete.error);
+        };
+
+        requete.onblocked = () => {
+            reject(
+                new Error("Ouverture de la base bloquée par un autre onglet.")
+            );
+        };
+    });
+}
+
+async function enregistrerCommandesIndexedDB(liste) {
+    const db = await ouvrirBaseCommandes();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(
+            COMMANDES_STORE_NAME,
+            "readwrite"
+        );
+
+        const magasin = transaction.objectStore(
+            COMMANDES_STORE_NAME
+        );
+
+        liste.forEach(commande => {
+            magasin.put(commande);
+        });
+
+        transaction.oncomplete = () => resolve(true);
+
+        transaction.onerror = () => {
+            reject(transaction.error);
+        };
+
+        transaction.onabort = () => {
+            reject(transaction.error || new Error(
+                "Enregistrement IndexedDB interrompu."
+            ));
+        };
+    });
+}
+
+async function lireCommandesIndexedDB() {
+    const db = await ouvrirBaseCommandes();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(
+            COMMANDES_STORE_NAME,
+            "readonly"
+        );
+
+        const requete = transaction
+            .objectStore(COMMANDES_STORE_NAME)
+            .getAll();
+
+        requete.onsuccess = () => {
+            resolve(requete.result || []);
+        };
+
+        requete.onerror = () => {
+            reject(requete.error);
+        };
+    });
+}
+
+async function compterCommandesIndexedDB() {
+    const db = await ouvrirBaseCommandes();
+
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(
+            COMMANDES_STORE_NAME,
+            "readonly"
+        );
+
+        const requete = transaction
+            .objectStore(COMMANDES_STORE_NAME)
+            .count();
+
+        requete.onsuccess = () => resolve(requete.result);
+
+        requete.onerror = () => reject(requete.error);
+    });
+}
+
+/* =========================================================
+   TEST DU STOCKAGE INDEXEDDB
+========================================================= */
+
+window.testerStockageCommandes = async function () {
+    try {
+        const db = await ouvrirBaseCommandes();
+        const nombreCommandes = await compterCommandesIndexedDB();
+
+        console.log("Base IndexedDB ouverte :", db.name);
+        console.log("Nombre de commandes dans IndexedDB :", nombreCommandes);
+
+        alert(
+            "IndexedDB fonctionne correctement.\n" +
+            "Commandes actuellement enregistrées : " +
+            nombreCommandes
+        );
+
+        return true;
+
+    } catch (erreur) {
+        console.error("Erreur de test IndexedDB :", erreur);
+
+        alert(
+            "Impossible d'ouvrir IndexedDB : " +
+            erreur.message
+        );
+
+        return false;
+    }
+};
+
 // =====================================================
 // DIAGNOSTIC DU STOCKAGE — LECTURE UNIQUEMENT
 // Ne modifie et ne supprime aucune donnée.
