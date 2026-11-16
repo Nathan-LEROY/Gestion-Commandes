@@ -1719,7 +1719,7 @@ async function enregistrerCommande(evenement) {
             numero_commande: commande.numeroCommande,
             nom_client: commande.client,
             telephone: commande.telephone,
-            "WhatsApp": commande.whatsapp,
+            whatsapp: commande.whatsapp,
             facebook: commande.facebook,
             lieu_livraison: commande.lieu,
             nom_produit: commande.produit,
