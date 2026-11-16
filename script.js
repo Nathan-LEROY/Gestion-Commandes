@@ -1732,7 +1732,7 @@ async function enregistrerCommande(evenement) {
             date_commande: commande.dateCommande,
             donnees: commande,
             created_at: commande.dateCreation,
-            update_at: maintenant
+            updated_at: maintenant
         };
 
         // Enregistrer ou actualiser la commande sur Supabase
