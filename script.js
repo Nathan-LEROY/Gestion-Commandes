@@ -1625,6 +1625,7 @@ async function supprimerCommande(id) {
     }
 }
 
+
 /* =========================================================
    ENREGISTREMENT
 ========================================================= */
@@ -1649,9 +1650,9 @@ async function enregistrerCommande(evenement) {
         return;
     }
 
-    const id = commandeEnCoursModification || genererId();
+    const id = String(commandeEnCoursModification || genererId());
 
-    const ancienne = commandes.find(c => c.id === id);
+    const ancienne = commandes.find(c => String(c.id) === id);
 
     let photo = "";
 
@@ -1688,19 +1689,95 @@ async function enregistrerCommande(evenement) {
         return;
     }
 
-    if (ancienne) {
-        commandes = commandes.map(c =>
-            c.id === id ? commande : c
-        );
-    } else {
-        commandes.push(commande);
+    // Vérifier la connexion Supabase
+    const client = window.clientSupabase;
+
+    if (!client) {
+        alert("Connexion Supabase indisponible. La commande n'a pas été envoyée.");
+        return;
     }
 
-    const sauvegardeReussie = await sauvegarderCommandes();
+    try {
+        const { data: sessionData, error: sessionError } =
+            await client.auth.getSession();
 
-    if (sauvegardeReussie) {
+        if (sessionError) throw sessionError;
+
+        const utilisateur = sessionData.session?.user;
+
+        if (!utilisateur) {
+            alert("Veuillez vous connecter avant d'enregistrer une commande.");
+            return;
+        }
+
+        // Préparer les données pour Supabase
+        const maintenant = new Date().toISOString();
+
+        const donneesSupabase = {
+            id: commande.id,
+            user_id: utilisateur.id,
+            numero_commande: commande.numeroCommande,
+            nom_client: commande.client,
+            telephone: commande.telephone,
+            "WhatsApp": commande.whatsapp,
+            facebook: commande.facebook,
+            lieu_livraison: commande.lieu,
+            nom_produit: commande.produit,
+            photo: commande.photo,
+            nombre_produit: commande.quantite,
+            prix_produit: commande.prix,
+            avance: commande.acompte,
+            frais_livraison: commande.fraisLivraison,
+            statut: commande.statut,
+            date_commande: commande.dateCommande,
+            donnees: commande,
+            created_at: commande.dateCreation,
+            update_at: maintenant
+        };
+
+        // Enregistrer ou actualiser la commande sur Supabase
+        const { error: erreurSupabase } = await client
+            .from("commandes")
+            .upsert(donneesSupabase, {
+                onConflict: "id"
+            });
+
+        if (erreurSupabase) {
+            throw erreurSupabase;
+        }
+
+        console.info("Commande enregistrée sur Supabase :", commande.id);
+
+        // Mettre à jour la liste locale
+        if (ancienne) {
+            commandes = commandes.map(c =>
+                String(c.id) === id ? commande : c
+            );
+        } else {
+            commandes.push(commande);
+        }
+
+        // Enregistrer dans IndexedDB
+        const sauvegardeReussie = await sauvegarderCommandes();
+
+        if (!sauvegardeReussie) return;
+
         reinitialiserFormulaire();
         afficherCommandes();
+
+        alert(
+            ancienne
+                ? "Commande modifiée et synchronisée avec succès."
+                : "Commande enregistrée et synchronisée avec succès."
+        );
+
+    } catch (erreur) {
+        console.error("Erreur d'enregistrement de la commande :", erreur);
+
+        alert(
+            "La commande n'a pas pu être enregistrée sur Supabase.\n\n" +
+            "Détail : " + (erreur.message || "Erreur inconnue")
+        );
     }
 }
 
