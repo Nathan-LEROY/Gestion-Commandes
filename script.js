@@ -297,6 +297,10 @@ function afficherSection(section) {
         idSection = "sectionCommandes";
     }
 
+   if (section === "historique") {
+    idSection = "sectionHistorique";
+}
+
     if (section === "impression") {
         idSection = "sectionImpression";
     }
