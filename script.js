@@ -3477,7 +3477,7 @@ window.synchroniserCommandesAvecSupabase = async function () {
         console.info("Récupération des commandes depuis Supabase...");
 
         const commandesDistantes = [];
-        const tailleLot = 5;
+        const tailleLot = 500;
         let debut = 0;
 
         // Récupération des commandes par petits lots.
