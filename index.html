@@ -95,6 +95,10 @@
         📋 Commandes
     </button>
 
+    <button type="button" class="menu-item" data-section="historique">
+    📚 Historique
+</button>
+    
     <button type="button" class="menu-item" data-section="impression">
     🖨️ Impression
     </button>
@@ -735,6 +739,59 @@
             </section>
 
         </main>
+
+        
+<!-- =================================================
+     HISTORIQUE DES COMMANDES LIVRÉES
+================================================== -->
+
+<section class="card" id="sectionHistorique" style="display:none;">
+
+    <div class="section-title">
+        <div>
+            <h2>📚 Historique des commandes</h2>
+            <p>Retrouve ici toutes les commandes dont le statut est Livré.</p>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="search-box">
+            <label for="rechercheHistorique">🔍 Rechercher</label>
+            <input
+                id="rechercheHistorique"
+                type="search"
+                placeholder="Client ou produit..."
+            >
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Produit</th>
+                    <th>Qté</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                    <th>Acompte</th>
+                    <th>Reste</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="historiqueBody"></tbody>
+        </table>
+    </div>
+
+    <div id="aucunHistorique" class="empty-state hidden">
+        <div>📚</div>
+        <h3>Aucune commande livrée</h3>
+        <p>Les commandes avec le statut Livré apparaîtront ici.</p>
+    </div>
+
+</section>
 
 <!-- =================================================
      PRODUITS
