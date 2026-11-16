@@ -3449,156 +3449,212 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
     });
 }
 
+
 /* =========================================================
-   SYNCHRONISATION DES COMMANDES AVEC SUPABASE
+   SYNCHRONISATION OPTIMISÉE DES COMMANDES AVEC SUPABASE
 ========================================================= */
 
 window.synchroniserCommandesAvecSupabase = async function () {
-    const client = window.clientSupabase;
 
-    if (!client) {
-        console.warn("Supabase n'est pas encore prêt.");
-        return false;
+    // Éviter plusieurs synchronisations simultanées.
+    if (window._synchronisationCommandesEnCours) {
+        return await window._synchronisationCommandesEnCours;
     }
 
-    try {
-        const { data: sessionData, error: sessionError } =
-            await client.auth.getSession();
+    const operation = (async function () {
 
-        if (sessionError) throw sessionError;
+        const client = window.clientSupabase;
 
-        const utilisateur = sessionData.session?.user;
-
-        if (!utilisateur) {
-            console.warn("Aucun utilisateur connecté.");
+        if (!client) {
+            console.warn("Supabase n'est pas encore prêt.");
             return false;
         }
 
-        console.info("Récupération des commandes depuis Supabase...");
-
-        const commandesDistantes = [];
-        const tailleLot = 500;
-        let debut = 0;
-
-        // Récupération des commandes par petits lots.
-        while (true) {
-            const { data, error } = await client
-                .from("commandes")
-                .select("*")
-                .eq("user_id", utilisateur.id)
-                .order("id", { ascending: true })
-                .range(debut, debut + tailleLot - 1);
-
-            if (error) throw error;
-
-            if (!data || data.length === 0) break;
-
-            data.forEach(ligne => {
-                if (
-                    ligne.donnees &&
-                    typeof ligne.donnees === "object"
-                ) {
-                    commandesDistantes.push({
-                        ...ligne.donnees,
-                        id: String(ligne.id)
-                    });
-                } else {
-                    commandesDistantes.push({
-                        id: String(ligne.id),
-                        numeroCommande: ligne.numero_commande || "",
-                        client: ligne.nom_client || "",
-                        telephone: ligne.telephone || "",
-                        whatsapp: ligne.whatsapp || "",
-                        facebook: ligne.facebook || "",
-                        lieu: ligne.lieu_livraison || "",
-                        produit: ligne.nom_produit || "",
-                        photo: ligne.photo || "",
-                        quantite: Number(ligne.nombre_produit || 1),
-                        prix: Number(ligne.prix_produit || 0),
-                        acompte: Number(ligne.avance || 0),
-                        fraisLivraison: Number(
-                            ligne.frais_livraison || 0
-                        ),
-                        statut: ligne.statut || "En attente",
-                        dateCommande: ligne.date_commande || "",
-                        dateCreation:
-                            ligne.created_at || new Date().toISOString()
-                    });
-                }
-            });
-
-            debut += data.length;
-
-            if (data.length < tailleLot) break;
-        }
-
-        // Fusionner les commandes par identifiant.
-        // Les données Supabase sont prioritaires.
-        const fusion = new Map();
-
-        const locales = Array.isArray(commandes)
-            ? commandes
+        const anciennesCommandes = Array.isArray(commandes)
+            ? [...commandes]
             : [];
 
-        locales.forEach(commande => {
-            fusion.set(String(commande.id), commande);
-        });
+        try {
+            const { data: sessionData, error: sessionError } =
+                await client.auth.getSession();
 
-        commandesDistantes.forEach(commande => {
-            fusion.set(String(commande.id), commande);
-        });
+            if (sessionError) throw sessionError;
 
-        commandes = Array.from(fusion.values());
+            const utilisateur = sessionData.session?.user;
 
-        // Enregistrement dans IndexedDB, sans utiliser localStorage.
-        const sauvegardeReussie = await sauvegarderCommandes();
+            if (!utilisateur) {
+                console.warn("Aucun utilisateur connecté.");
+                return false;
+            }
 
-        if (!sauvegardeReussie) {
-            throw new Error(
-                "L'enregistrement des commandes dans IndexedDB a échoué."
+            console.info("Début de la synchronisation complète...");
+
+            const commandesDistantes = [];
+            const tailleLot = 500;
+            let debut = 0;
+            let nombreTotalAttendu = null;
+
+            // Récupération paginée avec comptage exact.
+            while (true) {
+
+                const { data, error, count } = await client
+                    .from("commandes")
+                    .select("*", { count: "exact" })
+                    .eq("user_id", utilisateur.id)
+                    .order("id", { ascending: true })
+                    .range(debut, debut + tailleLot - 1);
+
+                if (error) throw error;
+
+                if (nombreTotalAttendu === null) {
+                    nombreTotalAttendu = count;
+
+                    if (nombreTotalAttendu === null) {
+                        throw new Error(
+                            "Impossible de vérifier le nombre total de commandes."
+                        );
+                    }
+                }
+
+                if (!data || data.length === 0) break;
+
+                data.forEach(ligne => {
+
+                    if (
+                        ligne.donnees &&
+                        typeof ligne.donnees === "object"
+                    ) {
+                        commandesDistantes.push({
+                            ...ligne.donnees,
+                            id: String(ligne.id)
+                        });
+
+                    } else {
+                        commandesDistantes.push({
+                            id: String(ligne.id),
+                            numeroCommande: ligne.numero_commande || "",
+                            client: ligne.nom_client || "",
+                            telephone: ligne.telephone || "",
+                            whatsapp: ligne.whatsapp || "",
+                            facebook: ligne.facebook || "",
+                            lieu: ligne.lieu_livraison || "",
+                            produit: ligne.nom_produit || "",
+                            photo: ligne.photo || "",
+                            quantite: Number(ligne.nombre_produit || 1),
+                            prix: Number(ligne.prix_produit || 0),
+                            acompte: Number(ligne.avance || 0),
+                            fraisLivraison: Number(
+                                ligne.frais_livraison || 0
+                            ),
+                            statut: ligne.statut || "En attente",
+                            dateCommande: ligne.date_commande || "",
+                            dateCreation:
+                                ligne.created_at || new Date().toISOString()
+                        });
+                    }
+                });
+
+                debut += data.length;
+
+                if (data.length < tailleLot) break;
+            }
+
+            // Ne jamais remplacer les données locales
+            // si la récupération distante est incomplète.
+            if (commandesDistantes.length !== nombreTotalAttendu) {
+                throw new Error(
+                    "Récupération incomplète : " +
+                    commandesDistantes.length + " sur " +
+                    nombreTotalAttendu + " commandes."
+                );
+            }
+
+            // Vérifier l'unicité des identifiants.
+            const identifiants = new Set(
+                commandesDistantes.map(c => String(c.id))
             );
-        }
 
-        // Vérification finale.
-        const commandesVerifiees = await lireCommandesIndexedDB();
+            if (identifiants.size !== commandesDistantes.length) {
+                throw new Error(
+                    "Des identifiants de commandes sont en double."
+                );
+            }
 
-        if (commandesVerifiees.length < commandes.length) {
-            throw new Error(
-                "La vérification du stockage IndexedDB a échoué."
+            // Supabase devient la référence de la liste complète.
+            // Les anciennes commandes locales absentes de Supabase
+            // ne seront plus réintroduites.
+            commandes = commandesDistantes;
+
+            const sauvegardeReussie = await sauvegarderCommandes();
+
+            if (!sauvegardeReussie) {
+                commandes = anciennesCommandes;
+                return false;
+            }
+
+            // Vérification finale du contenu IndexedDB.
+            const commandesVerifiees = await lireCommandesIndexedDB();
+
+            const idsVerifies = new Set(
+                commandesVerifiees.map(c => String(c.id))
             );
+
+            const stockageComplet =
+                commandesVerifiees.length === commandesDistantes.length &&
+                commandesDistantes.every(
+                    c => idsVerifies.has(String(c.id))
+                );
+
+            if (!stockageComplet) {
+                await enregistrerCommandesIndexedDB(
+                    anciennesCommandes
+                );
+
+                commandes = anciennesCommandes;
+
+                throw new Error(
+                    "La vérification finale d'IndexedDB a échoué."
+                );
+            }
+
+            if (typeof afficherCommandes === "function") {
+                afficherCommandes();
+            }
+
+            if (typeof afficherStatistiques === "function") {
+                afficherStatistiques();
+            }
+
+            console.info(
+                "Synchronisation terminée :",
+                commandesDistantes.length,
+                "commandes."
+            );
+
+            return true;
+
+        } catch (erreur) {
+
+            console.error(
+                "Erreur de synchronisation des commandes :",
+                erreur
+            );
+
+            commandes = anciennesCommandes;
+
+            return false;
         }
 
-        if (typeof afficherCommandes === "function") {
-            afficherCommandes();
-        }
+    })();
 
-        if (typeof afficherStatistiques === "function") {
-            afficherStatistiques();
-        }
+    window._synchronisationCommandesEnCours = operation;
 
-        console.info(
-            "Récupération terminée :",
-            commandesDistantes.length,
-            "commande(s) depuis Supabase."
-        );
-
-        console.info(
-            "Commandes enregistrées dans IndexedDB :",
-            commandesVerifiees.length
-        );
-
-        return true;
-
-    } catch (erreur) {
-        console.error(
-            "Erreur de récupération des commandes :",
-            erreur
-        );
-
-        return false;
+    try {
+        return await operation;
+    } finally {
+        window._synchronisationCommandesEnCours = null;
     }
 };
-
 
 /* =========================================================
    DÉMARRAGE
