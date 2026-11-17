@@ -1102,13 +1102,19 @@ function afficherStatistiques() {
         commandesFiltrees
             .map(c => String(c.client || "").trim().toLowerCase())
             .filter(Boolean)
-    );
+    );  
+   
+   // Commandes réellement en attente
+const statutsEnAttente = [
+    "En attente",
+    "Acompte reçu",
+    "En préparation",
+    "Prêt"
+];
 
-    // Commandes non soldées
-    const totalEnAttente = commandesFiltrees.filter(
-        commande => commande.statut !== "Payé"
-    ).length;
-
+const totalEnAttente = commandesFiltrees.filter(
+    commande => statutsEnAttente.includes(commande.statut)
+).length;
     // Commandes soldées
     const totalSolde = commandesFiltrees.filter(
         commande => commande.statut === "Payé"
