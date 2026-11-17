@@ -634,6 +634,9 @@ const acompte = document.getElementById("acompte");
 const fraisLivraison = document.getElementById("fraisLivraison");
 const statut = document.getElementById("statut");
 
+const publicationAssociee =
+    document.getElementById("publicationAssociee");
+
 const totalProduit = document.getElementById("totalProduit");
 const resteCharge = document.getElementById("resteCharge");
 
@@ -4031,6 +4034,44 @@ function sauvegarderPublicationsDepenses(publications) {
     );
 }
 
+/* =========================================================
+   PUBLICATIONS DISPONIBLES POUR LES COMMANDES
+========================================================= */
+
+function actualiserListePublicationsCommandes() {
+    const select = document.getElementById("publicationAssociee");
+
+    if (!select) return;
+
+    const valeurActuelle = select.value;
+    const publications = chargerPublicationsDepenses();
+
+    select.innerHTML = `
+        <option value="">
+            Aucune publication sélectionnée
+        </option>
+    `;
+
+    publications.forEach(publication => {
+        const option = document.createElement("option");
+
+        option.value = String(publication.id);
+        option.textContent =
+            `${publication.nom} — ${publication.date}`;
+
+        select.appendChild(option);
+    });
+
+    // Conserver la sélection si elle existe encore.
+    if (
+        publications.some(
+            publication => String(publication.id) === valeurActuelle
+        )
+    ) {
+        select.value = valeurActuelle;
+    }
+}
+
 function formaterArPublication(montant) {
     return Math.round(Number(montant) || 0).toLocaleString("fr-FR") + " Ar";
 }
@@ -4385,6 +4426,7 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
 afficherLignesDepensesPublication();
 afficherPublicationsDepenses();
 actualiserTotauxPublication();
+actualiserListePublicationsCommandes();
 
 /* =========================================
    PERSONNALISATION GLOBALE DU TEXTE
