@@ -1751,6 +1751,9 @@ function reinitialiserFormulaire() {
 
     commandeForm.reset();
 
+   if (publicationAssociee) {
+    publicationAssociee.value = "";
+}
    commandeEnCoursModification = null;
    
     if (commandeId) commandeId.value = "";
@@ -1831,6 +1834,12 @@ if (lieuLivraison) {
         statut.value = commande.statut;
     }
 
+   // Restaurer la publication associée à cette commande
+actualiserListePublicationsCommandes();
+
+if (publicationAssociee) {
+    publicationAssociee.value = commande.publicationId || "";
+}
     definirTexte(
         document.getElementById("formTitle"),
         "✏️ Modifier la commande"
@@ -2012,6 +2021,7 @@ async function enregistrerCommande(evenement) {
         acompte: avance,
         fraisLivraison: frais,
         statut: obtenirValeur(statut, "En attente"),
+        publicationId: publicationAssociee?.value || "",
         dateCommande: obtenirValeur(dateCommande),
         dateCreation: ancienne?.dateCreation || new Date().toISOString()
     };
