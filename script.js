@@ -4143,6 +4143,7 @@ function afficherLignesDepensesPublication() {
     actualiserTotauxPublication();
 }
 
+
 function afficherPublicationsDepenses() {
     const liste = document.getElementById("listePublicationsDepenses");
     if (!liste) return;
@@ -4155,12 +4156,12 @@ function afficherPublicationsDepenses() {
     }
 
     liste.innerHTML = publications.map(publication => {
+
+        // 1. Calculer les dépenses de cette publication
         const depenses = (publication.depenses || []).map(ligne => {
-            // Compatibilité avec les anciennes publications :
-            // les anciens montants USD sont convertis en Ar
-            // à l'aide du taux sauvegardé.
             const montantAr = ligne.devise === "USD"
-                ? (Number(ligne.montant) || 0) * (Number(publication.taux) || 0)
+                ? (Number(ligne.montant) || 0) *
+                  (Number(publication.taux) || 0)
                 : Number(ligne.montant) || 0;
 
             return {
@@ -4169,10 +4170,26 @@ function afficherPublicationsDepenses() {
             };
         });
 
-        const total = depenses.reduce(
+        const totalDepenses = depenses.reduce(
             (somme, ligne) => somme + ligne.montantAr,
             0
         );
+
+        // 2. Récupérer uniquement les commandes associées
+        const commandesPublication = commandes.filter(commande =>
+            String(commande.publicationId || "") ===
+            String(publication.id)
+        );
+
+        // 3. Calculer tous les revenus des commandes associées
+        const totalRevenus = commandesPublication.reduce(
+            (somme, commande) =>
+                somme + calculerTotalProduit(commande),
+            0
+        );
+
+        // 4. Calculer le bilan après publicité
+        const bilan = totalRevenus - totalDepenses;
 
         return `
             <details class="card">
@@ -4181,16 +4198,50 @@ function afficherPublicationsDepenses() {
                     — ${echapperHTML(publication.date)}
                 </summary>
 
-                <p>Dépenses totales : ${formaterArPublication(total)}</p>
+                <div class="bilan-publication">
 
-                <ul>
-                    ${depenses.map(ligne => `
-                        <li>
-                            ${echapperHTML(ligne.libelle)} :
-                            ${formaterArPublication(ligne.montantAr)}
-                        </li>
-                    `).join("")}
-                </ul>
+                    <h3>📊 Résultats de cette publication</h3>
+
+                    <p>
+                        🛒 Commandes associées :
+                        <strong>${commandesPublication.length}</strong>
+                    </p>
+
+                    <p>
+                        💰 Total des revenus :
+                        <strong>${formaterArPublication(totalRevenus)}</strong>
+                    </p>
+
+                    <p>
+                        📣 Dépenses publicitaires :
+                        <strong>${formaterArPublication(totalDepenses)}</strong>
+                    </p>
+
+                    <p>
+                        📊 Bilan après publicité :
+                        <strong>${formaterArPublication(bilan)}</strong>
+                    </p>
+
+                </div>
+
+                <hr>
+
+                <h4>📋 Détail des dépenses</h4>
+
+                ${
+                    depenses.length > 0
+                    ? `
+                        <ul>
+                            ${depenses.map(ligne => `
+                                <li>
+                                    ${echapperHTML(ligne.libelle)} :
+                                    ${formaterArPublication(ligne.montantAr)}
+                                </li>
+                            `).join("")}
+                        </ul>
+                    `
+                    : "<p>Aucune dépense enregistrée.</p>"
+                }
 
                 <button type="button" class="btn"
                     data-modifier-publication="${echapperHTML(publication.id)}">
@@ -4201,6 +4252,7 @@ function afficherPublicationsDepenses() {
                     data-supprimer-publication="${echapperHTML(publication.id)}">
                     Supprimer
                 </button>
+
             </details>
         `;
     }).join("");
