@@ -1098,18 +1098,6 @@ function afficherStatistiques() {
             .filter(Boolean)
     );
 
-    // Total des acomptes reçus
-    const totalAcomptes = commandesFiltrees.reduce(
-        (somme, commande) => somme + nombre(commande.acompte),
-        0
-    );
-
-    // Total des restes à payer
-    const totalRestes = commandesFiltrees.reduce(
-        (somme, commande) => somme + calculerResteProduit(commande),
-        0
-    );
-
     // Commandes non soldées
     const totalEnAttente = commandesFiltrees.filter(
         commande => commande.statut !== "Payé"
@@ -1129,16 +1117,6 @@ function afficherStatistiques() {
     definirTexte(
         document.getElementById("statCommandes"),
         String(commandesFiltrees.length)
-    );
-
-    definirTexte(
-        document.getElementById("statAcomptes"),
-        formaterMontant(totalAcomptes)
-    );
-
-    definirTexte(
-        document.getElementById("statRestes"),
-        formaterMontant(totalRestes)
     );
 
     definirTexte(
