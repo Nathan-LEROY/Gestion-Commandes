@@ -1105,11 +1105,9 @@ function afficherStatistiques() {
     );  
    
    // Commandes réellement en attente
-const statutsEnAttente = [
+  const statutsEnAttente = [
     "En attente",
-    "Acompte reçu",
-    "En préparation",
-    "Prêt"
+    "Acompte reçu"
 ];
 
 const totalEnAttente = commandesFiltrees.filter(
@@ -1238,14 +1236,12 @@ document.getElementById("periodeDashboard")
 ========================================================= */
 
 function classeStatut(valeur) {
-    const classes = {
-        "En attente": "statut-attente",
-        "Acompte reçu": "statut-acompte",
-        "En préparation": "statut-preparation",
-        "Prêt": "statut-pret",
-        "Livré": "statut-livre",
-        "Payé": "statut-paye"
-    };
+   const classes = {
+    "En attente": "statut-attente",
+    "Acompte reçu": "statut-acompte",
+    "Livré": "statut-livre",
+    "Payé": "statut-paye"
+};
 
     return classes[valeur] || "statut-attente";
 }
