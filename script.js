@@ -261,6 +261,7 @@ function afficherSection(section) {
     "sectionAjouter",
     "sectionProduits",
     "sectionCommandes",
+    "sectionHistorique",
     "sectionImpression",
     "sectionFichesProduits",    
     "sectionParametres",
