@@ -1166,8 +1166,9 @@ function obtenirCommandesFiltrees() {
     });
 }
 
+
 /* =========================================================
-   AFFICHER L'HISTORIQUE DES COMMANDES LIVRÉES
+   AFFICHER L'HISTORIQUE AVEC DES DOSSIERS PAR DATE
 ========================================================= */
 
 function afficherHistorique() {
@@ -1199,73 +1200,183 @@ function afficherHistorique() {
 
     tbody.innerHTML = "";
 
+    /* CLASSER LES COMMANDES PAR DATE */
+
+    const groupes = {};
+
     liste.forEach(commande => {
 
-        const tr = document.createElement("tr");
+        let date = "Date inconnue";
 
-        tr.innerHTML = `
-            <td>
-                <strong>${echapperHTML(commande.client || "")}</strong><br>
-                <small>${echapperHTML(commande.telephone || "")}</small>
-            </td>
+        if (commande.dateCommande) {
+            const [annee, mois, jour] = commande.dateCommande.split("-");
 
-            <td>
-                ${commande.photo
-                    ? `<img src="${echapperHTML(commande.photo)}"
-                         alt="Produit"
-                         style="width:45px;height:45px;object-fit:cover;">`
-                    : ""}
-                <br>
-                ${echapperHTML(commande.produit || "")}
-            </td>
+            if (annee && mois && jour) {
+                date = `${jour}/${mois}/${annee}`;
+            }
+        }
 
-            <td>${commande.quantite || 0}</td>
+        if (!groupes[date]) {
+            groupes[date] = [];
+        }
 
-            <td>${formaterMontant(commande.prix || 0)}</td>
+        groupes[date].push(commande);
+    });
 
-            <td>${formaterMontant(calculerTotalProduit(commande))}</td>
+    /* TRIER LES DATES */
 
-            <td>${formaterMontant(commande.acompte || 0)}</td>
+    const dates = Object.keys(groupes).sort((a, b) => {
 
-            <td>${formaterMontant(calculerResteProduit(commande))}</td>
+        if (a === "Date inconnue") return 1;
+        if (b === "Date inconnue") return -1;
 
-            <td>
-                <span class="${classeStatut(commande.statut)}">
-                    ${echapperHTML(commande.statut || "")}
-                </span>
-            </td>
+        const [jourA, moisA, anneeA] = a.split("/");
+        const [jourB, moisB, anneeB] = b.split("/");
 
-            <td>
-                <button type="button"
-                    data-action="modifier"
-                    data-id="${echapperHTML(String(commande.id))}">
-                    ✏️
-                </button>
+        return new Date(anneeB, moisB - 1, jourB)
+            - new Date(anneeA, moisA - 1, jourA);
+    });
 
-                <button type="button"
-                    data-action="supprimer"
-                    data-id="${echapperHTML(String(commande.id))}">
-                    🗑️
-                </button>
+    /* AFFICHER LES DOSSIERS */
 
-                <button type="button"
-                    data-action="whatsapp"
-                    data-id="${echapperHTML(String(commande.id))}">
-                    WhatsApp
-                </button>
+    dates.forEach(date => {
 
-                <button type="button"
-                    data-action="facebook"
-                    data-id="${echapperHTML(String(commande.id))}">
-                    Messenger
+        const commandesDuJour = groupes[date];
+
+        const ligneDossier = document.createElement("tr");
+
+        ligneDossier.dataset.dossier = "true";
+
+        ligneDossier.innerHTML = `
+            <td colspan="9">
+                <button
+                    type="button"
+                    class="btn secondary"
+                    style="
+                        width:100%;
+                        justify-content:flex-start;
+                        text-align:left;
+                        font-size:15px;
+                        padding:12px;
+                    "
+                    data-ouverture="ferme"
+                    onclick="
+                        let ligne = this.closest('tr').nextElementSibling;
+                        let ouvrir = this.dataset.ouverture === 'ferme';
+
+                        while (ligne && !ligne.dataset.dossier) {
+                            ligne.style.display = ouvrir ? '' : 'none';
+                            ligne = ligne.nextElementSibling;
+                        }
+
+                        this.dataset.ouverture = ouvrir ? 'ouvert' : 'ferme';
+                        this.innerHTML = ouvrir
+                            ? '📂 ${date} — ${commandesDuJour.length} commande(s)'
+                            : '📁 ${date} — ${commandesDuJour.length} commande(s)';
+                    "
+                >
+                    📁 ${date} — ${commandesDuJour.length} commande(s)
                 </button>
             </td>
         `;
 
-        tbody.appendChild(tr);
+        tbody.appendChild(ligneDossier);
+
+        /* COMMANDES DU DOSSIER */
+
+        commandesDuJour.forEach(commande => {
+
+            const ligne = document.createElement("tr");
+
+            ligne.style.display = "none";
+
+            ligne.innerHTML = `
+                <td>
+                    <strong>
+                        ${commande.numeroCommande
+                            ? `🔢 ${echapperHTML(commande.numeroCommande)}<br>`
+                            : ""}
+                        ${echapperHTML(commande.client || "")}
+                    </strong>
+
+                    ${commande.telephone
+                        ? `<br><small>📞 ${echapperHTML(commande.telephone)}</small>`
+                        : ""}
+
+                    ${commande.whatsapp
+                        ? `<br><small>💬 ${echapperHTML(commande.whatsapp)}</small>`
+                        : ""}
+                </td>
+
+                <td>
+                    ${commande.photo
+                        ? `<img
+                            src="${echapperHTML(commande.photo)}"
+                            alt="${echapperHTML(commande.produit || "")}"
+                            style="width:80px;height:80px;object-fit:cover;border-radius:8px;"
+                        ><br>`
+                        : ""
+                    }
+
+                    ${echapperHTML(commande.produit || "")}
+
+                    ${commande.lieu
+                        ? `<br><small>${echapperHTML(commande.lieu)}</small>`
+                        : ""}
+                </td>
+
+                <td>${echapperHTML(commande.quantite ?? 0)}</td>
+
+                <td>${formaterMontant(commande.prix || 0)}</td>
+
+                <td>${formaterMontant(calculerTotalProduit(commande))}</td>
+
+                <td>${formaterMontant(commande.acompte || 0)}</td>
+
+                <td>${formaterMontant(calculerResteProduit(commande))}</td>
+
+                <td>
+                    <span class="statut ${classeStatut(commande.statut)}">
+                        ${echapperHTML(commande.statut || "")}
+                    </span>
+                </td>
+
+                <td>
+                    <button class="btn secondary"
+                        type="button"
+                        data-action="modifier"
+                        data-id="${echapperHTML(String(commande.id))}">
+                        ✏️ Modifier
+                    </button>
+
+                    <button class="btn danger-outline"
+                        type="button"
+                        data-action="supprimer"
+                        data-id="${echapperHTML(String(commande.id))}">
+                        🗑️ Supprimer
+                    </button>
+
+                    <button class="btn whatsapp"
+                        type="button"
+                        data-action="whatsapp"
+                        data-id="${echapperHTML(String(commande.id))}">
+                        WhatsApp
+                    </button>
+
+                    <button class="btn secondary"
+                        type="button"
+                        data-action="facebook"
+                        data-id="${echapperHTML(String(commande.id))}">
+                        💙 Messenger
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(ligne);
+        });
     });
 
-        if (zoneVide) {
+    if (zoneVide) {
         zoneVide.classList.toggle("hidden", liste.length !== 0);
     }
 }
