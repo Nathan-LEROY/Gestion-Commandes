@@ -3882,6 +3882,7 @@ window.synchroniserCommandesAvecSupabase = async function () {
                     } else {
                         commandesDistantes.push({
                             id: String(ligne.id),
+                            publicationId: ligne.publication_id || "",
                             numeroCommande: ligne.numero_commande || "",
                             client: ligne.nom_client || "",
                             telephone: ligne.telephone || "",
@@ -3975,6 +3976,13 @@ window.synchroniserCommandesAvecSupabase = async function () {
                 afficherStatistiques();
             }
 
+           if (typeof afficherPublicationsDepenses === "function") {
+    afficherPublicationsDepenses();
+}
+
+if (typeof actualiserListePublicationsCommandes === "function") {
+    actualiserListePublicationsCommandes();
+}
             console.info(
                 "Synchronisation terminée :",
                 commandesDistantes.length,
