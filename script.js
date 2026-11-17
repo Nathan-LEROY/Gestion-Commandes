@@ -1031,62 +1031,96 @@ function recalculerFormulaire() {
    STATISTIQUES
 ========================================================= */
 
-   function afficherStatistiques() {
+function afficherStatistiques() {
 
-    /* -----------------------------------------------------
-       NOMBRE DE CLIENTS
-    ----------------------------------------------------- */
+    const periode = document.getElementById("periodeDashboard")?.value || "tout";
 
+    // Date locale au format AAAA-MM-JJ
+    const maintenant = new Date();
+
+    const formaterDateLocale = date => {
+        const annee = date.getFullYear();
+        const mois = String(date.getMonth() + 1).padStart(2, "0");
+        const jour = String(date.getDate()).padStart(2, "0");
+
+        return `${annee}-${mois}-${jour}`;
+    };
+
+    const dateFin = formaterDateLocale(maintenant);
+    let dateDebut = "";
+
+    const debut = new Date(
+        maintenant.getFullYear(),
+        maintenant.getMonth(),
+        maintenant.getDate()
+    );
+
+    if (periode === "aujourdhui") {
+        dateDebut = dateFin;
+    }
+
+    if (periode === "7jours") {
+        debut.setDate(debut.getDate() - 6);
+        dateDebut = formaterDateLocale(debut);
+    }
+
+    if (periode === "30jours") {
+        debut.setDate(debut.getDate() - 29);
+        dateDebut = formaterDateLocale(debut);
+    }
+
+    if (periode === "mois") {
+        dateDebut = formaterDateLocale(
+            new Date(maintenant.getFullYear(), maintenant.getMonth(), 1)
+        );
+    }
+
+    if (periode === "annee") {
+        dateDebut = `${maintenant.getFullYear()}-01-01`;
+    }
+
+    // Filtrer les commandes selon la période
+    const commandesFiltrees = commandes.filter(commande => {
+
+        if (periode === "tout") return true;
+
+        const date = String(commande.dateCommande || "").slice(0, 10);
+
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+
+        return date >= dateDebut && date <= dateFin;
+    });
+
+    // Nombre de clients distincts
     const clients = new Set(
-        commandes
-            .map(c => c.client.trim().toLowerCase())
+        commandesFiltrees
+            .map(c => String(c.client || "").trim().toLowerCase())
             .filter(Boolean)
     );
 
-
-    /* -----------------------------------------------------
-       TOTAL DES ACOMPTES REÇUS
-    ----------------------------------------------------- */
-
-    const totalAcomptes = commandes.reduce(
-        (somme, commande) => {
-            return somme + nombre(commande.acompte);
-        },
-        0
-    );
- 
-    /* -----------------------------------------------------
-       RESTES À PAYER
-    ----------------------------------------------------- */
-
-    const totalRestes = commandes.reduce(
-        (somme, commande) => {
-            return somme + calculerResteProduit(commande);
-        },
+    // Total des acomptes reçus
+    const totalAcomptes = commandesFiltrees.reduce(
+        (somme, commande) => somme + nombre(commande.acompte),
         0
     );
 
-      /* -----------------------------------------------------
-   COMMANDES EN ATTENTE
------------------------------------------------------ */
+    // Total des restes à payer
+    const totalRestes = commandesFiltrees.reduce(
+        (somme, commande) => somme + calculerResteProduit(commande),
+        0
+    );
 
-const totalEnAttente = commandes.filter(
-    commande => commande.statut !== "Payé"
-).length;
+    // Commandes non soldées
+    const totalEnAttente = commandesFiltrees.filter(
+        commande => commande.statut !== "Payé"
+    ).length;
 
+    // Commandes soldées
+    const totalSolde = commandesFiltrees.filter(
+        commande => commande.statut === "Payé"
+    ).length;
 
-/* -----------------------------------------------------
-   COMMANDES SOLDÉES
------------------------------------------------------ */
-
-const totalSolde = commandes.filter(
-    commande => commande.statut === "Payé"
-).length;
-
-    /* -----------------------------------------------------
-       AFFICHAGE
-    ----------------------------------------------------- */
-
+    // Affichage
     definirTexte(
         document.getElementById("statClients"),
         String(clients.size)
@@ -1094,7 +1128,7 @@ const totalSolde = commandes.filter(
 
     definirTexte(
         document.getElementById("statCommandes"),
-        String(commandes.length)
+        String(commandesFiltrees.length)
     );
 
     definirTexte(
@@ -1102,22 +1136,25 @@ const totalSolde = commandes.filter(
         formaterMontant(totalAcomptes)
     );
 
-        definirTexte(
+    definirTexte(
         document.getElementById("statRestes"),
         formaterMontant(totalRestes)
     );
 
-      definirTexte(
-    document.getElementById("statEnAttente"),
-    String(totalEnAttente)
-);
+    definirTexte(
+        document.getElementById("statEnAttente"),
+        String(totalEnAttente)
+    );
 
-definirTexte(
-    document.getElementById("statSolde"),
-    String(totalSolde)
-);
-      
+    definirTexte(
+        document.getElementById("statSolde"),
+        String(totalSolde)
+    );
 }
+
+
+document.getElementById("periodeDashboard")
+    ?.addEventListener("change", afficherStatistiques);
 
 /* =========================================================
    STATUTS
