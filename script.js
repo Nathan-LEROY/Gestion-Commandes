@@ -1160,9 +1160,120 @@ function obtenirCommandesFiltrees() {
         const correspondStatut =
             !filtre || commande.statut === filtre;
 
-        return correspondRecherche && correspondStatut;
+        return correspondRecherche &&
+       correspondStatut &&
+       commande.statut !== "Livré";
     });
 }
+
+/* =========================================================
+   AFFICHER L'HISTORIQUE DES COMMANDES LIVRÉES
+========================================================= */
+
+function afficherHistorique() {
+
+    const tbody = document.getElementById("historiqueBody");
+
+    if (!tbody) return;
+
+    const zoneVide = document.getElementById("aucunHistorique");
+
+    const terme = (
+        document.getElementById("rechercheHistorique")?.value || ""
+    ).trim().toLowerCase();
+
+    const liste = commandes.filter(commande => {
+
+        if (commande.statut !== "Livré") return false;
+
+        const texte = [
+            commande.client,
+            commande.telephone,
+            commande.lieu,
+            commande.produit,
+            commande.numeroCommande
+        ].join(" ").toLowerCase();
+
+        return !terme || texte.includes(terme);
+    });
+
+    tbody.innerHTML = "";
+
+    liste.forEach(commande => {
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>
+                <strong>${echapperHTML(commande.client || "")}</strong><br>
+                <small>${echapperHTML(commande.telephone || "")}</small>
+            </td>
+
+            <td>
+                ${commande.photo
+                    ? `<img src="${echapperHTML(commande.photo)}"
+                         alt="Produit"
+                         style="width:45px;height:45px;object-fit:cover;">`
+                    : ""}
+                <br>
+                ${echapperHTML(commande.produit || "")}
+            </td>
+
+            <td>${commande.quantite || 0}</td>
+
+            <td>${formaterMontant(commande.prix || 0)}</td>
+
+            <td>${formaterMontant(calculerTotalProduit(commande))}</td>
+
+            <td>${formaterMontant(commande.acompte || 0)}</td>
+
+            <td>${formaterMontant(calculerResteProduit(commande))}</td>
+
+            <td>
+                <span class="${classeStatut(commande.statut)}">
+                    ${echapperHTML(commande.statut || "")}
+                </span>
+            </td>
+
+            <td>
+                <button type="button"
+                    data-action="modifier"
+                    data-id="${echapperHTML(String(commande.id))}">
+                    ✏️
+                </button>
+
+                <button type="button"
+                    data-action="supprimer"
+                    data-id="${echapperHTML(String(commande.id))}">
+                    🗑️
+                </button>
+
+                <button type="button"
+                    data-action="whatsapp"
+                    data-id="${echapperHTML(String(commande.id))}">
+                    WhatsApp
+                </button>
+
+                <button type="button"
+                    data-action="facebook"
+                    data-id="${echapperHTML(String(commande.id))}">
+                    Messenger
+                </button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+
+        if (zoneVide) {
+        zoneVide.classList.toggle("hidden", liste.length !== 0);
+    }
+}
+
+/* RECHERCHE DANS L'HISTORIQUE */
+
+document.getElementById("rechercheHistorique")
+    ?.addEventListener("input", afficherHistorique);
 
 /* =========================================================
    TABLEAU
@@ -1411,6 +1522,7 @@ if (commande.dateCommande) {
         );
     }
 
+    afficherHistorique();
     afficherStatistiques();
 }
 
@@ -2170,29 +2282,37 @@ async function toutSupprimer() {
 }
 
 /* =========================================================
-   ÉVÉNEMENTS DU TABLEAU
+   ÉVÉNEMENTS DES TABLEAUX DE COMMANDES ET HISTORIQUE
 ========================================================= */
-commandesBody?.addEventListener("click", evenement => {
+
+function gererActionsTableau(evenement) {
+
     const bouton = evenement.target.closest("button[data-action]");
     if (!bouton) return;
 
     const id = bouton.dataset.id;
     const action = bouton.dataset.action;
 
-   if (action === "modifier") {
-    console.log("MODIFIER CLIQUÉ");
-    console.log("ID reçu :", id);
-    console.log("Commande trouvée :", commandes.find(c => c.id === id));
+    if (action === "modifier") {
+        modifierCommande(id);
 
-    modifierCommande(id);
-} else if (action === "supprimer") {
-    supprimerCommande(id);
-} else if (action === "whatsapp") {
-    envoyerWhatsApp(id);
-} else if (action === "facebook") {
-    envoyerFacebook(id);
+    } else if (action === "supprimer") {
+        supprimerCommande(id);
+
+    } else if (action === "whatsapp") {
+        envoyerWhatsApp(id);
+
+    } else if (action === "facebook") {
+        envoyerFacebook(id);
+    }
 }
-});
+
+commandesBody?.addEventListener("click", gererActionsTableau);
+
+document.getElementById("historiqueBody")?.addEventListener(
+    "click",
+    gererActionsTableau
+);
 
 commandesBody?.addEventListener("change", evenement => {
     const caseSelection = evenement.target.closest(
