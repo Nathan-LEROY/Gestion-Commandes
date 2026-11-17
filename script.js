@@ -1113,11 +1113,7 @@ function afficherStatistiques() {
 const totalEnAttente = commandesFiltrees.filter(
     commande => statutsEnAttente.includes(commande.statut)
 ).length;
-    // Commandes soldées
-    const totalSolde = commandesFiltrees.filter(
-        commande => commande.statut === "Payé"
-    ).length;
-
+    
     // =====================================================
     // CHIFFRE D'AFFAIRES : prix produit × quantité
     // Sans frais de livraison
@@ -1207,12 +1203,7 @@ const totalEnAttente = commandesFiltrees.filter(
         String(totalEnAttente)
     );
 
-    definirTexte(
-        document.getElementById("statSolde"),
-        String(totalSolde)
-    );
-
-    definirTexte(
+     definirTexte(
         document.getElementById("statChiffreAffaires"),
         formaterMontant(totalChiffreAffaires)
     );
