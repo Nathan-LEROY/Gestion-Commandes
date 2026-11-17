@@ -1026,7 +1026,6 @@ function recalculerFormulaire() {
     definirTexte(totalProduit, formaterMontant(total));
     definirTexte(resteCharge, formaterMontant(reste));
 }
-
 /* =========================================================
    STATISTIQUES
 ========================================================= */
@@ -1079,17 +1078,24 @@ function afficherStatistiques() {
         dateDebut = `${maintenant.getFullYear()}-01-01`;
     }
 
-    // Filtrer les commandes selon la période
-    const commandesFiltrees = commandes.filter(commande => {
+    // Vérifier si une date appartient à la période
+    const dateDansPeriode = date => {
 
         if (periode === "tout") return true;
 
-        const date = String(commande.dateCommande || "").slice(0, 10);
+        const dateValide = String(date || "").slice(0, 10);
 
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateValide)) {
+            return false;
+        }
 
-        return date >= dateDebut && date <= dateFin;
-    });
+        return dateValide >= dateDebut && dateValide <= dateFin;
+    };
+
+    // Filtrer les commandes
+    const commandesFiltrees = commandes.filter(commande =>
+        dateDansPeriode(commande.dateCommande)
+    );
 
     // Nombre de clients distincts
     const clients = new Set(
@@ -1108,7 +1114,80 @@ function afficherStatistiques() {
         commande => commande.statut === "Payé"
     ).length;
 
-    // Affichage
+    // =====================================================
+    // CHIFFRE D'AFFAIRES : prix produit × quantité
+    // Sans frais de livraison
+    // =====================================================
+
+    const totalChiffreAffaires = commandesFiltrees.reduce(
+        (somme, commande) => {
+            return somme + calculerTotalProduit(commande);
+        },
+        0
+    );
+
+    // =====================================================
+    // DÉPENSES PUBLICITAIRES
+    // =====================================================
+
+    let totalDepensesPublicite = 0;
+
+    try {
+
+        const publications = chargerPublicationsDepenses();
+
+        const publicationsFiltrees = publications.filter(publication =>
+            dateDansPeriode(publication.date)
+        );
+
+        totalDepensesPublicite = publicationsFiltrees.reduce(
+            (total, publication) => {
+
+                const depenses = Array.isArray(publication.depenses)
+                    ? publication.depenses
+                    : [];
+
+                const totalPublication = depenses.reduce(
+                    (somme, ligne) => {
+
+                        const montant = Number(ligne.montant) || 0;
+
+                        // Anciennes dépenses enregistrées en USD
+                        if (ligne.devise === "USD") {
+                            return somme + (
+                                montant * (Number(publication.taux) || 0)
+                            );
+                        }
+
+                        // Dépenses enregistrées en Ariary
+                        return somme + montant;
+                    },
+                    0
+                );
+
+                return total + totalPublication;
+            },
+            0
+        );
+
+    } catch (erreur) {
+        console.error(
+            "Erreur de calcul des dépenses publicitaires :",
+            erreur
+        );
+    }
+
+    // =====================================================
+    // BILAN APRÈS PUBLICITÉ
+    // =====================================================
+
+    const bilanPublicite =
+        totalChiffreAffaires - totalDepensesPublicite;
+
+    // =====================================================
+    // AFFICHAGE DES STATISTIQUES
+    // =====================================================
+
     definirTexte(
         document.getElementById("statClients"),
         String(clients.size)
@@ -1128,8 +1207,22 @@ function afficherStatistiques() {
         document.getElementById("statSolde"),
         String(totalSolde)
     );
-}
 
+    definirTexte(
+        document.getElementById("statChiffreAffaires"),
+        formaterMontant(totalChiffreAffaires)
+    );
+
+    definirTexte(
+        document.getElementById("statDepensesPublicite"),
+        formaterMontant(totalDepensesPublicite)
+    );
+
+    definirTexte(
+        document.getElementById("statBilanPublicite"),
+        formaterMontant(bilanPublicite)
+    );
+}
 
 document.getElementById("periodeDashboard")
     ?.addEventListener("change", afficherStatistiques);
