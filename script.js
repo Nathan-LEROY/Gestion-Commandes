@@ -4393,6 +4393,7 @@ formulairePublicationDepense?.addEventListener("submit", evenement => {
         lignesDepensesPublication = [];
         afficherLignesDepensesPublication();
         afficherPublicationsDepenses();
+       actualiserListePublicationsCommandes();
 
         alert("Publication enregistrée sur cet appareil.");
     } catch (erreur) {
@@ -4449,6 +4450,7 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
             );
 
             afficherPublicationsDepenses();
+            actualiserListePublicationsCommandes();
             return;
         }
 
