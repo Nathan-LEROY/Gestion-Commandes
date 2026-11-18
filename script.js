@@ -4640,29 +4640,7 @@ async function synchroniserPublicationsDepensesAvecSupabase() {
             (publicationsDistantes || []).map(p => String(p.id))
         );
 
-        // 2. Préparer uniquement les publications locales absentes du serveur
-        const publicationsAMigrer = publicationsLocales
-            .filter(p => !idsDistants.has(String(p.id)))
-            .map(p => ({
-                id: String(p.id),
-                user_id: userId,
-                nom: p.nom,
-                publication_date: p.date || p.publication_date,
-                depenses: Array.isArray(p.depenses) ? p.depenses : []
-            }));
-
-        // 3. Envoyer les anciennes données locales sans écraser
-        // les publications déjà présentes sur Supabase
-        if (publicationsAMigrer.length > 0) {
-
-            const { error: migrationErreur } = await client
-                .from("depenses_publications")
-                .upsert(publicationsAMigrer, {
-                    onConflict: "id"
-                });
-
-            if (migrationErreur) throw migrationErreur;
-        }
+        // 2. Supabase est la source principale des publications.
 
         // 4. Relire les données confirmées sur Supabase
         const { data: publicationsFinales, error: finalErreur } =
