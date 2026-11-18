@@ -9,7 +9,6 @@ const PRODUITS_STORAGE_KEY = "crystalBoutikProduitsV1";
 const FICHES_PRODUITS_STORAGE_KEY =
     "crystalBoutikFichesProduitsV1";
 
-
 /* =========================================================
    STOCKAGE INDEXEDDB DES COMMANDES
    Migration sécurisée — Crystal Boutik
@@ -1661,14 +1660,8 @@ if (commande.dateCommande) {
     ${commande.lieu
         ? `<br><small>${echapperHTML(commande.lieu)}</small>`
         : ""}
-</td>
-
-                <td>${echapperHTML(commande.quantite)}</td>
-
-                <td>
-                    ${formaterMontant(commande.prix)}
-                </td>
-
+           </td>
+                <td>${echapperHTML(commande.quantite)}</td>            
                 <td>
                     ${formaterMontant(
                         calculerTotalProduit(commande)
