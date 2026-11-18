@@ -1620,56 +1620,45 @@ body.theme-sombre .statut {
     }
 }
 
+
 /* =====================================================
-   CRYSTAL BOUTIK — BANNIÈRE AVEC PHOTO
+   CRYSTAL BOUTIK — EN-TÊTE AVEC BANNIÈRE ORIGINALE
 ===================================================== */
 
-.header {
-    position: relative;
-    isolation: isolate;
+.header.header-banniere {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    margin: 0 0 20px 0;
     overflow: hidden;
-    min-height: 210px;
-    padding: 25px;
-    border-radius: 16px;
-
-    background:
-        linear-gradient(
-            rgba(4, 15, 42, 0.12),
-            rgba(4, 15, 42, 0.12)
-        );
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    box-shadow: 0 5px 22px rgba(0, 30, 90, 0.25);
+    line-height: 0;
 }
 
-/* Photo originale légèrement floutée */
-.header::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset: -8px;
-
-    background-image: url("./crystal-boutik-header.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    filter: blur(4px);
-    transform: scale(1.02);
+.header.header-banniere::before,
+.header.header-banniere::after {
+    display: none;
+    content: none;
 }
 
-/* Texte conservé au premier plan */
-.header > div {
-    position: relative;
-    z-index: 1;
+.header.header-banniere img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: inherit;
 }
 
-/* Sur mobile */
+/* Adaptation mobile */
 @media (max-width: 600px) {
-    .header {
-        min-height: 145px;
-        padding: 18px 10px;
+    .header.header-banniere {
+        border-radius: 9px;
+        margin-bottom: 14px;
     }
 }
