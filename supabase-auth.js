@@ -68,6 +68,9 @@ if (typeof window.synchroniserCommandesAvecSupabase === "function") {
     await window.synchroniserCommandesAvecSupabase();
 }
 
+            if (typeof window.synchroniserPublicationsDepensesAvecSupabase === "function") {
+    await window.synchroniserPublicationsDepensesAvecSupabase();
+}
 } else {
             application.hidden = true;
             zoneConnexion.hidden = false;
