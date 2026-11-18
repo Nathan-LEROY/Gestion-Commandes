@@ -4493,6 +4493,142 @@ afficherPublicationsDepenses();
 actualiserTotauxPublication();
 actualiserListePublicationsCommandes();
 
+
+/* =========================================================
+   SYNCHRONISATION DES DÉPENSES DE PUBLICATION AVEC SUPABASE
+========================================================= */
+
+let synchronisationPublicationsEnCours = null;
+
+async function synchroniserPublicationsDepensesAvecSupabase() {
+
+    if (synchronisationPublicationsEnCours) {
+        return synchronisationPublicationsEnCours;
+    }
+
+    synchronisationPublicationsEnCours = (async function () {
+
+        const client = window.clientSupabase;
+
+        if (!client) {
+            throw new Error("Connexion Supabase indisponible.");
+        }
+
+        const { data: sessionData, error: sessionError } =
+            await client.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        const session = sessionData.session;
+
+        if (!session || !session.user) {
+            throw new Error("Utilisateur non connecté.");
+        }
+
+        const userId = session.user.id;
+
+        // 1. Lire les publications déjà présentes sur Supabase
+        const { data: publicationsDistantes, error: lectureErreur } =
+            await client
+                .from("depenses_publications")
+                .select("id, nom, publication_date, depenses")
+                .eq("user_id", userId);
+
+        if (lectureErreur) throw lectureErreur;
+
+        const publicationsLocales = chargerPublicationsDepenses();
+
+        const idsDistants = new Set(
+            (publicationsDistantes || []).map(p => String(p.id))
+        );
+
+        // 2. Préparer uniquement les publications locales absentes du serveur
+        const publicationsAMigrer = publicationsLocales
+            .filter(p => !idsDistants.has(String(p.id)))
+            .map(p => ({
+                id: String(p.id),
+                user_id: userId,
+                nom: p.nom,
+                publication_date: p.date || p.publication_date,
+                depenses: Array.isArray(p.depenses) ? p.depenses : []
+            }));
+
+        // 3. Envoyer les anciennes données locales sans écraser
+        // les publications déjà présentes sur Supabase
+        if (publicationsAMigrer.length > 0) {
+
+            const { error: migrationErreur } = await client
+                .from("depenses_publications")
+                .upsert(publicationsAMigrer, {
+                    onConflict: "id"
+                });
+
+            if (migrationErreur) throw migrationErreur;
+        }
+
+        // 4. Relire les données confirmées sur Supabase
+        const { data: publicationsFinales, error: finalErreur } =
+            await client
+                .from("depenses_publications")
+                .select("id, nom, publication_date, depenses")
+                .eq("user_id", userId);
+
+        if (finalErreur) throw finalErreur;
+
+        // 5. Actualiser le stockage local uniquement après réussite
+        const publicationsSynchronisees = (publicationsFinales || [])
+            .map(p => ({
+                id: String(p.id),
+                nom: p.nom,
+                date: p.publication_date,
+                depenses: Array.isArray(p.depenses) ? p.depenses : []
+            }));
+
+        sauvegarderPublicationsDepenses(publicationsSynchronisees);
+
+        // 6. Rafraîchir les affichages existants
+        if (typeof afficherPublicationsDepenses === "function") {
+            afficherPublicationsDepenses();
+        }
+
+        if (typeof actualiserListePublicationsCommandes === "function") {
+            actualiserListePublicationsCommandes();
+        }
+
+        if (typeof actualiserTotauxPublication === "function") {
+            actualiserTotauxPublication();
+        }
+
+        console.log("Dépenses de publication synchronisées avec Supabase.");
+
+        return true;
+
+    })();
+
+    try {
+        return await synchronisationPublicationsEnCours;
+    } catch (erreur) {
+
+        console.error(
+            "Erreur de synchronisation des dépenses de publication :",
+            erreur
+        );
+
+        alert(
+            "La synchronisation des dépenses de publication a échoué. " +
+            "Tes données locales sont conservées. Vérifie ta connexion et réessaie."
+        );
+
+        return false;
+
+    } finally {
+        synchronisationPublicationsEnCours = null;
+    }
+}
+
+window.synchroniserPublicationsDepensesAvecSupabase =
+    synchroniserPublicationsDepensesAvecSupabase;
+
 /* =========================================
    PERSONNALISATION GLOBALE DU TEXTE
 ========================================= */
