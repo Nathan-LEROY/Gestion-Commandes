@@ -4338,7 +4338,8 @@ document.getElementById("listeLignesDepensesPublication")?.addEventListener(
     }
 );
 
-formulairePublicationDepense?.addEventListener("submit", evenement => {
+
+formulairePublicationDepense?.addEventListener("submit", async evenement => {
     evenement.preventDefault();
 
     const nom = document.getElementById("nomPublicationDepense").value.trim();
@@ -4348,6 +4349,23 @@ formulairePublicationDepense?.addEventListener("submit", evenement => {
         alert("Vérifiez le nom et la date de la publication.");
         return;
     }
+
+    const client = window.clientSupabase;
+
+    if (!client) {
+        alert("Connexion Supabase indisponible. Aucune modification enregistrée.");
+        return;
+    }
+
+    const { data: sessionData, error: sessionError } =
+        await client.auth.getSession();
+
+    if (sessionError || !sessionData.session) {
+        alert("Votre session a expiré. Veuillez vous reconnecter.");
+        return;
+    }
+
+    const userId = sessionData.session.user.id;
 
     const publications = chargerPublicationsDepenses();
     const idExistant = document.getElementById("publicationDepenseId").value;
@@ -4367,20 +4385,42 @@ formulairePublicationDepense?.addEventListener("submit", evenement => {
         }))
     };
 
-    const index = publications.findIndex(
-        item => String(item.id) === String(publication.id)
-    );
-
-    if (index >= 0) {
-        publications[index] = publication;
-    } else {
-        publications.unshift(publication);
-    }
+    const ligneSupabase = {
+        id: String(publication.id),
+        user_id: userId,
+        nom: publication.nom,
+        publication_date: publication.date,
+        depenses: publication.depenses
+    };
 
     try {
+        // 1. Enregistrer d'abord sur Supabase
+        const { error: erreurSupabase } = await client
+            .from("depenses_publications")
+            .upsert(ligneSupabase, {
+                onConflict: "id"
+            });
+
+        if (erreurSupabase) {
+            throw erreurSupabase;
+        }
+
+        // 2. Mettre à jour le stockage local après confirmation
+        const index = publications.findIndex(
+            item => String(item.id) === String(publication.id)
+        );
+
+        if (index >= 0) {
+            publications[index] = publication;
+        } else {
+            publications.unshift(publication);
+        }
+
         sauvegarderPublicationsDepenses(publications);
 
+        // 3. Réinitialiser le formulaire
         formulairePublicationDepense.reset();
+
         document.getElementById("publicationDepenseId").value = "";
 
         document.getElementById(
@@ -4392,14 +4432,22 @@ formulairePublicationDepense?.addEventListener("submit", evenement => {
         ).style.display = "none";
 
         lignesDepensesPublication = [];
+
         afficherLignesDepensesPublication();
         afficherPublicationsDepenses();
-       actualiserListePublicationsCommandes();
+        actualiserListePublicationsCommandes();
+        actualiserTotauxPublication();
 
-        alert("Publication enregistrée sur cet appareil.");
+        alert("Publication enregistrée avec succès sur Supabase.");
+
     } catch (erreur) {
-        console.error("Erreur d'enregistrement :", erreur);
-        alert("Impossible d'enregistrer. L'espace de stockage est peut-être plein.");
+        console.error("Erreur d'enregistrement de la publication :", erreur);
+
+        alert(
+            "Impossible de confirmer l'enregistrement sur Supabase. " +
+            "Tes données locales existantes sont conservées. " +
+            "Vérifie ta connexion et réessaie."
+        );
     }
 });
 
