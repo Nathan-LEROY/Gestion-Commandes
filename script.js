@@ -4491,8 +4491,43 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
 
         if (!publication) return;
 
-        if (supprimer) {
-            if (!confirm("Supprimer cette publication et ses dépenses ?")) return;
+        
+if (supprimer) {
+    if (!confirm("Supprimer cette publication et ses dépenses ?")) return;
+
+    const client = window.clientSupabase;
+
+    if (!client) {
+        alert("Connexion Supabase indisponible. Suppression annulée.");
+        return;
+    }
+
+    (async () => {
+        try {
+            const { data: sessionData, error: sessionError } =
+                await client.auth.getSession();
+
+            if (sessionError) throw sessionError;
+
+            if (!sessionData.session) {
+                alert("Votre session a expiré. Veuillez vous reconnecter.");
+                return;
+            }
+
+            const userId = sessionData.session.user.id;
+
+            const { data, error } = await client
+                .from("depenses_publications")
+                .delete()
+                .eq("id", String(id))
+                .eq("user_id", userId)
+                .select("id");
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                throw new Error("La suppression n'a pas été confirmée.");
+            }
 
             sauvegarderPublicationsDepenses(
                 publications.filter(item => String(item.id) !== String(id))
@@ -4500,8 +4535,23 @@ document.getElementById("listePublicationsDepenses")?.addEventListener(
 
             afficherPublicationsDepenses();
             actualiserListePublicationsCommandes();
-            return;
+            actualiserTotauxPublication();
+
+            alert("Publication supprimée sur Supabase avec succès.");
+
+        } catch (erreur) {
+            console.error("Erreur de suppression :", erreur);
+
+            alert(
+                "La suppression n'a pas pu être confirmée sur Supabase. " +
+                "La publication est conservée sur cet appareil. Réessaie avec Internet."
+            );
         }
+    })();
+
+    return;
+}
+
 
         document.getElementById("publicationDepenseId").value = publication.id;
         document.getElementById("nomPublicationDepense").value = publication.nom;
