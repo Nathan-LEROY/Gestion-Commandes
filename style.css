@@ -1619,3 +1619,57 @@ body.theme-sombre .statut {
         border-bottom-color: #35465e;
     }
 }
+
+/* =====================================================
+   CRYSTAL BOUTIK — BANNIÈRE AVEC PHOTO
+===================================================== */
+
+.header {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 210px;
+    padding: 25px;
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            rgba(4, 15, 42, 0.12),
+            rgba(4, 15, 42, 0.12)
+        );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Photo originale légèrement floutée */
+.header::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -8px;
+
+    background-image: url("./crystal-boutik-header.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    filter: blur(4px);
+    transform: scale(1.02);
+}
+
+/* Texte conservé au premier plan */
+.header > div {
+    position: relative;
+    z-index: 1;
+}
+
+/* Sur mobile */
+@media (max-width: 600px) {
+    .header {
+        min-height: 145px;
+        padding: 18px 10px;
+    }
+}
