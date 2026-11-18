@@ -1651,7 +1651,7 @@ body.theme-sombre .statut {
     width: 100%;
     height: 120px;
     max-width: 100%;
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
     border-radius: inherit;
 }
