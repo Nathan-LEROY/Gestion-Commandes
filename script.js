@@ -2271,9 +2271,88 @@ function obtenirZoneImpression() {
     return zone;
 }
 
+
+/* =========================================================
+   FOND PHOTO PERSONNALISÉ DES ÉTIQUETTES
+========================================================= */
+
+let imageFondEtiquette = localStorage.getItem("crystalBoutikFondEtiquette") || "";
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const champImage = document.getElementById("imageFondEtiquette");
+    const apercu = document.getElementById("apercuFondEtiquette");
+    const imageApercu = document.getElementById("imageApercuEtiquette");
+    const boutonSupprimer = document.getElementById("supprimerFondEtiquette");
+
+    if (!champImage || !apercu || !imageApercu || !boutonSupprimer) {
+        return;
+    }
+
+    function afficherFond() {
+        if (imageFondEtiquette) {
+            imageApercu.src = imageFondEtiquette;
+            apercu.style.display = "block";
+        } else {
+            imageApercu.removeAttribute("src");
+            apercu.style.display = "none";
+        }
+    }
+
+    afficherFond();
+
+    champImage.addEventListener("change", function () {
+        const fichier = champImage.files[0];
+
+        if (!fichier) return;
+
+        if (!fichier.type.startsWith("image/")) {
+            alert("Veuillez choisir une image valide.");
+            champImage.value = "";
+            return;
+        }
+
+        const lecteur = new FileReader();
+
+        lecteur.onload = function (evenement) {
+            imageFondEtiquette = evenement.target.result;
+
+            try {
+                localStorage.setItem(
+                    "crystalBoutikFondEtiquette",
+                    imageFondEtiquette
+                );
+                afficherFond();
+            } catch (erreur) {
+                imageFondEtiquette = "";
+                alert("Image trop volumineuse. Choisissez une image plus légère.");
+            }
+        };
+
+        lecteur.readAsDataURL(fichier);
+    });
+
+    boutonSupprimer.addEventListener("click", function () {
+        imageFondEtiquette = "";
+        localStorage.removeItem("crystalBoutikFondEtiquette");
+        champImage.value = "";
+        afficherFond();
+    });
+
+});
+
+
 function creerEtiquette(commande) {
     const etiquette = document.createElement("article");
     etiquette.className = "shipping-label";
+
+    if (imageFondEtiquette) {
+        etiquette.style.backgroundImage =
+            `url("${imageFondEtiquette}")`;
+        etiquette.style.backgroundSize = "cover";
+        etiquette.style.backgroundPosition = "center";
+        etiquette.style.backgroundRepeat = "no-repeat";
+    }
 
     etiquette.innerHTML = `
         <h2>CRYSTAL BOUTIK</h2>
