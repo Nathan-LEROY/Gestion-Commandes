@@ -948,8 +948,34 @@
         Sélectionnez les commandes à imprimer depuis la liste des commandes.
     </p>
 
-    </section>
-        
+    <div class="print-background-controls">
+        <h3>🎨 Fond personnalisé des étiquettes</h3>
+
+        <label for="imageFondEtiquette">
+            Choisir une photo :
+        </label>
+
+        <input
+            type="file"
+            id="imageFondEtiquette"
+            accept="image/*"
+        >
+
+        <div id="apercuFondEtiquette" style="display:none;">
+            <p>Aperçu du fond sélectionné :</p>
+            <img
+                id="imageApercuEtiquette"
+                alt="Aperçu du fond des étiquettes"
+                style="max-width:200px; max-height:150px;"
+            >
+            <button type="button" id="supprimerFondEtiquette">
+                Retirer la photo
+            </button>
+        </div>
+    </div>
+
+</section>
+
 
 <!-- =================================================
      PARAMÈTRES — APPARENCE
