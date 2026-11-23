@@ -2391,6 +2391,46 @@ function creerEtiquette(commande) {
     return etiquette;
 }
 
+/* =========================================================
+   CRÉER UNE ÉTIQUETTE VIERGE
+========================================================= */
+
+function creerEtiquetteVide() {
+    const etiquette = document.createElement("article");
+    etiquette.className = "shipping-label etiquette-vide";
+
+    if (imageFondEtiquette) {
+        etiquette.style.backgroundImage =
+            `url("${imageFondEtiquette}")`;
+    }
+
+    etiquette.innerHTML = `
+        <h2>CRYSTAL BOUTIK</h2>
+
+        <p><strong>N° :</strong> __________________</p>
+
+        <p><strong>Client :</strong> __________________</p>
+
+        <p><strong>Produit :</strong> __________________</p>
+
+        <p><strong>Qté :</strong> ______</p>
+
+        <p><strong>Prix :</strong> __________________</p>
+
+        <p><strong>Avance :</strong> __________________</p>
+
+        <p><strong>Frais de livraison :</strong> __________</p>
+
+        <p><strong>Reste :</strong> __________________</p>
+
+        <p><strong>Lieu :</strong> __________________</p>
+
+        <p><strong>Tél :</strong> __________________</p>
+    `;
+
+    return etiquette;
+}
+
 function imprimerCommandes() {
     const selectionnees = commandes.filter(c =>
         selectionImpression.has(c.id)
@@ -2407,14 +2447,42 @@ function imprimerCommandes() {
 
     zone.innerHTML = "";
 
-    const grille = document.createElement("div");
-    grille.className = "labels-grid";
+    const nombreEtiquettesParPage = 50;
 
-    selectionnees.forEach(commande => {
-        grille.appendChild(creerEtiquette(commande));
-    });
+    // Calcul du nombre de feuilles nécessaires
+    const nombrePages = Math.ceil(
+        selectionnees.length / nombreEtiquettesParPage
+    );
 
-    zone.appendChild(grille);
+    for (let page = 0; page < nombrePages; page++) {
+
+        const grille = document.createElement("div");
+        grille.className = "labels-grid";
+
+        const debut = page * nombreEtiquettesParPage;
+        const fin = Math.min(
+            debut + nombreEtiquettesParPage,
+            selectionnees.length
+        );
+
+        // Ajouter les étiquettes des commandes
+        for (let i = debut; i < fin; i++) {
+            grille.appendChild(
+                creerEtiquette(selectionnees[i])
+            );
+        }
+
+        // Compléter les emplacements restants
+        const nombreCommandesPage = fin - debut;
+        const placesVides =
+            nombreEtiquettesParPage - nombreCommandesPage;
+
+        for (let i = 0; i < placesVides; i++) {
+            grille.appendChild(creerEtiquetteVide());
+        }
+
+        zone.appendChild(grille);
+    }
 
     // Ouvrir l'onglet IMPRESSION
     const boutonImpression = document.querySelector(
