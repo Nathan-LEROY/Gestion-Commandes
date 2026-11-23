@@ -667,8 +667,26 @@ footer {
         print-color-adjust: exact;
     }
 
-    .app {
-        display: none !important;
+   
+    /* Masquer tous les éléments de l'application */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* Afficher uniquement les étiquettes */
+    #apercuEtiquettes,
+    #apercuEtiquettes * {
+        visibility: visible !important;
+    }
+
+    #apercuEtiquettes {
+        display: block !important;
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 194mm;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .print-area {
