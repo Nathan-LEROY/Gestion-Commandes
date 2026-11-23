@@ -1663,3 +1663,37 @@ body.theme-sombre .statut {
         margin-bottom: 14px;
     }
 }
+
+
+/* =========================================================
+   FOND PHOTO PERSONNALISÉ DES ÉTIQUETTES
+========================================================= */
+
+.shipping-label {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: white;
+    overflow: hidden;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.shipping-label h2,
+.shipping-label p {
+    position: relative;
+    z-index: 1;
+    color: #000;
+    text-shadow: 0 0 2px white, 0 0 3px white;
+}
+
+@media print {
+    .shipping-label {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+    }
+}
