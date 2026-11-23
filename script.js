@@ -2259,18 +2259,16 @@ function mettreAJourCompteurImpression() {
 ========================================================= */
 
 function obtenirZoneImpression() {
-    let zone = document.getElementById("printArea");
+    const zone = document.getElementById("apercuEtiquettes");
 
     if (!zone) {
-        zone = document.createElement("section");
-        zone.id = "printArea";
-        zone.className = "print-area";
-        document.body.appendChild(zone);
+        console.error("La zone apercuEtiquettes est introuvable.");
+        alert("La zone d'aperçu des étiquettes est introuvable.");
+        return null;
     }
 
     return zone;
 }
-
 
 /* =========================================================
    FOND PHOTO PERSONNALISÉ DES ÉTIQUETTES
@@ -2393,7 +2391,6 @@ function creerEtiquette(commande) {
     return etiquette;
 }
 
-
 function imprimerCommandes() {
     const selectionnees = commandes.filter(c =>
         selectionImpression.has(c.id)
@@ -2405,6 +2402,9 @@ function imprimerCommandes() {
     }
 
     const zone = obtenirZoneImpression();
+
+    if (!zone) return;
+
     zone.innerHTML = "";
 
     const grille = document.createElement("div");
@@ -2416,7 +2416,7 @@ function imprimerCommandes() {
 
     zone.appendChild(grille);
 
-    // Ouvrir l'onglet IMPRESSION sans lancer l'impression
+    // Ouvrir l'onglet IMPRESSION
     const boutonImpression = document.querySelector(
         '[data-section="impression"]'
     );
@@ -2425,6 +2425,27 @@ function imprimerCommandes() {
         boutonImpression.click();
     }
 }
+
+/* =========================================================
+   LANCER L'IMPRESSION DES ÉTIQUETTES
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+    const bouton = document.getElementById("lancerImpression");
+
+    if (!bouton) return;
+
+    bouton.addEventListener("click", function () {
+        const zone = document.getElementById("apercuEtiquettes");
+
+        if (!zone || zone.children.length === 0) {
+            alert("Veuillez d'abord sélectionner des commandes à imprimer.");
+            return;
+        }
+
+        window.print();
+    });
+});
 
 /* =========================================================
    EXPORTATION JSON
