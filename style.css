@@ -533,7 +533,19 @@ td .btn {
     font-size: 4.5pt;
     line-height: 1.1;
 }
+/* ÉTIQUETTES VIERGES À REMPLIR À LA MAIN */
 
+.shipping-label.etiquette-vide {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.shipping-label.etiquette-vide p {
+    min-height: 3mm;
+    border-bottom: 0.15mm solid #555;
+    padding-bottom: 0.3mm;
+}
 .shipping-label .label-total {
     margin-top: 2mm;
     padding: 3mm;
@@ -1702,4 +1714,22 @@ body.theme-sombre .statut {
         background-position: center !important;
         background-repeat: no-repeat !important;
     }
+}
+
+/* =========================================================
+   SAUTS DE PAGE AUTOMATIQUES POUR LES FEUILLES A4
+========================================================= */
+
+@media print {
+
+    #apercuEtiquettes .labels-grid {
+        break-after: page;
+        page-break-after: always;
+    }
+
+    #apercuEtiquettes .labels-grid:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
 }
