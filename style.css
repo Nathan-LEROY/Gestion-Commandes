@@ -1733,3 +1733,35 @@ body.theme-sombre .statut {
     }
 
 }
+
+/* =========================================================
+   AFFICHAGE DE L'APERÇU DES ÉTIQUETTES
+========================================================= */
+
+#apercuEtiquettes {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#apercuEtiquettes .labels-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(10, 28mm);
+    gap: 0;
+    width: 194mm;
+    min-height: 280mm;
+    align-content: start;
+    box-sizing: border-box;
+    margin: 0 auto 20px;
+}
+
+#apercuEtiquettes .shipping-label {
+    position: relative;
+    background-color: white;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
