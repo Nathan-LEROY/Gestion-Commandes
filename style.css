@@ -519,19 +519,21 @@ td .btn {
     overflow-wrap: anywhere;
 }
 
+
 .shipping-label h2 {
-    margin: 0 0 0.5mm;
-    padding-bottom: 0.5mm;
-    border-bottom: 0.2mm solid #94a3b8;
-    font-size: 5pt;
-    line-height: 1.1;
+    margin: 0 0 1mm;
+    padding-bottom: 1mm;
+    border-bottom: 0.3mm solid #333;
+    font-size: 9pt;
+    line-height: 1.2;
     text-align: center;
+    font-weight: 700;
 }
 
 .shipping-label p {
     margin: 0;
-    font-size: 4.5pt;
-    line-height: 1.1;
+    font-size: 7pt;
+    line-height: 1.25;
 }
 /* ÉTIQUETTES VIERGES À REMPLIR À LA MAIN */
 
@@ -542,9 +544,9 @@ td .btn {
 }
 
 .shipping-label.etiquette-vide p {
-    min-height: 3mm;
-    border-bottom: 0.15mm solid #555;
-    padding-bottom: 0.3mm;
+    min-height: 4mm;
+    border-bottom: 0.2mm solid #555;
+    padding-bottom: 0.5mm;
 }
 .shipping-label .label-total {
     margin-top: 2mm;
