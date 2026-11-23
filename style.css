@@ -682,17 +682,23 @@ footer {
     page-break-inside: avoid;
 }
 
-    .shipping-label {
-        display: flex !important;
-        min-width: 0;
-        border: 1px solid #333;
-        border-radius: 1mm;
-        box-shadow: none;
-        background: white !important;
-        color: black !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
+    
+.shipping-label {
+    display: flex !important;
+    min-width: 0;
+    border: 1px solid #333;
+    border-radius: 1mm;
+    box-shadow: none;
+    background-color: white;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
 
     .shipping-label h2,
     .shipping-label p,
