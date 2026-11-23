@@ -2393,6 +2393,7 @@ function creerEtiquette(commande) {
     return etiquette;
 }
 
+
 function imprimerCommandes() {
     const selectionnees = commandes.filter(c =>
         selectionImpression.has(c.id)
@@ -2415,7 +2416,14 @@ function imprimerCommandes() {
 
     zone.appendChild(grille);
 
-    window.print();
+    // Ouvrir l'onglet IMPRESSION sans lancer l'impression
+    const boutonImpression = document.querySelector(
+        '[data-section="impression"]'
+    );
+
+    if (boutonImpression) {
+        boutonImpression.click();
+    }
 }
 
 /* =========================================================
