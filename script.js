@@ -2352,45 +2352,35 @@ function creerEtiquette(commande) {
         etiquette.style.backgroundRepeat = "no-repeat";
     }
 
+    const resteAPayer = calculerTotalEtiquette(commande);
+    const fraisLivraison = nombre(commande.fraisLivraison);
+
     etiquette.innerHTML = `
         <h2>CRYSTAL BOUTIK</h2>
 
-        <p><strong>N° :</strong>
-            ${echapperHTML(commande.numeroCommande || "")}
-        </p>
-
-        <p><strong>Client :</strong>
+        <p><strong>Nom :</strong>
             ${echapperHTML(commande.client || "")}
         </p>
 
-        <p>
-            <strong>Produit :</strong>
+        <p><strong>Produit :</strong>
             ${echapperHTML(commande.produit || "")}
-            &nbsp;&nbsp;
-            <strong>Qté :</strong>
-            ${echapperHTML(commande.quantite || "")}
         </p>
-
-        <p><strong>Prix :</strong></p>
-
-        <p><strong>Avance :</strong></p>
-
-        <p><strong>Frais de livraison :</strong></p>
-
-        <p><strong>Reste :</strong></p>
 
         <p><strong>Lieu :</strong>
             ${echapperHTML(commande.lieu || "")}
         </p>
 
-        <p><strong>Tél :</strong>
-            ${echapperHTML(commande.telephone || "")}
+        <p><strong>Reste à payer :</strong>
+            ${echapperHTML(formaterMontant(resteAPayer))}
+        </p>
+
+        <p><strong>Frais de livraison :</strong>
+            ${echapperHTML(formaterMontant(fraisLivraison))}
         </p>
     `;
 
     return etiquette;
 }
-
 /* =========================================================
    CRÉER UNE ÉTIQUETTE VIERGE
 ========================================================= */
@@ -2402,30 +2392,23 @@ function creerEtiquetteVide() {
     if (imageFondEtiquette) {
         etiquette.style.backgroundImage =
             `url("${imageFondEtiquette}")`;
+        etiquette.style.backgroundSize = "cover";
+        etiquette.style.backgroundPosition = "center";
+        etiquette.style.backgroundRepeat = "no-repeat";
     }
 
     etiquette.innerHTML = `
         <h2>CRYSTAL BOUTIK</h2>
 
-        <p><strong>N° :</strong> __________________</p>
-
-        <p><strong>Client :</strong> __________________</p>
+        <p><strong>Nom :</strong> __________________</p>
 
         <p><strong>Produit :</strong> __________________</p>
 
-        <p><strong>Qté :</strong> ______</p>
-
-        <p><strong>Prix :</strong> __________________</p>
-
-        <p><strong>Avance :</strong> __________________</p>
-
-        <p><strong>Frais de livraison :</strong> __________</p>
-
-        <p><strong>Reste :</strong> __________________</p>
-
         <p><strong>Lieu :</strong> __________________</p>
 
-        <p><strong>Tél :</strong> __________________</p>
+        <p><strong>Reste à payer :</strong> __________________</p>
+
+        <p><strong>Frais de livraison :</strong> __________________</p>
     `;
 
     return etiquette;
