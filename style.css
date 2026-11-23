@@ -700,19 +700,18 @@ footer {
     padding: 0;
 }
 
-        .labels-grid {
+                .labels-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(10, 28mm);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(8, 35.125mm);
     gap: 0;
     width: 194mm;
-    height: 280mm;
+    height: 281mm;
     align-content: start;
     box-sizing: border-box;
     break-inside: avoid;
     page-break-inside: avoid;
 }
-
     
 .shipping-label {
     display: flex !important;
@@ -1765,11 +1764,11 @@ body.theme-sombre .statut {
 
 #apercuEtiquettes .labels-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(10, 28mm);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(8, 35.125mm);
     gap: 0;
     width: 194mm;
-    min-height: 280mm;
+    height: 281mm;
     align-content: start;
     box-sizing: border-box;
     margin: 0 auto 20px;
