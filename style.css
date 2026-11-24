@@ -658,7 +658,6 @@ footer {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-
    
     /* Masquer tous les éléments de l'application */
     body * {
@@ -947,8 +946,81 @@ background-image:
 .shipping-label .label-total {
     border-color: #D89AB7 !important;
 }
+    
+/* =========================================================
+   AJUSTEMENT FINAL : 24 ÉTIQUETTES SUR UNE PAGE A4
+========================================================= */
+
+@page {
+    size: A4 portrait;
+    margin: 5mm;
 }
 
+#apercuEtiquettes,
+.print-area {
+    width: 198mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.labels-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 66mm) !important;
+    grid-template-rows: repeat(8, 35.625mm) !important;
+    grid-auto-rows: 35.625mm !important;
+    gap: 0 !important;
+    width: 198mm !important;
+    height: 285mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.shipping-label {
+    width: 66mm !important;
+    height: 35.625mm !important;
+    min-width: 66mm !important;
+    min-height: 35.625mm !important;
+    max-width: 66mm !important;
+    max-height: 35.625mm !important;
+    padding: 1.5mm !important;
+    gap: 1mm !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.shipping-label .label-informations {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    gap: 0.5mm !important;
+    align-self: center !important;
+}
+
+.shipping-label .label-informations p {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 5.5pt !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0 !important;
+}
+
+.shipping-label .label-informations strong {
+    font-size: 5.8pt !important;
+}
+
+.shipping-label .label-logo {
+    flex: 0 0 14mm !important;
+    width: 14mm !important;
+    height: 14mm !important;
+}
+
+.shipping-label .label-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}
+
+}
 /* =========================================================
    MENU LATÉRAL
    ========================================================= */
