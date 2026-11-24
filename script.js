@@ -2353,7 +2353,10 @@ function creerEtiquette(commande) {
     }
 
     const resteAPayer = calculerTotalEtiquette(commande);
-    const fraisLivraison = nombre(commande.fraisLivraison);
+    const fraisLivraisonRenseigne =
+    commande.fraisLivraison !== null &&
+    commande.fraisLivraison !== undefined &&
+    String(commande.fraisLivraison).trim() !== "";
 
     etiquette.innerHTML = `
         <div class="label-informations">
@@ -2374,8 +2377,10 @@ function creerEtiquette(commande) {
             </p>
 
             <p><strong>Frais de livraison :</strong>
-                ${echapperHTML(formaterMontant(fraisLivraison))}
-            </p>
+    ${fraisLivraisonRenseigne
+        ? echapperHTML(formaterMontant(nombre(commande.fraisLivraison)))
+        : ""}
+</p>
         </div>
 
         <div class="label-logo">
