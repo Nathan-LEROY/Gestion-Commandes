@@ -1018,9 +1018,12 @@ background-image:
 }
 
 .shipping-label .label-logo {
-    flex: 0 0 18mm !important;
-    width: 18mm !important;
-    height: 18mm !important;
+    flex: 0 0 31mm !important;
+    width: 31mm !important;
+    height: 32mm !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .shipping-label .label-logo img {
