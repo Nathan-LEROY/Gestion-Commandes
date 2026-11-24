@@ -693,18 +693,17 @@ footer {
 
     
 .labels-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(2, 140mm);
-    gap: 0;
-    width: 194mm;
-    height: 280mm;
-    align-content: start;
-    box-sizing: border-box;
-    break-inside: avoid;
-    page-break-inside: avoid;
+    display: grid !important;
+    grid-template-columns: 194mm !important;
+    grid-template-rows: repeat(2, 140mm) !important;
+    gap: 0 !important;
+    width: 194mm !important;
+    height: 280mm !important;
+    align-content: start !important;
+    box-sizing: border-box !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
 }
-    
 
 .shipping-label {
     display: flex !important;
