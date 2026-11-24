@@ -730,17 +730,51 @@ footer {
     
 background-color: #FFFFFF !important;
 background-image:
-    radial-gradient(ellipse 3mm 6mm at 11% 4%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(ellipse 3mm 6mm at 16% 9%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(ellipse 3mm 6mm at 11% 16%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(ellipse 3mm 6mm at 5% 10%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(circle 2mm at 11% 10%, #D99AB7 0 65%, transparent 75%),
-    radial-gradient(ellipse 3mm 6mm at 89% 84%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(ellipse 3mm 6mm at 95% 90%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(ellipse 3mm 6mm at 89% 97%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(ellipse 3mm 6mm at 83% 90%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
-    radial-gradient(circle 2mm at 89% 90%, #D99AB7 0 65%, transparent 75%),
-    linear-gradient(120deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%) !important;
+    radial-gradient(ellipse 2.5mm 5mm at 10% 10%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 15% 15%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 10% 20%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 12.5% 15%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 35% 8%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 40% 13%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 35% 18%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 37.5% 13%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 65% 12%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 70% 17%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 65% 22%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 67.5% 17%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 90% 10%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 95% 15%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 90% 20%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 92.5% 15%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 20% 50%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 25% 55%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 20% 60%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 22.5% 55%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 75% 48%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 80% 53%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 75% 58%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 77.5% 53%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 10% 80%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 15% 85%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 10% 90%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 12.5% 85%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 45% 78%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 50% 83%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 45% 88%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 47.5% 83%, #D99AB7 0 65%, transparent 75%),
+
+    radial-gradient(ellipse 2.5mm 5mm at 85% 80%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 90% 85%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(ellipse 2.5mm 5mm at 85% 90%, rgba(218,145,177,0.38) 0 60%, transparent 72%),
+    radial-gradient(circle 1.5mm at 87.5% 85%, #D99AB7 0 65%, transparent 75%),
+    linear-gradient(#FFFFFF, #FFFFFF) !important;
 
     background-size: cover !important;
     background-position: center !important;
