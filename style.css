@@ -862,21 +862,91 @@ background-image:
 
 .no-print {
     display: none !important;
-}
-
-    .shipping-label h2,
-    .shipping-label p,
-    .shipping-label strong {
-        color: black !important;
-    }
-
-    .shipping-label .label-total {
-        border: 1px solid black;
-    }
-
+}    
     .no-print {
         display: none !important;
-    }
+    }    
+/* =========================================================
+   FORMAT 24 ÉTIQUETTES PAR PAGE A4
+   3 colonnes x 8 rangées
+========================================================= */
+
+#apercuEtiquettes,
+.print-area {
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.labels-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 70mm) !important;
+    grid-template-rows: repeat(8, 37.125mm) !important;
+    gap: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.shipping-label {
+    width: 70mm !important;
+    height: 37.125mm !important;
+    min-width: 70mm !important;
+    min-height: 37.125mm !important;
+    max-width: 70mm !important;
+    max-height: 37.125mm !important;
+
+    padding: 2mm !important;
+    gap: 2mm !important;
+    border-radius: 1mm !important;
+    box-sizing: border-box !important;
+}
+
+.shipping-label .label-informations {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    gap: 1mm !important;
+}
+
+.shipping-label .label-informations p {
+    margin: 0 !important;
+    font-size: 6.2pt !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+    color: #352B35 !important;
+}
+
+.shipping-label .label-informations strong {
+    font-size: 6.5pt !important;
+    color: #A64D78 !important;
+}
+
+.shipping-label .label-logo {
+    flex: 0 0 16mm !important;
+    width: 16mm !important;
+    height: 16mm !important;
+}
+
+.shipping-label .label-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}
+
+.shipping-label h2,
+.shipping-label p {
+    color: #352B35 !important;
+}
+
+.shipping-label strong {
+    color: #A64D78 !important;
+}
+
+.shipping-label .label-total {
+    border-color: #D89AB7 !important;
+}
 }
 
 /* =========================================================
