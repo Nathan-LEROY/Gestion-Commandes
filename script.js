@@ -2388,6 +2388,7 @@ function creerEtiquette(commande) {
 
     return etiquette;
 }
+
 /* =========================================================
    CRÉER UNE ÉTIQUETTE VIERGE
 ========================================================= */
@@ -2405,17 +2406,24 @@ function creerEtiquetteVide() {
     }
 
     etiquette.innerHTML = `
-        <h2>CRYSTAL BOUTIK</h2>
+        <div class="label-informations">
+            <p><strong>Nom :</strong> __________________</p>
 
-        <p><strong>Nom :</strong> __________________</p>
+            <p><strong>Produit :</strong> __________________</p>
 
-        <p><strong>Produit :</strong> __________________</p>
+            <p><strong>Lieu :</strong> __________________</p>
 
-        <p><strong>Lieu :</strong> __________________</p>
+            <p><strong>Reste à payer :</strong> __________________</p>
 
-        <p><strong>Reste à payer :</strong> __________________</p>
+            <p><strong>Frais de livraison :</strong> __________________</p>
+        </div>
 
-        <p><strong>Frais de livraison :</strong> __________________</p>
+        <div class="label-logo">
+            <img
+                src="./logo-crystal-boutik.jpg"
+                alt="Logo Crystal Boutik"
+            >
+        </div>
     `;
 
     return etiquette;
