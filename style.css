@@ -728,7 +728,7 @@ footer {
     box-shadow: none !important;
 
     
-background-color: #FFF9FC !important;
+background-color: #FFFFFF !important;
 background-image:
     radial-gradient(ellipse 3mm 6mm at 11% 4%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
     radial-gradient(ellipse 3mm 6mm at 16% 9%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
@@ -740,7 +740,7 @@ background-image:
     radial-gradient(ellipse 3mm 6mm at 89% 97%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
     radial-gradient(ellipse 3mm 6mm at 83% 90%, rgba(218, 145, 177, 0.42) 0 60%, transparent 72%),
     radial-gradient(circle 2mm at 89% 90%, #D99AB7 0 65%, transparent 75%),
-    linear-gradient(120deg, #FFFFFF 0%, #FFF5F9 55%, #FCEAF2 100%) !important;
+    linear-gradient(120deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%) !important;
 
     background-size: cover !important;
     background-position: center !important;
