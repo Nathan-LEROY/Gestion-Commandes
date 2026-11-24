@@ -2353,10 +2353,11 @@ function creerEtiquette(commande) {
     }
 
     const resteAPayer = calculerTotalEtiquette(commande);
-    const fraisLivraisonRenseigne =
-    commande.fraisLivraison !== null &&
-    commande.fraisLivraison !== undefined &&
-    String(commande.fraisLivraison).trim() !== "";
+    const valeurFrais = String(commande.fraisLivraison ?? "").trim();
+
+const fraisLivraisonRenseigne =
+    valeurFrais !== "" &&
+    nombre(valeurFrais) !== 0;
 
     etiquette.innerHTML = `
         <div class="label-informations">
