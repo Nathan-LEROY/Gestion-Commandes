@@ -533,9 +533,11 @@ td .btn {
 }
 
 .shipping-label.etiquette-vide p {
-    min-height: 4mm;
+    min-height: 5mm;
     border-bottom: none;
     padding-bottom: 0.5mm;
+    font-size: 9pt !important;
+    line-height: 1.4 !important;
 }
 
 .shipping-label .label-total {
