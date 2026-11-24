@@ -534,9 +534,10 @@ td .btn {
 
 .shipping-label.etiquette-vide p {
     min-height: 4mm;
-    border-bottom: 0.2mm solid #555;
+    border-bottom: none;
     padding-bottom: 0.5mm;
 }
+
 .shipping-label .label-total {
     margin-top: 2mm;
     padding: 3mm;
