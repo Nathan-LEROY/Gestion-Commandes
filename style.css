@@ -691,13 +691,14 @@ footer {
     padding: 0;
 }
 
-                .labels-grid {
+    
+.labels-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(8, 35.125mm);
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, 140mm);
     gap: 0;
     width: 194mm;
-    height: 281mm;
+    height: 280mm;
     align-content: start;
     box-sizing: border-box;
     break-inside: avoid;
