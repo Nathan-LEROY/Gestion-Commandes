@@ -2074,3 +2074,22 @@ body.theme-sombre .statut {
     overflow: hidden;
 }
 
+
+/* =========================================================
+   MESSAGE DE REMERCIEMENT EN BAS DES ÉTIQUETTES
+========================================================= */
+
+.shipping-label .label-merci {
+    position: absolute !important;
+    bottom: 3mm !important;
+    left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 10pt !important;
+    font-style: italic !important;
+    font-weight: 600 !important;
+    color: #A64D78 !important;
+    line-height: 1.2 !important;
+    z-index: 5 !important;
+}
