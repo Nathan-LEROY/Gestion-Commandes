@@ -2417,11 +2417,15 @@ function creerEtiquetteVide() {
             <p><strong>Frais de livraison :</strong></p>
         </div>
 
-        <div class="label-logo">
+                <div class="label-logo">
             <img
                 src="./logo-crystal-boutik.jpg"
                 alt="Logo Crystal Boutik"
             >
+        </div>
+
+        <div class="label-merci">
+            Merci de votre confiance ♡
         </div>
     `;
 
