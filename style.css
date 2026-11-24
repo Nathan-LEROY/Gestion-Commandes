@@ -824,17 +824,20 @@ background-image:
 }
     
 .shipping-label .label-informations p {
-    font-family: "Trebuchet MS", Arial, sans-serif !important;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
     font-size: 14pt !important;
     font-weight: 500 !important;
-    line-height: 1.6 !important;
-    letter-spacing: 0.3px !important;
+    line-height: 1.7 !important;
+    letter-spacing: 0.45px !important;
     color: #352B35 !important;
+    font-style: normal !important;
 }
 
 .shipping-label .label-informations strong {
-    font-family: Georgia, serif !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 15pt !important;
     font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
     color: #A64D78 !important;
 }
 
