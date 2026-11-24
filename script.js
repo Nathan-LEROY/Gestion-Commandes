@@ -2444,7 +2444,7 @@ function imprimerCommandes() {
 
     zone.innerHTML = "";
 
-    const nombreEtiquettesParPage = 2;
+    const nombreEtiquettesParPage = 24;
 
     // Calcul du nombre de feuilles nécessaires
     const nombrePages = Math.ceil(
