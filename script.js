@@ -2356,26 +2356,34 @@ function creerEtiquette(commande) {
     const fraisLivraison = nombre(commande.fraisLivraison);
 
     etiquette.innerHTML = `
+        <div class="label-informations">
+            <p><strong>Nom :</strong>
+                ${echapperHTML(commande.client || "")}
+            </p>
 
-        <p><strong>Nom :</strong>
-            ${echapperHTML(commande.client || "")}
-        </p>
+            <p><strong>Produit :</strong>
+                ${echapperHTML(commande.produit || "")}
+            </p>
 
-        <p><strong>Produit :</strong>
-            ${echapperHTML(commande.produit || "")}
-        </p>
+            <p><strong>Lieu :</strong>
+                ${echapperHTML(commande.lieu || "")}
+            </p>
 
-        <p><strong>Lieu :</strong>
-            ${echapperHTML(commande.lieu || "")}
-        </p>
+            <p><strong>Reste à payer :</strong>
+                ${echapperHTML(formaterMontant(resteAPayer))}
+            </p>
 
-        <p><strong>Reste à payer :</strong>
-            ${echapperHTML(formaterMontant(resteAPayer))}
-        </p>
+            <p><strong>Frais de livraison :</strong>
+                ${echapperHTML(formaterMontant(fraisLivraison))}
+            </p>
+        </div>
 
-        <p><strong>Frais de livraison :</strong>
-            ${echapperHTML(formaterMontant(fraisLivraison))}
-        </p>
+        <div class="label-logo">
+            <img
+                src="./logo-crystal-boutik.jpg"
+                alt="Logo Crystal Boutik"
+            >
+        </div>
     `;
 
     return etiquette;
