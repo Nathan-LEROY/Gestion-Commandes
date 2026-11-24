@@ -705,6 +705,7 @@ footer {
     page-break-inside: avoid !important;
 }
 
+
 .shipping-label {
     display: flex !important;
     flex-direction: row !important;
@@ -727,11 +728,21 @@ footer {
     box-shadow: none !important;
 
     background-color: #FFF9FC !important;
+    background-image:
+        linear-gradient(135deg, transparent 72%, rgba(226, 170, 195, 0.20) 72%),
+        linear-gradient(315deg, transparent 82%, rgba(240, 210, 224, 0.45) 82%),
+        linear-gradient(120deg, #FFFFFF 0%, #FFF5F9 55%, #FCEAF2 100%) !important;
+
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
 
-    color: #29212A !important;
+    color: #352B35 !important;
+    font-family: "Trebuchet MS", Arial, sans-serif !important;
+
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+
     break-inside: avoid !important;
     page-break-inside: avoid !important;
 }
@@ -743,8 +754,18 @@ footer {
 }
 
 .shipping-label .label-informations p {
+    font-family: "Trebuchet MS", Arial, sans-serif !important;
     font-size: 14pt !important;
-    line-height: 1.5 !important;
+    font-weight: 500 !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.3px !important;
+    color: #352B35 !important;
+}
+
+.shipping-label .label-informations strong {
+    font-family: Georgia, serif !important;
+    font-weight: 700 !important;
+    color: #A64D78 !important;
 }
 
 .shipping-label .label-logo {
@@ -757,6 +778,44 @@ footer {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
+}
+    
+.shipping-label .label-informations p {
+    font-family: "Trebuchet MS", Arial, sans-serif !important;
+    font-size: 14pt !important;
+    font-weight: 500 !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.3px !important;
+    color: #352B35 !important;
+}
+
+.shipping-label .label-informations strong {
+    font-family: Georgia, serif !important;
+    font-weight: 700 !important;
+    color: #A64D78 !important;
+}
+
+.shipping-label .label-total {
+    border-color: #D89AB7 !important;
+}
+
+.shipping-label h2 {
+    color: #352B35 !important;
+}
+
+.shipping-label .label-informations p {
+    color: #352B35 !important;
+}
+
+.shipping-label .label-informations strong {
+    color: #A64D78 !important;
+}
+.shipping-label .label-total {
+    border: 1px solid #D89AB7 !important;
+}
+
+.no-print {
+    display: none !important;
 }
 
     .shipping-label h2,
