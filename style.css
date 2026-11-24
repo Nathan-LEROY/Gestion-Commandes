@@ -519,17 +519,6 @@ td .btn {
     overflow-wrap: anywhere;
 }
 
-
-.shipping-label h2 {
-    margin: 0 0 1mm;
-    padding-bottom: 1mm;
-    border-bottom: 0.3mm solid #333;
-    font-size: 9pt;
-    line-height: 1.2;
-    text-align: center;
-    font-weight: 700;
-}
-
 .shipping-label p {
     margin: 0;
     font-size: 7pt;
