@@ -2356,7 +2356,6 @@ function creerEtiquette(commande) {
     const fraisLivraison = nombre(commande.fraisLivraison);
 
     etiquette.innerHTML = `
-        <h2>CRYSTAL BOUTIK</h2>
 
         <p><strong>Nom :</strong>
             ${echapperHTML(commande.client || "")}
