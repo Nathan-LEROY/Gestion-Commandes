@@ -705,21 +705,59 @@ footer {
     page-break-inside: avoid;
 }
     
+
 .shipping-label {
     display: flex !important;
-    min-width: 0;
-    border: 1px solid #333;
-    border-radius: 1mm;
-    box-shadow: none;
-    background-color: white;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+
+    width: 194mm !important;
+    height: 140mm !important;
+    min-width: 194mm !important;
+    min-height: 140mm !important;
+    max-width: 194mm !important;
+    max-height: 140mm !important;
+
+    box-sizing: border-box !important;
+    padding: 8mm !important;
+    gap: 8mm !important;
+
+    border: 1px solid #E8C6D5 !important;
+    border-radius: 3mm !important;
+    box-shadow: none !important;
+
+    background-color: #FFF9FC !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
-    color: black !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    break-inside: avoid;
-    page-break-inside: avoid;
+
+    color: #29212A !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+.shipping-label .label-informations {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    gap: 8mm !important;
+}
+
+.shipping-label .label-informations p {
+    font-size: 14pt !important;
+    line-height: 1.5 !important;
+}
+
+.shipping-label .label-logo {
+    flex: 0 0 65mm !important;
+    width: 65mm !important;
+    height: 65mm !important;
+}
+
+.shipping-label .label-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
 }
 
     .shipping-label h2,
