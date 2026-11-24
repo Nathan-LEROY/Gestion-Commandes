@@ -2388,7 +2388,6 @@ function creerEtiquette(commande) {
 
     return etiquette;
 }
-
 /* =========================================================
    CRÉER UNE ÉTIQUETTE VIERGE
 ========================================================= */
@@ -2407,15 +2406,15 @@ function creerEtiquetteVide() {
 
     etiquette.innerHTML = `
         <div class="label-informations">
-            <p><strong>Nom :</strong> __________________</p>
+            <p><strong>Nom :</strong></p>
 
-            <p><strong>Produit :</strong> __________________</p>
+            <p><strong>Produit :</strong></p>
 
-            <p><strong>Lieu :</strong> __________________</p>
+            <p><strong>Lieu :</strong></p>
 
-            <p><strong>Reste à payer :</strong> __________________</p>
+            <p><strong>Reste à payer :</strong></p>
 
-            <p><strong>Frais de livraison :</strong> __________________</p>
+            <p><strong>Frais de livraison :</strong></p>
         </div>
 
         <div class="label-logo">
