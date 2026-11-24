@@ -2384,10 +2384,15 @@ function creerEtiquette(commande) {
                 alt="Logo Crystal Boutik"
             >
         </div>
+
+        <div class="label-merci">
+            Merci de votre confiance ♡
+        </div>
     `;
 
     return etiquette;
 }
+
 /* =========================================================
    CRÉER UNE ÉTIQUETTE VIERGE
 ========================================================= */
@@ -2407,17 +2412,13 @@ function creerEtiquetteVide() {
     etiquette.innerHTML = `
         <div class="label-informations">
             <p><strong>Nom :</strong></p>
-
             <p><strong>Produit :</strong></p>
-
             <p><strong>Lieu :</strong></p>
-
             <p><strong>Reste à payer :</strong></p>
-
             <p><strong>Frais de livraison :</strong></p>
         </div>
 
-                <div class="label-logo">
+        <div class="label-logo">
             <img
                 src="./logo-crystal-boutik.jpg"
                 alt="Logo Crystal Boutik"
