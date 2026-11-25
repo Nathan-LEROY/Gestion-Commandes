@@ -2339,7 +2339,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-
 function creerEtiquette(commande) {
     const etiquette = document.createElement("article");
     etiquette.className = "shipping-label";
@@ -2353,39 +2352,40 @@ function creerEtiquette(commande) {
     }
 
     const resteAPayer = calculerTotalEtiquette(commande);
-    const valeurFrais = String(commande.fraisLivraison ?? "").trim();
 
-const fraisLivraisonRenseigne =
-    valeurFrais !== "" &&
-    nombre(valeurFrais) !== 0;
+    const valeurFrais =
+        String(commande.fraisLivraison ?? "").trim();
+
+    const fraisLivraisonRenseigne =
+        valeurFrais !== "" &&
+        nombre(valeurFrais) !== 0;
+
     etiquette.innerHTML = `
-
-        
-<div class="label-informations">
-    <p><strong>Nom :</strong>
-        ${echapperHTML(commande.client || "")}
-    </p>
-
-    <p><strong>Lieu :</strong>
-        ${echapperHTML(commande.lieu || "")}
-    </p>
-
-    <p><strong>Reste à payer :</strong>
-        ${echapperHTML(formaterMontant(resteAPayer))}
-    </p>
-
-    <p><strong>Frais de livraison :</strong>
-        ${fraisLivraisonRenseigne
-            ? echapperHTML(formaterMontant(nombre(commande.fraisLivraison)))
-            : ""}
-    </p>
-</div>
-
         <div class="label-logo">
             <img
                 src="./logo-crystal-boutik.jpg"
                 alt="Logo Crystal Boutik"
             >
+        </div>
+
+        <div class="label-informations">
+            <p><strong>Nom :</strong>
+                ${echapperHTML(commande.client || "")}
+            </p>
+
+            <p><strong>Lieu :</strong>
+                ${echapperHTML(commande.lieu || "")}
+            </p>
+
+            <p><strong>Reste à payer :</strong>
+                ${echapperHTML(formaterMontant(resteAPayer))}
+            </p>
+
+            <p><strong>Frais de livraison :</strong>
+                ${fraisLivraisonRenseigne
+                    ? echapperHTML(formaterMontant(nombre(commande.fraisLivraison)))
+                    : ""}
+            </p>
         </div>
 
         <div class="label-merci">
@@ -2395,7 +2395,6 @@ const fraisLivraisonRenseigne =
 
     return etiquette;
 }
-
 /* =========================================================
    CRÉER UNE ÉTIQUETTE VIERGE
 ========================================================= */
