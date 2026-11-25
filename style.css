@@ -2126,3 +2126,29 @@ body.theme-sombre .statut {
     letter-spacing: 0.5px !important;
     color: #A64D78 !important;
 }
+
+
+/* CORRECTION : TEXTE COMPLET DANS LE PDF */
+@media print {
+    .shipping-label .label-informations {
+        display: flex !important;
+        flex-direction: column !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        gap: 1.2mm !important;
+    }
+
+    .shipping-label .label-informations p {
+        display: block !important;
+        visibility: visible !important;
+        font-size: 7pt !important;
+        line-height: 1.2 !important;
+        letter-spacing: 0.1px !important;
+        margin: 0 !important;
+    }
+
+    .shipping-label .label-informations strong {
+        font-size: 7.2pt !important;
+        line-height: 1.2 !important;
+    }
+}
