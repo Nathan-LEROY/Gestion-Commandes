@@ -2361,23 +2361,24 @@ const fraisLivraisonRenseigne =
 
     etiquette.innerHTML = `
         <div class="label-informations">
-            <p><strong>Nom :</strong>
-    <span class="label-valeur">${echapperHTML(commande.client || "")}</span>
+            
+         <p><strong>Nom :</strong>
+    ${echapperHTML(commande.client || "")}
 </p>
 
-      <p><strong>Lieu :</strong>
-    <span class="label-valeur">${echapperHTML(commande.lieu || "")}</span>
+<p><strong>Lieu :</strong>
+    ${echapperHTML(commande.lieu || "")}
 </p>
 
-            <p><strong>Reste à payer :</strong>
-    <span class="label-valeur">${echapperHTML(formaterMontant(resteAPayer))}</span>
+<p><strong>Reste à payer :</strong>
+    ${echapperHTML(formaterMontant(resteAPayer))}
 </p>
 
-            <p><strong>Frais de livraison :</strong>
+<p><strong>Frais de livraison :</strong>
     ${fraisLivraisonRenseigne
         ? echapperHTML(formaterMontant(nombre(commande.fraisLivraison)))
         : ""}
-</p>
+</p> 
         </div>
 
         <div class="label-logo">
