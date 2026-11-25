@@ -2103,24 +2103,25 @@ body.theme-sombre .statut {
 .shipping-label .label-informations p {
     margin: 0 !important;
 }
+
 /* =========================================================
    STYLE FINAL DES INFORMATIONS DES ÉTIQUETTES
 ========================================================= */
 
 .shipping-label .label-informations p {
     font-family: Georgia, "Times New Roman", serif !important;
-    font-size: 16pt !important;
+    font-size: 12pt !important;
     font-weight: 500 !important;
-    line-height: 1.5 !important;
-    letter-spacing: 0.5px !important;
+    line-height: 1.35 !important;
+    letter-spacing: 0.2px !important;
     color: #352B35 !important;
     margin: 0 !important;
 }
 
 .shipping-label .label-informations strong {
     font-family: Georgia, "Times New Roman", serif !important;
-    font-size: 16pt !important;
+    font-size: 12pt !important;
     font-weight: 700 !important;
-    letter-spacing: 0.6px !important;
+    letter-spacing: 0.3px !important;
     color: #A64D78 !important;
 }
