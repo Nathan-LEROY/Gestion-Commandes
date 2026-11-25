@@ -2103,9 +2103,3 @@ body.theme-sombre .statut {
 .shipping-label .label-informations p {
     margin: 0 !important;
 }
-/* Agrandir uniquement les informations renseignées */
-.shipping-label .label-valeur {
-    font-size: 12pt !important;
-    font-weight: 700 !important;
-    color: #352B35 !important;
-}
