@@ -2152,3 +2152,45 @@ body.theme-sombre .statut {
         line-height: 1.2 !important;
     }
 }
+
+/* LOGO EN ARRIERE-PLAN DES INFORMATIONS */
+.shipping-label {
+    position: relative !important;
+}
+
+.shipping-label .label-logo {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
+
+.shipping-label .label-logo img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    opacity: 0.18 !important;
+}
+
+.shipping-label .label-informations {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+}
+
+.shipping-label .label-informations p {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+}
+
+.shipping-label .label-merci {
+    z-index: 3 !important;
+}
