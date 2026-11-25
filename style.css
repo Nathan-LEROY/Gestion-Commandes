@@ -2093,3 +2093,14 @@ body.theme-sombre .statut {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
+
+/* Espacement des informations sur les étiquettes remplies */
+.shipping-label:not(.etiquette-vide) .label-informations {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3mm !important;
+}
+
+.shipping-label:not(.etiquette-vide) .label-informations p {
+    margin: 0 !important;
+}
