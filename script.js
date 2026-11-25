@@ -2358,28 +2358,28 @@ function creerEtiquette(commande) {
 const fraisLivraisonRenseigne =
     valeurFrais !== "" &&
     nombre(valeurFrais) !== 0;
-
     etiquette.innerHTML = `
-        <div class="label-informations">
-            
-         <p><strong>Nom :</strong>
-    ${echapperHTML(commande.client || "")}
-</p>
 
-<p><strong>Lieu :</strong>
-    ${echapperHTML(commande.lieu || "")}
-</p>
+        
+<div class="label-informations">
+    <p><strong>Nom :</strong>
+        ${echapperHTML(commande.client || "")}
+    </p>
 
-<p><strong>Reste à payer :</strong>
-    ${echapperHTML(formaterMontant(resteAPayer))}
-</p>
+    <p><strong>Lieu :</strong>
+        ${echapperHTML(commande.lieu || "")}
+    </p>
 
-<p><strong>Frais de livraison :</strong>
-    ${fraisLivraisonRenseigne
-        ? echapperHTML(formaterMontant(nombre(commande.fraisLivraison)))
-        : ""}
-</p> 
-        </div>
+    <p><strong>Reste à payer :</strong>
+        ${echapperHTML(formaterMontant(resteAPayer))}
+    </p>
+
+    <p><strong>Frais de livraison :</strong>
+        ${fraisLivraisonRenseigne
+            ? echapperHTML(formaterMontant(nombre(commande.fraisLivraison)))
+            : ""}
+    </p>
+</div>
 
         <div class="label-logo">
             <img
