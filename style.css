@@ -2203,3 +2203,13 @@ body.theme-sombre .statut {
     margin: 0 !important;
     box-sizing: border-box !important;
 }
+
+/* AGRANDIR LES INFORMATIONS DES ÉTIQUETTES REMPLIES */
+.shipping-label:not(.etiquette-vide) .label-informations p {
+    font-size: 8pt !important;
+    line-height: 1.25 !important;
+}
+
+.shipping-label:not(.etiquette-vide) .label-informations strong {
+    font-size: 8.2pt !important;
+}
