@@ -2213,3 +2213,10 @@ body.theme-sombre .statut {
 .shipping-label:not(.etiquette-vide) .label-informations strong {
     font-size: 8.2pt !important;
 }
+
+/* RÉDUIRE L'APERÇU À L'ÉCRAN UNIQUEMENT */
+@media screen {
+    #apercuEtiquettes {
+        zoom: 0.65;
+    }
+}
