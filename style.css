@@ -826,14 +826,8 @@ background-image:
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-}
-    
-.shipping-label .label-logo img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain !important;
-}
-    
+}    
+   
 .shipping-label .label-informations p {
     font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
     font-size: 14pt !important;
